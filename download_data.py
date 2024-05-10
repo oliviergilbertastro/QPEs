@@ -23,5 +23,6 @@ objects = [
     (71.3921,-10.2005),
     ]
 
-for i in tqdm(range(len(objects))):
-    get_file(objects[i], i)
+if __name__ == "__main__":
+    for i in tqdm(range(len(objects))):
+        get_file(objects[i], i, size=1024, pixscale=0.131)

@@ -10,17 +10,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import LogNorm
 import mpl_interactions.ipyplot as iplt
 from matplotlib.widgets import Slider
-
-objects = [
-    (19.7861250,-34.1916944),
-    (195.500588,27.7827129),
-    (37.9469167,-10.3361972),
-    (38.7040417,-44.3254583),
-    (189.734917,+33.165911),
-    (42.322161985,-4.214494783),
-    (210.2222,-28.7665),
-    (71.3921,-10.2005),
-    ]
+from download_data import objects
 
 def makeFalseColorImage(img):
     """
@@ -41,9 +31,9 @@ def makeFalseColorImage(img):
     for i in range(3):
         rgb_img[:,:,i] = rgb_img[:,:,i]/np.max(rgb_img[:,:,i])
     
-    print(np.mean(rgb_img[:,:,0]))
-    print(np.mean(rgb_img[:,:,1]))
-    print(np.mean(rgb_img[:,:,2]))
+    print(np.sum(rgb_img[:,:,0]))
+    print(np.sum(rgb_img[:,:,1]))
+    print(np.sum(rgb_img[:,:,2]))
     return rgb_img
 
 
@@ -51,7 +41,7 @@ def makeFalseColorImage(img):
 fitsFiles = []
 fitsImages = []
 fitsFalseColor = []
-for i in range(8):
+for i in range(len(objects)):
     fitsFiles.append(pyfits.open(f"data/object{i}.fits"))
     fitsImages.append(np.array(fitsFiles[i][0].data).T.swapaxes(0, 1))
     fitsFalseColor.append(makeFalseColorImage(fitsImages[i]))
@@ -59,11 +49,12 @@ for i in range(8):
     def controlVisual(contrast=0.5, intensity=5):
         return fitsFalseColor[i]**(1/(contrast))*intensity*5
     fig, ax = plt.subplots()
+    fig.set_size_inches(6, 7.25)
     plt.subplots_adjust(bottom=0.25)
     ax1 = plt.axes([0.25, 0.1, 0.65, 0.03])
     ax2 = plt.axes([0.25, 0.05, 0.65, 0.03])
-    slider1 = Slider(ax1, label="Contrast", valmin=0.01, valmax=5, valinit=3)
-    slider2 = Slider(ax2, label="Intensity", valmin=0.1, valmax=20)
+    slider1 = Slider(ax1, label="Contrast", valmin=2, valmax=5, valinit=3)
+    slider2 = Slider(ax2, label="Intensity", valmin=0.1, valmax=5)
     controls = iplt.imshow(controlVisual, contrast=slider1, intensity=slider2, ax=ax, origin="lower")
     plt.title(f"Object_{i}: RA:{(objects[i][0]):.4f} DEC:{(objects[i][1]):.4f}",fontsize=15)
     plt.show()
