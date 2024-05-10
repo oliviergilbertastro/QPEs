@@ -23,6 +23,7 @@ def makeFalseColorImage(img):
     z = np.array([255,0,0])
     filters = [g,r,i,z]
     rgb_img = np.zeros((img.shape[0],img.shape[1],3))
+    #We add each image band to the final rgb image by multiplying it with the chosen false color
     for i, filter in enumerate(filters):
         rgb_img[:,:,0] += img[:,:,i]*filter[0]
         rgb_img[:,:,1] += img[:,:,i]*filter[1]
@@ -30,10 +31,6 @@ def makeFalseColorImage(img):
     #Now we need to renormalize:
     for i in range(3):
         rgb_img[:,:,i] = rgb_img[:,:,i]/np.max(rgb_img[:,:,i])
-    
-    print(np.sum(rgb_img[:,:,0]))
-    print(np.sum(rgb_img[:,:,1]))
-    print(np.sum(rgb_img[:,:,2]))
     return rgb_img
 
 

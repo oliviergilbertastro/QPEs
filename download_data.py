@@ -1,5 +1,6 @@
 """
 DOWNLOADS THE NECESSARY FITS FILES (IMAGES) IN THE GRIZ BANDS
+(You need an internet connection to run this code successfully)
 """
 
 import requests
