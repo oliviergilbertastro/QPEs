@@ -27,4 +27,4 @@ objects = [
 
 if __name__ == "__main__":
     for i in tqdm(range(len(objects))):
-        get_file(objects[i], i, size=512, pixscale=0.262)
+        get_file(objects[i], i, size=1024, pixscale=0.262)
