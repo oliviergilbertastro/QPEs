@@ -9,6 +9,7 @@ from tqdm import tqdm
 def get_file(pos, filenumber, size=512, pixscale=0.262):
     ra, dec = pos
     url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&size={size}&layer=ls-dr10&pixscale={pixscale}'
+    #url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&layer=ls-dr10'
     r = requests.get(url)
     open(r'data/object'+str(filenumber)+r'.fits' , 'wb').write(r.content)
 
@@ -26,4 +27,4 @@ objects = [
 
 if __name__ == "__main__":
     for i in tqdm(range(len(objects))):
-        get_file(objects[i], i, size=1024, pixscale=0.131)
+        get_file(objects[i], i, size=512, pixscale=0.262)
