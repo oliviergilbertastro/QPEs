@@ -490,7 +490,7 @@ class DataProcess(object):
         """
         Use galight.tools.cutout_tools.plot_overview to plot image overview.
         """
-        from galight.tools.cutout_tools import plot_overview
+        from galight_modif.tools.cutout_tools import plot_overview
         if hasattr(self, 'PSF_pos_list'):
             PSF_pos_list = self.PSF_pos_list
         else:
