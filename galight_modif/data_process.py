@@ -13,19 +13,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import astropy.io.fits as pyfits
 from astropy.wcs import WCS
-from galight.tools.measure_tools import measure_bkg
-from galight.tools.cutout_tools import cut_center_auto, cutout
+from galight_modif.tools.measure_tools import measure_bkg
+from galight_modif.tools.cutout_tools import cut_center_auto, cutout
 from copy import deepcopy
 from matplotlib.colors import LogNorm
-from galight.tools.astro_tools import plt_fits, read_pixel_scale
+from galight_modif.tools.astro_tools import plt_fits, read_pixel_scale
 import photutils
 import sys
 from packaging import version
-from galight.tools.measure_tools import search_local_max, measure_FWHM
-from galight.tools.measure_tools import detect_obj
-from galight.tools.astro_tools import plt_many_fits
+from galight_modif.tools.measure_tools import search_local_max, measure_FWHM
+from galight_modif.tools.measure_tools import detect_obj
+from galight_modif.tools.astro_tools import plt_many_fits
 import lenstronomy 
-from galight.tools.measure_tools import detect_obj, mask_obj
+from galight_modif.tools.measure_tools import detect_obj, mask_obj
 class DataProcess(object):
     """
     A class to Process the data, including the following feature:
@@ -145,6 +145,7 @@ class DataProcess(object):
                 Arguments can also passed to detect_obj()
                         
         """
+        self.arguments = kwargs
         if if_plot == None:
             if_plot = self.if_plot
         if show_materials == None:

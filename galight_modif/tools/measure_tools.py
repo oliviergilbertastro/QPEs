@@ -609,9 +609,9 @@ def detect_obj(image, detect_tool = 'phot', exp_sz= 1.2, if_plot=False, auto_sor
         # objects with a shape similar to the kernel.
         
         if version.parse(photutils.__version__) >= version.parse("1.2.0"):
-            segm = detect_sources(convolved_image, threshold, npixels=npixels, kernel=None)
+            segm = detect_sources(convolved_image, threshold, npixels=npixels)
             segm_deblend = deblend_sources(convolved_image, segm, npixels=npixels,
-                                            kernel=None, nlevels=nlevels,
+                                            nlevels=nlevels,
                                             contrast=contrast)
         else:
             segm = detect_sources(convolved_image, threshold, npixels=npixels, filter_kernel=None)
