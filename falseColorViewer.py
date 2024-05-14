@@ -43,20 +43,26 @@ for i in range(len(objects)):
     fitsImages.append(np.array(fitsFiles[i][0].data).T.swapaxes(0, 1))
     fitsFalseColor.append(makeFalseColorImage(fitsImages[i]))
 
+
+def showFalseColorImage(i):
+    def controlVisual(contrast=0.5, intensity=5):
+        return fitsFalseColor[i]**(1/(contrast))*intensity*5
+    fig, ax = plt.subplots()
+    fig.set_size_inches(6, 7.25)
+    plt.subplots_adjust(bottom=0.25)
+    ax1 = plt.axes([0.25, 0.1, 0.65, 0.03])
+    ax2 = plt.axes([0.25, 0.05, 0.65, 0.03])
+    slider1 = Slider(ax1, label="Contrast", valmin=2, valmax=5, valinit=3)
+    slider2 = Slider(ax2, label="Intensity", valmin=0.1, valmax=5)
+    controls = iplt.imshow(controlVisual, contrast=slider1, intensity=slider2, ax=ax, origin="lower")
+    plt.title(f"Object_{i}: RA:{(objects[i][0]):.4f} DEC:{(objects[i][1]):.4f}",fontsize=15)
+    plt.show()
+
+
+
 if input("Show false color images? [y/n]") == "y":
     for i in range(len(objects)):
-        def controlVisual(contrast=0.5, intensity=5):
-            return fitsFalseColor[i]**(1/(contrast))*intensity*5
-        fig, ax = plt.subplots()
-        fig.set_size_inches(6, 7.25)
-        plt.subplots_adjust(bottom=0.25)
-        ax1 = plt.axes([0.25, 0.1, 0.65, 0.03])
-        ax2 = plt.axes([0.25, 0.05, 0.65, 0.03])
-        slider1 = Slider(ax1, label="Contrast", valmin=2, valmax=5, valinit=3)
-        slider2 = Slider(ax2, label="Intensity", valmin=0.1, valmax=5)
-        controls = iplt.imshow(controlVisual, contrast=slider1, intensity=slider2, ax=ax, origin="lower")
-        plt.title(f"Object_{i}: RA:{(objects[i][0]):.4f} DEC:{(objects[i][1]):.4f}",fontsize=15)
-        plt.show()
+        showFalseColorImage(i)
 
 
 
@@ -71,6 +77,8 @@ if input("Show false color images? [y/n]") == "y":
 #exp =  astro_tools.read_fits_exp(fitsFile_qso[0].header)  #Read the exposure time
 
 choose_object = int(input("Enter the object's number [0-7]:"))
+
+showFalseColorImage(choose_object)
 
 header = fitsFiles[choose_object][0].header
 print(header)
