@@ -2,7 +2,7 @@
 import pickle
 import numpy as np
 picklename = 'ra19.7861250_dec-34.1916944_bulge.pkl'
-fitting_run_result = pickle.load(open(picklename,'rb'))  #fitting_run_result is actually the fit_run in galaxyFitting.py.
+fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galaxyFitting.py.
 
 from galight_modif.tools.plot_tools import total_compare
 data = fitting_run_result.fitting_specify_class.kwargs_data['image_data']

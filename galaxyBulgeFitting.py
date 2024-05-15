@@ -27,8 +27,8 @@ if True:
     plt.show()
 
 fov_image = img[1].data-np.ones(img[1].data.shape)*863.3368 #trying to remove the noise
-header = img[0].header
-exp =  astro_tools.read_fits_exp(header)  #Read the exposure time 
+header = img[1].header
+exp =  astro_tools.read_fits_exp(img[0].header)  #Read the exposure time 
 wht = wht_img[1].data
 mean_wht = exp * (0.262)**2  #The drizzle information is used to derive the mean WHT value.
 exp_map = exp * wht/mean_wht  #Derive the exposure time map for each pixel
@@ -98,7 +98,8 @@ def condition_bulgedisk(kwargs_lens, kwargs_source, kwargs_lens_light, kwargs_ps
 #For more details, see notebook galight_HSC_QSO.ipynb
 fit_sepc = FittingSpecify(data_process)
 #The 'fix_n_list' will fix Sersic_n as 4 for the comp0, and as 1 for the comp1.
-fit_sepc.prepare_fitting_seq(point_source_num = 0, fix_n_list= [[0,1], [1,1.14]],condition=condition_bulgedisk)
+fit_sepc.prepare_fitting_seq(point_source_num = 0, fix_n_list= None,condition=condition_bulgedisk)
+#fit_sepc.prepare_fitting_seq(point_source_num = 0, fix_n_list= [[0,1], [1,1.14]],condition=condition_bulgedisk)
 
 #The settings of the parameters is the dict defined by fit_sepc.kwargs_params. One can modify the values herein to change the default setting manually. 
 

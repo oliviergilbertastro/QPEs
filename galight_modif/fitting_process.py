@@ -593,7 +593,7 @@ class FittingProcess(object):
         if dump_class.fitting_specify_class.kwargs_likelihood['custom_logL_addition'] != None:
             dump_class.prior = str(dump_class.fitting_specify_class.kwargs_likelihood['custom_logL_addition'])
             del dump_class.fitting_specify_class.kwargs_likelihood['custom_logL_addition']
-        pickle.dump(dump_class, open(savename+'.pkl', 'wb'))    
+        pickle.dump(dump_class, open("galight_fitruns/"+savename+'.pkl', 'wb'))    
     
     def dump_result_version_free(self):
         save_pickle = {}
