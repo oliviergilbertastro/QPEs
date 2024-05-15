@@ -26,11 +26,11 @@ if True:
     ax2.imshow(img[1].data)
     plt.show()
 
-fov_image = img[1].data-np.ones(img[1].data.shape)*863.#2710 #trying to remove the noise
+fov_image = img[1].data-np.ones(img[1].data.shape)*863.3368 #trying to remove the noise
 header = img[0].header
 exp =  astro_tools.read_fits_exp(header)  #Read the exposure time 
 wht = wht_img[1].data
-mean_wht = exp * (0.0642/0.135)**2  #The drizzle information is used to derive the mean WHT value.
+mean_wht = exp * (0.262)**2  #The drizzle information is used to derive the mean WHT value.
 exp_map = exp * wht/mean_wht  #Derive the exposure time map for each pixel
 
 
@@ -66,63 +66,45 @@ data_process.psf_id_for_fitting = int(input('Use which PSF? Input a number.\n'))
 data_process.checkout()
 
 
-#PREPARE THE FITTING
+
+#Add bulge
+
+#Modify the fitting of the component (i.e., galaxy) id = 0 into to components (i.e., bulge + disk)
+import copy
+apertures = copy.deepcopy(data_process.apertures)
+comp_id = 0
+add_aperture0 = copy.deepcopy(apertures[comp_id])
+#This setting assigns comp0 as 'bulge' and comp1 as 'disk'
+add_aperture0.a, add_aperture0.b = add_aperture0.a/2, add_aperture0.b/2
+apertures = apertures[:comp_id] + [add_aperture0] + apertures[comp_id:]
+data_process.apertures = apertures #Pass apertures to the data_process
+
+#Adding a prior so that 1)the size of the bulge is within a range to the disk size. 2) disk have more ellipticity.
+import lenstronomy.Util.param_util as param_util
+def condition_bulgedisk(kwargs_lens, kwargs_source, kwargs_lens_light, kwargs_ps, kwargs_special, kwargs_extinction, kwargs_tracer_source):
+    logL = 0
+    #note that the Comp[0] is the bulge and the Comp[1] is the disk.
+    phi0, q0 = param_util.ellipticity2phi_q(kwargs_lens_light[0]['e1'], kwargs_lens_light[0]['e2'])
+    phi1, q1 = param_util.ellipticity2phi_q(kwargs_lens_light[1]['e1'], kwargs_lens_light[1]['e2'])
+    cond_0 = (kwargs_lens_light[0]['R_sersic'] > kwargs_lens_light[1]['R_sersic'] * 0.9)
+    cond_1 = (kwargs_lens_light[0]['R_sersic'] < kwargs_lens_light[1]['R_sersic']*0.15)
+    cond_2 = (q0 < q1)
+    if cond_0 or cond_1 or cond_2:
+        logL -= 10**15
+    return logL
 
 
+#Start to produce the class and params for fitting.
+#For more details, see notebook galight_HSC_QSO.ipynb
 fit_sepc = FittingSpecify(data_process)
+#The 'fix_n_list' will fix Sersic_n as 4 for the comp0, and as 1 for the comp1.
+fit_sepc.prepare_fitting_seq(point_source_num = 0, fix_n_list= [[0,1], [1,1.14]],condition=condition_bulgedisk)
 
-
-#For the extended source model, we can use any of the following:
-'''
-    "GAUSSIAN",
-    "GAUSSIAN_ELLIPSE",
-    "ELLIPSOID",
-    "MULTI_GAUSSIAN",
-    "MULTI_GAUSSIAN_ELLIPSE",
-    "SERSIC",
-    "SERSIC_ELLIPSE",
-    "SERSIC_ELLIPSE_Q_PHI",
-    "CORE_SERSIC",
-    "SHAPELETS",
-    "SHAPELETS_POLAR",
-    "SHAPELETS_POLAR_EXP",
-    "SHAPELETS_ELLIPSE",
-    "HERNQUIST",
-    "HERNQUIST_ELLIPSE",
-    "PJAFFE",
-    "PJAFFE_ELLIPSE",
-    "UNIFORM",
-    "POWER_LAW",
-    "NIE",
-    "CHAMELEON",
-    "DOUBLE_CHAMELEON",
-    "TRIPLE_CHAMELEON",
-    "INTERPOL",
-    "SLIT_STARLETS",
-    "SLIT_STARLETS_GEN2",
-    "LINEAR",
-    "LINEAR_ELLIPSE",
-'''
-
-source_params = [
-    [{'R_sersic': 2, 'n_sersic': 1, 'e1': 0.020985783580179947, 'e2': 0.020877686531223398, 'center_x': -0.03150875524892178, 'center_y': 0.006710267576362281}],   #init
-    [{'n_sersic': 2, 'R_sersic': 0.01469085455157253, 'e1': 0.1, 'e2': 0.1, 'center_x': 0.07924000173807065, 'center_y': 0.07924000173807065}],                     #sigma
-    [{'amp': 1, 'e1': 0.4999904134855958, 'e2': 0.058201039792618724, 'center_x': -0.01088466290826861, 'center_y': 0.009910087886402434}],                                                                                                                                           #fixed
-    [{'e1': -0.5, 'e2': -0.5, 'R_sersic': 0.001981000043451766, 'n_sersic': 0.2, 'center_x': -0.42770876393927504, 'center_y': -0.389489741113991}],                #lower bound
-    [{'e1': 0.5, 'e2': 0.5, 'R_sersic': 305.2036281827358795, 'n_sersic': 9.0, 'center_x': 0.3646912534414315, 'center_y': 0.40291027626671555}]                      #upper bound
-          ]
-
-#Prepare the fitting sequence, keywords see notes above.
-fit_sepc.prepare_fitting_seq(point_source_num = 1, fix_n_list= None, fix_center_list = None, 
-                            extend_source_model=["SERSIC_ELLIPSE"], source_params = None, ps_params = None)
+#The settings of the parameters is the dict defined by fit_sepc.kwargs_params. One can modify the values herein to change the default setting manually. 
 
 #Plot the initial settings for fittings. 
-print("plot_fitting_sets")
-fit_sepc.plot_fitting_sets()
-
-#Build up and to pass to the next step.
-print("build_fitting_seq")
 fit_sepc.build_fitting_seq()
+fit_sepc.plot_fitting_sets()
 
 
 
@@ -132,7 +114,7 @@ fit_sepc.build_fitting_seq()
 
 #Pass fit_sepc to FittingProcess,
 # savename: The name of the saved files.    
-fit_run = FittingProcess(fit_sepc, savename = 'ra19.7861250_dec-34.1916944', fitting_level='deep') 
+fit_run = FittingProcess(fit_sepc, savename = 'ra19.7861250_dec-34.1916944_bulge', fitting_level='deep') 
 #For the fitting_level, you can also put ['norm', 'deep'] for the later ['PSO', 'MCMC'] corresplingly.
 
 #Setting the fitting approach and Run: 
@@ -157,3 +139,20 @@ fit_run.plot_all(target_ID='GSN 069')
 #Save the fitting class as pickle format:
 #     Note, if you use python3 (or 2), load with python3 (or 2)
 fit_run.dump_result()
+fitting_run_result = fit_run
+from galight_modif.tools.plot_tools import total_compare
+data = fitting_run_result.fitting_specify_class.kwargs_data['image_data']
+noise = fitting_run_result.fitting_specify_class.kwargs_data['noise_map']
+galaxy_list = fitting_run_result.image_host_list
+galaxy_total_image = np.zeros_like(galaxy_list[0])
+for i in range(len(galaxy_list)):
+    galaxy_total_image = galaxy_total_image+galaxy_list[i]
+model = galaxy_total_image
+norm_residual = (data - model)/noise
+flux_list_2d = [data, model, norm_residual]
+label_list_2d = ['data', 'model', 'normalized residual']
+flux_list_1d = [data, model, galaxy_list[0], galaxy_list[1], -model]
+label_list_1d = ['data', 'model', 'bulge', 'disk']
+total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d, deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
+                      zp=fitting_run_result.zp, if_annuli=False, arrows= False, show_plot = True,
+                      target_ID = 'target_ID', sum_rest = True)

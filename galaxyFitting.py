@@ -26,11 +26,11 @@ if True:
     ax2.imshow(img[1].data)
     plt.show()
 
-fov_image = img[1].data-np.ones(img[1].data.shape)*863.#2710 #trying to remove the noise
+fov_image = img[1].data-np.ones(img[1].data.shape)*863.3368 #trying to remove the noise
 header = img[0].header
 exp =  astro_tools.read_fits_exp(header)  #Read the exposure time 
 wht = wht_img[1].data
-mean_wht = exp * (0.0642/0.135)**2  #The drizzle information is used to derive the mean WHT value.
+mean_wht = exp * (0.262)**2  #The drizzle information is used to derive the mean WHT value.
 exp_map = exp * wht/mean_wht  #Derive the exposure time map for each pixel
 
 
