@@ -527,7 +527,7 @@ class FittingProcess(object):
         segmap_ = segmap_float > 0.5
         if np.sum(segmap_)>10:
             segmap = segmap_
-        mask = np.zeros_like(data, dtype=np.bool)
+        mask = np.zeros_like(data, dtype=bool)
         for i in range(1,data.max()+1):
             if i != seg_idx:
                 mask_  = data == i
