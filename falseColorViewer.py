@@ -39,7 +39,7 @@ fitsFiles = []
 fitsImages = []
 fitsFalseColor = []
 for i in range(len(objects)):
-    fitsFiles.append(pyfits.open(f"data/object{i}.fits"))
+    fitsFiles.append(pyfits.open(f"data/images/object{i}.fits"))
     fitsImages.append(np.array(fitsFiles[i][0].data).T.swapaxes(0, 1))
     fitsFalseColor.append(makeFalseColorImage(fitsImages[i]))
 
@@ -60,7 +60,7 @@ def showFalseColorImage(i):
 
 
 
-if input("Show false color images? [y/n]") == "y":
+if input("Show all false color images? [y/n]") == "y":
     for i in range(len(objects)):
         showFalseColorImage(i)
 
@@ -79,7 +79,3 @@ if input("Show false color images? [y/n]") == "y":
 choose_object = int(input("Enter the object's number [0-7]:"))
 
 showFalseColorImage(choose_object)
-
-header = fitsFiles[choose_object][0].header
-print(header)
-exp =  astro_tools.read_fits_exp(fitsFiles[choose_object][0].header)

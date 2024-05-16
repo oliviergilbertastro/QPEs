@@ -11,7 +11,7 @@ def get_file(pos, filenumber, size=512, pixscale=0.262):
     url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&size={size}&layer=ls-dr10&pixscale={pixscale}'
     #url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&layer=ls-dr10'
     r = requests.get(url)
-    open(r'data/object'+str(filenumber)+r'.fits' , 'wb').write(r.content)
+    open(r'data/images/object'+str(filenumber)+r'.fits' , 'wb').write(r.content)
 
 #List of objects' RA and DEC to download
 objects = [
