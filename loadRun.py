@@ -43,9 +43,10 @@ def loadRun(ra_dec, type="AGN"):
     else:
         flux_list_1d = [data, model, ps_list[0], galaxy_list[0], galaxy_list[1], -model]
         label_list_1d = ['data', 'model', 'AGN', 'bulge', 'disk']
+    symbol = "+" if ra_dec[1] > 0 else ""
     total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d, deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
                         zp=fitting_run_result.zp, if_annuli=False, arrows= False, show_plot = True, mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
-                        target_ID = f'{str(ra_dec[0])+str(ra_dec[1])}', sum_rest = True)
+                        target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}', sum_rest = True)
 
 
     fitting_run_result.fitting_specify_class.plot_fitting_sets()

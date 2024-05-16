@@ -19,7 +19,7 @@ if objID == 1:
     galight_fit(ra_dec=objects[objID],
                 img_path = "/Users/oliviergilbert/Downloads/image-decam-989756-N29-i.fits.gz",
                 oow_path = "/Users/oliviergilbert/Downloads/iv-decam-989756-N29-i.fits.gz",
-                type = "AGN",
+                type = type,
                 median_noise = 3944.6768+0.0128,
                 PSF_pos_list = [[ 981., 1927.], [513., 1919.]],
                 )
