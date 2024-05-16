@@ -61,3 +61,21 @@ elif objID == 2:
                 PSF_pos_list = [[37.9556, -10.3576], [38.0116, -10.3474]],
                 band=band,
                 )
+    
+
+#-------------------------------------------------------------------object3---------------------------------------------------------
+elif objID == 3:
+    if band == "i" or band == 'I' or band == "2":
+        img_path = f"image-decam-667213-N27-i.fits.gz"
+        oow_path = f"iv-decam-667213-N27-i.fits.gz"
+    elif band == "z" or band == 'Z' or band == "3":
+        img_path = f"image-decam-513359-N22-z.fits.gz"
+        oow_path = f"iv-decam-513359-N22-z.fits.gz"
+    galight_fit(ra_dec=objects[objID],
+                img_path = data_repo+img_path,
+                oow_path = data_repo+oow_path,
+                type = type,
+                PSF_pos_list = [[38.7643, -44.3211], [38.8033, -44.3424], [38.8122, -44.3468], [38.8552, -44.3693]],
+                band=band,
+                nsigma=3,
+                )

@@ -16,7 +16,7 @@ import lenstronomy.Util.param_util as param_util
 
 SUBTRACT_NOISE = True
 
-def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_list=None, band="i"):
+def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_list=None, band="i", nsigma=15):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
         number_of_ps = 1
@@ -77,7 +77,7 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
         fov_image = fov_image-np.ones(fov_image.shape)*data_process.bkg_mid
         data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
                             rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)
-        data_process.generate_target_materials(radius=60, create_mask = True, nsigma=15,
+        data_process.generate_target_materials(radius=60, create_mask = True, nsigma=nsigma,
                                         exp_sz= 1, npixels = 5, if_plot=True)
 
     print('---------------DATA PROCESS PARAMETERS-------------')
