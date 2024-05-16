@@ -2,6 +2,7 @@
 import pickle
 import numpy as np
 from galight_modif.tools.plot_tools import total_compare
+from download_data import objects
 
 def loadRun(ra_dec, type="AGN", band="i"):
     if type in ["AGN", "agn", "Agn"]:
@@ -38,6 +39,9 @@ def loadRun(ra_dec, type="AGN", band="i"):
     noise = fitting_run_result.fitting_specify_class.kwargs_data['noise_map']
     galaxy_list = fitting_run_result.image_host_list
     ps_list = fitting_run_result.image_ps_list
+    if ra_dec == objects[5] and input("Manually adjust? [y/n]") == "y":
+        galaxy_list[0] = galaxy_list[0]*1.15
+        ps_list[0] = ps_list[0]*2.1
     galaxy_total_image = np.zeros_like(galaxy_list[0])
     for i in range(len(galaxy_list)):
         galaxy_total_image = galaxy_total_image+galaxy_list[i]

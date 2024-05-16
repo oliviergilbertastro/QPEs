@@ -13,10 +13,11 @@ from matplotlib.widgets import Slider
 from download_data import objects
 import copy
 import lenstronomy.Util.param_util as param_util
+from matplotlib.colors import LogNorm
 
 SUBTRACT_NOISE = True
 
-def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_list=None, band="i", nsigma=15):
+def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_list=None, band="i", nsigma=15, radius=60):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
         number_of_ps = 1
@@ -55,8 +56,8 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     #Showing the image in the selected band
     ax1 = plt.subplot(211)
     ax2 = plt.subplot(212, sharex=ax1, sharey=ax1)
-    ax1.imshow(copy.copy(wht_img[1].data).T)
-    ax2.imshow(copy.copy(img[1].data).T)
+    ax1.imshow(copy.copy(wht_img[1].data).T, norm=LogNorm())
+    ax2.imshow(copy.copy(img[1].data).T, norm=LogNorm())
     ax1.invert_xaxis()
     plt.show()
 
@@ -80,7 +81,7 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
         fov_image = fov_image-np.ones(fov_image.shape)*data_process.bkg_mid
         data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
                             rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)
-        data_process.generate_target_materials(radius=60, create_mask = True, nsigma=nsigma,
+        data_process.generate_target_materials(radius=radius, create_mask = True, nsigma=nsigma,
                                         exp_sz= 1, npixels = 5, if_plot=True)
 
     print('---------------DATA PROCESS PARAMETERS-------------')
