@@ -14,7 +14,9 @@ from download_data import objects
 import copy
 import lenstronomy.Util.param_util as param_util
 
-def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_list=None):
+SUBTRACT_NOISE = True
+
+def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_list=None, band="i"):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
         number_of_ps = 1
@@ -29,6 +31,16 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
         bulge = True
     else:
         raise ValueError(f"type {type} is not a supported fitting type")
+    if band in ["g", "G"]:
+        band = "g"
+    elif band in ["r", "R"]:
+        band = "r"
+    elif band in ["i", "I"]:
+        band = "i"
+    elif band in ["z", "Z"]:
+        band = "z"
+    else:
+        raise ValueError(f"band {band} is not a supported filter band")
 
     img = pyfits.open(img_path)
     wht_img = pyfits.open(oow_path)
@@ -40,7 +52,7 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     ax2.imshow(img[1].data)
     plt.show()
 
-    fov_image = img[1].data-np.ones(img[1].data.shape)*median_noise #trying to remove the noise
+    fov_image = img[1].data
     header = img[1].header
     exp =  astro_tools.read_fits_exp(img[0].header)  #Read the exposure time 
     wht = wht_img[1].data
@@ -50,9 +62,17 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     #data_process = DataProcess(fov_image = fov_image, target_pos = [1432., 966.], pos_type = 'pixel', header = header,
     #                        rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)  #zp use 27.0 for convinence.
     data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
-                            rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)  #zp use 27.0 for convinence.
+                            rm_bkglight = False, exptime = exp_map, if_plot=False, zp = 22.5)  #zp use 27.0 for convinence.
 
-    data_process.generate_target_materials(radius=60, create_mask = True, nsigma=15,
+    data_process.generate_target_materials(radius=60, create_mask = False, nsigma=15,
+                                        exp_sz= 1, npixels = 5, if_plot=False)
+    
+    if SUBTRACT_NOISE:
+        #To get a good fit, we remove the median noise from the initial image and restart the procedure
+        fov_image = fov_image-np.ones(fov_image.shape)*data_process.bkg_mid
+        data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
+                            rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)
+        data_process.generate_target_materials(radius=60, create_mask = True, nsigma=15,
                                         exp_sz= 1, npixels = 5, if_plot=True)
 
     print('---------------DATA PROCESS PARAMETERS-------------')
@@ -63,7 +83,7 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
 
 
     #data_process.find_PSF(radius = 30, user_option = True)  #Try this line out! 
-    data_process.find_PSF(radius = 30, PSF_pos_list = PSF_pos_list, user_option=True)
+    data_process.find_PSF(radius = 30, PSF_pos_list = PSF_pos_list, pos_type="wcs", user_option=True)
 
     #Plot the FOV image and label the position of the target and the PSF
     data_process.plot_overview(label = 'Example', target_label = None)
@@ -121,14 +141,14 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     #Setting the fitting method and run.
 
     #Pass fit_sepc to FittingProcess,
-    fit_run = FittingProcess(fit_sepc, savename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}', fitting_level='deep') 
+    fit_run = FittingProcess(fit_sepc, savename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}', fitting_level='deep') 
 
     #Setting the fitting approach and Run:
     fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = None)
     #fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = [None, {'n_burn': 200, 'n_run': 1000, 'walkerRatio': 10, 'sigma_scale': .1}])
 
     # Plot all the fitting results:
-    fit_run.plot_all(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}')
+    fit_run.plot_all(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
 
     #Save the fitting class as pickle format:
     fit_run.dump_result()

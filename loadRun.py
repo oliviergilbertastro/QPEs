@@ -3,7 +3,7 @@ import pickle
 import numpy as np
 from galight_modif.tools.plot_tools import total_compare
 
-def loadRun(ra_dec, type="AGN"):
+def loadRun(ra_dec, type="AGN", band="i"):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
     elif type in ["Bulge", "BULGE", "bulge"]:
@@ -12,8 +12,19 @@ def loadRun(ra_dec, type="AGN"):
         type = "Bulge+AGN"
     else:
         raise ValueError(f"type {type} is not a supported fitting type")
+    
+    if band in ["g", "G"]:
+        band = "g"
+    elif band in ["r", "R"]:
+        band = "r"
+    elif band in ["i", "I"]:
+        band = "i"
+    elif band in ["z", "Z"]:
+        band = "z"
+    else:
+        raise ValueError(f"band {band} is not a supported filter band")
 
-    picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}.pkl'
+    picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}.pkl'
     fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
     fitting_run_result.run_diag()
     fitting_run_result.model_plot()
@@ -70,5 +81,6 @@ def loadRun(ra_dec, type="AGN"):
 
 from download_data import objects
 objID = int(input("Enter the object ID you want to load [0-7]:\n"))
-type = input("Enter the type of fitting you want to load:\n")
-loadRun(objects[objID], type=type)
+band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+type = input("Enter the type of fitting you want to load [AGN, Bulge, Bulge+AGN]:\n")
+loadRun(objects[objID], type=type, band=band)

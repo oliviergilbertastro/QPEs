@@ -202,7 +202,7 @@ class DataProcess(object):
                 from galight.tools.measure_tools import esti_bgkstd
                 cut_rad = np.min([self.radius*2, len(self.fov_image)/2])
                 target_2xlarger_stamp = cutout(image=self.fov_image, center= self.target_pos, radius=cut_rad)
-                self.bkg_std = esti_bgkstd(target_2xlarger_stamp, if_plot=if_plot, npixels = 20)
+                self.bkg_std, self.bkg_mid = esti_bgkstd(target_2xlarger_stamp, if_plot=if_plot, npixels = 20)
             _exptime = deepcopy(self.exptime)
             if _exptime is None:
                 if 'EXPTIME' in self.header.keys():
