@@ -10,6 +10,8 @@ def loadRun(ra_dec, type="AGN", band="i"):
         type = "Bulge"
     elif type in ["Bulge+AGN", "Bulge+Agn", "BULGE+AGN", "bulge+agn", "AGN+Bulge", "Agn+Bulge", "AGN+BULGE", "agn+bulge"]:
         type = "Bulge+AGN"
+    elif type in ["None", "Sersic", "none", "sersic", "single", ""]:
+        type = "None"
     else:
         raise ValueError(f"type {type} is not a supported fitting type")
     
@@ -26,8 +28,8 @@ def loadRun(ra_dec, type="AGN", band="i"):
 
     picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}.pkl'
     fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
-    fitting_run_result.run_diag()
-    fitting_run_result.model_plot()
+    #fitting_run_result.run_diag() #dont really care about this one, so leave it commented out unless it suddenly becomes interesting
+    #fitting_run_result.model_plot() #same here
     if fitting_run_result.fitting_kwargs_list[-1][0] == 'MCMC':
         fitting_run_result.plot_params_corner()
         fitting_run_result.plot_flux_corner()  
@@ -51,9 +53,12 @@ def loadRun(ra_dec, type="AGN", band="i"):
     elif type == "Bulge":
         flux_list_1d = [data, model, galaxy_list[0], galaxy_list[1], -model]
         label_list_1d = ['data', 'model', 'bulge', 'disk']
-    else:
+    elif type == "Bulge+AGN":
         flux_list_1d = [data, model, ps_list[0], galaxy_list[0], galaxy_list[1], -model]
         label_list_1d = ['data', 'model', 'AGN', 'bulge', 'disk']
+    elif type == "None":
+        flux_list_1d = [data, model, galaxy_list[0], -model]
+        label_list_1d = ['data', 'model', 'Sérsic']
     symbol = "+" if ra_dec[1] > 0 else ""
     total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d, deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
                         zp=fitting_run_result.zp, if_annuli=False, arrows= False, show_plot = True, mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
@@ -82,5 +87,5 @@ def loadRun(ra_dec, type="AGN", band="i"):
 from download_data import objects
 objID = int(input("Enter the object ID you want to load [0-7]:\n"))
 band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-type = input("Enter the type of fitting you want to load [AGN, Bulge, Bulge+AGN]:\n")
+type = input("Enter the type of extra-component fitting you want to load [None, AGN, Bulge, Bulge+AGN]:\n")
 loadRun(objects[objID], type=type, band=band)

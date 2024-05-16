@@ -29,6 +29,10 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
         type = "Bulge+AGN"
         number_of_ps = 1
         bulge = True
+    elif type in ["None", "Sersic", "none", "sersic", "single", ""]:
+        type = "None"
+        number_of_ps = 0
+        bulge = False
     else:
         raise ValueError(f"type {type} is not a supported fitting type")
     if band in ["g", "G"]:
@@ -46,10 +50,11 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     wht_img = pyfits.open(oow_path)
 
     #Showing the image in the selected band
-    ax1 = plt.subplot(121)
-    ax2 = plt.subplot(122, sharex=ax1, sharey=ax1)
-    ax1.imshow(wht_img[1].data)
-    ax2.imshow(img[1].data)
+    ax1 = plt.subplot(211)
+    ax2 = plt.subplot(212, sharex=ax1, sharey=ax1)
+    ax1.imshow(copy.copy(wht_img[1].data).T)
+    ax2.imshow(copy.copy(img[1].data).T)
+    ax1.invert_xaxis()
     plt.show()
 
     fov_image = img[1].data

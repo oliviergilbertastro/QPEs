@@ -8,7 +8,7 @@ from download_data import objects
 
 objID = int(input("Enter the object ID you want to fit [0-7]:\n"))
 band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
-type = input("What fitting model do you want to use?\n")
+type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
 
 data_repo = f"data/science/obj{objID}/"
 
@@ -58,6 +58,6 @@ elif objID == 2:
                 img_path = data_repo+img_path,
                 oow_path = data_repo+oow_path,
                 type = type,
-                PSF_pos_list = [[37.9556, -10.3576], [38.0116, -10.3474], [37.9261, -10.3171], [37.8154, -10.3520]],
+                PSF_pos_list = [[37.9556, -10.3576], [38.0116, -10.3474]],
                 band=band,
                 )
