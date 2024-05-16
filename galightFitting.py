@@ -46,6 +46,9 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     else:
         raise ValueError(f"band {band} is not a supported filter band")
 
+    if len(PSF_pos_list) == 0:
+        PSF_pos_list = None
+
     img = pyfits.open(img_path)
     wht_img = pyfits.open(oow_path)
 

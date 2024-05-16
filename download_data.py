@@ -14,14 +14,12 @@ def get_file(pos, filenumber, size=512, pixscale=0.262):
     open(r'data/images/object'+str(filenumber)+r'.fits' , 'wb').write(r.content)
 
 #List of objects' RA and DEC to download
-#The ones that are commented out are replaced by a more accurate WCS position right under
+#The ones that are commented out are replaced by a more accurate WCS position to their left
 objects = [
     (19.7861250,-34.1916944),
     (195.500588,+27.7827129),
-    #(37.9469167,-10.3361972),
-    (37.9465, -10.3365),
-    #(38.7040417,-44.3254583),
-    (38.7029, -44.3258),
+    (37.9465, -10.3365), #(37.9469167,-10.3361972),
+    (38.7029, -44.3258), #(38.7040417,-44.3254583),
     (189.734917,+33.165911),
     (42.322161985,-4.214494783),
     (210.2222,-28.7665),
