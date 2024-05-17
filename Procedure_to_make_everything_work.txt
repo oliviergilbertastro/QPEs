@@ -1,0 +1,6 @@
+
+To solve the make_source_mask() problem:
+1. Copy the "problem_solvers/photutils_init_template.py" content into the package at photutils/__init__.py
+2. Copy the "problem_solvers/photutils_core_template.py" content into the package at photutils/detection/core.py
+3. If any problems of the type "function blabla received an unexpected argument 'kernel'" happen, just delete the 'kernel' parameter from the function.
+4. If anything persists, good luck!

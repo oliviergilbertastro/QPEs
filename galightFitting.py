@@ -15,7 +15,7 @@ import copy
 import lenstronomy.Util.param_util as param_util
 from matplotlib.colors import LogNorm
 
-SUBTRACT_NOISE = True
+SUBTRACT_NOISE = False
 
 def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_list=None, band="i", nsigma=15, radius=60):
     if type in ["AGN", "agn", "Agn"]:
@@ -72,13 +72,14 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     #data_process = DataProcess(fov_image = fov_image, target_pos = [1432., 966.], pos_type = 'pixel', header = header,
     #                        rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)  #zp use 27.0 for convinence.
     data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
-                            rm_bkglight = False, exptime = exp_map, if_plot=False, zp = 22.5)  #zp use 27.0 for convinence.
+                            rm_bkglight = True, exptime = exp_map, if_plot=False, zp = 22.5)  #zp use 27.0 for convinence.
 
-    data_process.generate_target_materials(radius=60, create_mask = False, nsigma=15,
-                                        exp_sz= 1, npixels = 5, if_plot=False)
+    data_process.generate_target_materials(radius=radius, create_mask = (not SUBTRACT_NOISE), nsigma=nsigma,
+                                        exp_sz= 1, npixels = 5, if_plot=(not SUBTRACT_NOISE))
     
     if SUBTRACT_NOISE:
         #To get a good fit, we remove the median noise from the initial image and restart the procedure
+        print("Manually subtracting noise... (THIS IS NOT WANTED!)")
         fov_image = fov_image-np.ones(fov_image.shape)*data_process.bkg_mid
         data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
                             rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)

@@ -81,7 +81,7 @@ class DataProcess(object):
                     target_pos = pos.ra.degree, pos.dec.degree
                 self.target_pos = wcs.all_world2pix([[target_pos[0], target_pos[1]]], 1)[0]
             else:
-                raise ValueError("'pos_type' is should be either 'pixel' or 'wcs'.")
+                raise ValueError("'pos_type' should be either 'pixel' or 'wcs'.")
             self.target_pos = np.int0(self.target_pos)
         else:
             raise ValueError("'target_pos' must be assigned.")
@@ -92,7 +92,7 @@ class DataProcess(object):
         if header is not None:
             self.deltaPix = read_pixel_scale(header)
             if self.deltaPix == 3600.:
-                print("WARNING: pixel size could not read from the header, thus the value assigend as 1! ")
+                print("WARNING: pixel size could not be read from the header, thus the value assigend as 1! ")
                 self.deltaPix = 1.
         if fov_image is not None and rm_bkglight == True:
             bkglight = measure_bkg(fov_image, if_plot=if_plot, **kwargs)
