@@ -105,7 +105,7 @@ elif objID == 5:
                 img_path = data_repo+img_path,
                 oow_path = data_repo+oow_path,
                 type = type,
-                PSF_pos_list = [[42.3057, -4.1935], [42.3336, -4.1881], [42.2590, -4.1946]],
+                PSF_pos_list = None, #[[42.3057, -4.1935], [42.3336, -4.1881], [42.2590, -4.1946]],
                 band=band,
                 nsigma=3,
                 )
@@ -139,4 +139,3 @@ elif objID == 7:
                 band=band,
                 radius=45,
                 )
-    

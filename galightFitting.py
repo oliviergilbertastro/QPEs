@@ -46,8 +46,9 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
         band = "z"
     else:
         raise ValueError(f"band {band} is not a supported filter band")
-
-    if len(PSF_pos_list) == 0:
+    if PSF_pos_list == None:
+        PSF_pos_list = None
+    elif len(PSF_pos_list) == 0:
         PSF_pos_list = None
 
     img = pyfits.open(img_path)
@@ -56,8 +57,8 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     #Showing the image in the selected band
     ax1 = plt.subplot(211)
     ax2 = plt.subplot(212, sharex=ax1, sharey=ax1)
-    ax1.imshow(copy.copy(wht_img[1].data).T, norm=LogNorm())
-    ax2.imshow(copy.copy(img[1].data).T, norm=LogNorm())
+    ax1.imshow(copy.copy(wht_img[1].data).T)
+    ax2.imshow(copy.copy(img[1].data).T)
     ax1.invert_xaxis()
     plt.show()
 
@@ -90,9 +91,10 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     print('kwargs: ', data_process.arguments)
     print('---------------------------------------------------')
 
-
-    #data_process.find_PSF(radius = 30, user_option = True)  #Try this line out! 
-    data_process.find_PSF(radius = 30, PSF_pos_list = PSF_pos_list, pos_type="wcs", user_option=True)
+    if PSF_pos_list == None:
+        data_process.find_PSF(radius = 30, user_option = True, threshold=20000)  #Try this line out!
+    else:
+        data_process.find_PSF(radius = 30, PSF_pos_list = PSF_pos_list, pos_type="wcs", user_option=True)
 
     #Plot the FOV image and label the position of the target and the PSF
     data_process.plot_overview(label = 'Example', target_label = None)

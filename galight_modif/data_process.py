@@ -340,6 +340,7 @@ class DataProcess(object):
             init_PSF_locs_ = search_local_max(self.fov_image, radius = psf_edge,**kwargs)
             init_PSF_locs, FWHMs, fluxs, PSF_cutouts = [], [], [], []
             for i in range(len(init_PSF_locs_)):
+                #print(i, "data_process.py line 343")
                 cut_image = cut_center_auto(self.fov_image, center = init_PSF_locs_[i],
                                             radius=radius)
                 try:
