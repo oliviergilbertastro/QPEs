@@ -36,10 +36,16 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
         bics.append(fitting_run_results[i].fitting_seq.bic)
         if verbose:
             print(types[i], ":", fitting_run_results[i].fitting_seq.bic)
+    best_model_index = bics.index(np.min(bics))
     if verbose:
         print("-------------------------------------")
-        print("Best model:", types[bics.index(np.min(bics))])
-    return types[bics.index(np.min(bics))]
+        print("Best model:", types[best_model_index])
+    #Calculate the Sersic index + uncertainties
+    chain = fitting_run_results[best_model_index].samples_mcmc
+    lo, mid, hi = np.percentile(chain[:, 1],16), np.percentile(chain[:, 1],50), np.percentile(chain[:, 1],84)
+    plus, minus = (hi-mid), (mid-lo)
+    print(f"{mid:.2f}_"+r"{-"+f"{minus:.2f}"+r"}^{+"+f"{plus:.2f}"+r"}")
+    return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f" n = {mid} +{plus}/{minus}"
 
 
 from download_data import objects
