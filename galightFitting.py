@@ -158,7 +158,7 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     #Setting the fitting approach and Run:
     fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = None)
     #fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = [None, {'n_burn': 200, 'n_run': 1000, 'walkerRatio': 10, 'sigma_scale': .1}])
-
+    fit_run.mcmc_result_range()
     # Plot all the fitting results:
     fit_run.plot_all(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
 

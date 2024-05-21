@@ -35,6 +35,11 @@ def loadRun(ra_dec, type="AGN", band="i"):
         fitting_run_result.plot_params_corner()
         fitting_run_result.plot_flux_corner()  
 
+    print("-------------------------------------------------------")
+    print("max likelihood:", fitting_run_result.fitting_seq.best_fit_likelihood)
+    print("BIC:", fitting_run_result.fitting_seq.bic)
+    print("-------------------------------------------------------")
+
     data = fitting_run_result.fitting_specify_class.kwargs_data['image_data']
     noise = fitting_run_result.fitting_specify_class.kwargs_data['noise_map']
     galaxy_list = fitting_run_result.image_host_list

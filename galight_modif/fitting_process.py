@@ -88,6 +88,8 @@ class FittingProcess(object):
             start_time = time.time()
             chain_list = self.fitting_seq.fit_sequence(self.fitting_kwargs_list)
             kwargs_result = self.fitting_seq.best_fit()
+            print("*************************************")
+            print(f"BIC: {self.fitting_seq.bic}")
             if self.fitting_kwargs_list[-1][0] == 'MCMC':
                 self.sampler_type, self.samples_mcmc, self.param_mcmc, self.dist_mcmc  = chain_list[-1]    
             end_time = time.time()
@@ -163,6 +165,7 @@ class FittingProcess(object):
             else:
                 labels_flux = ["Galaxy_{0} flux".format(i) for i in range(len(fitting_specify_class.light_model_list))]
             if len(self.samples_mcmc) > 10000:  #Only save maximum 10000 chain results.
+                print(f"To save time, cutting from {len(self.samples_mcmc)} chain results to 10000.")
                 trans_steps = [len(self.samples_mcmc)-10000, len(self.samples_mcmc)]
             else:
                 trans_steps = [0, len(self.samples_mcmc)]
@@ -571,11 +574,13 @@ class FittingProcess(object):
             chain = self.samples_mcmc
             param = self.param_mcmc
         for i in range(len(param)):
-            print(i, ':', param[i])
-        checkid = int(input("Which parameter to checkout?\n"))
-        print("Low {0:.3f}, Mid {1:.3f}, High: {2:.3f}".format(np.percentile(chain[:, checkid],16),
-                                                                np.percentile(chain[:, checkid],50), 
-                                                                np.percentile(chain[:, checkid],84)) )
+            print(i, ':', param[i], ":", "Low {0:.3f}, Mid {1:.3f}, High: {2:.3f}".format(np.percentile(chain[:, i],16),
+                                                                np.percentile(chain[:, i],50), 
+                                                                np.percentile(chain[:, i],84)))
+        #checkid = int(input("Which parameter to checkout?\n"))
+        #print("Low {0:.3f}, Mid {1:.3f}, High: {2:.3f}".format(np.percentile(chain[:, checkid],16),
+        #                                                        np.percentile(chain[:, checkid],50), 
+        #                                                        np.percentile(chain[:, checkid],84)) )
     def dump_result(self, savedata= False):
         """
         Save all the fitting materials as pickle for the future use. To save space, the data_process_class() will be removed, since it usually includes FOV image which can be huge.
