@@ -44,8 +44,7 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     chain = fitting_run_results[best_model_index].samples_mcmc
     lo, mid, hi = np.percentile(chain[:, 1],16), np.percentile(chain[:, 1],50), np.percentile(chain[:, 1],84)
     plus, minus = (hi-mid), (mid-lo)
-    print(f"{mid:.2f}_"+r"{-"+f"{minus:.2f}"+r"}^{+"+f"{plus:.2f}"+r"}")
-    return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f" n = {mid} +{plus}/{minus}"
+    return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {(f"{mid:.2f}_"+r"{-"+f"{minus:.2f}"+r"}^{+"+f"{plus:.2f}"+r"}")}'
 
 
 from download_data import objects
