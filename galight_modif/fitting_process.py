@@ -86,8 +86,13 @@ class FittingProcess(object):
         fitting_specify_class = self.fitting_specify_class
         if refresh == False:
             start_time = time.time()
+            print("Start fit_sequence()")
             chain_list = self.fitting_seq.fit_sequence(self.fitting_kwargs_list)
+            print("Stop fit_sequence()")
+            print("Start getting best_fit()")
             kwargs_result = self.fitting_seq.best_fit()
+            print(kwargs_result)
+            print("Stop getting best_fit()")
             print("*************************************")
             print(f"BIC: {self.fitting_seq.bic}")
             if self.fitting_kwargs_list[-1][0] == 'MCMC':
@@ -96,10 +101,13 @@ class FittingProcess(object):
             print(round(end_time - start_time, 3), 'total time taken for the overall fitting (s)')
             print('============ CONGRATULATION, YOUR JOB WAS SUCCESSFUL ================ ')
         elif refresh == True:
+            print('refresh')
             kwargs_result = self.kwargs_result
             chain_list = self.chain_list
         ps_result = kwargs_result['kwargs_ps']
         source_result = kwargs_result['kwargs_lens_light']
+        print("ini Source result:", source_result)
+        print("ini PS result:", ps_result)
             
         if 'linear_solver' in fitting_specify_class.kwargs_constraints.keys():
             linear_solver = fitting_specify_class.kwargs_constraints['linear_solver']
@@ -117,7 +125,13 @@ class FittingProcess(object):
                                                             image_likelihood_mask_list=image_likelihood_mask_list)
             kwargs_params = kwargs_result
             kwargs_params.pop("kwargs_tracer_source", None)
-            model, error_map, cov_param, _ = _imageModel.image_linear_solve(inv_bool=True, **kwargs_params)
+            print("Start linear_solve...")
+            #This is where the amplitude is calculated
+            model, error_map, cov_param, param = _imageModel.image_linear_solve(inv_bool=True, **kwargs_params)
+            print("End linear_solve()")
+            #print(param) #A list of the host-galaxy and the point-source amplitudes
+            print("Source result:", source_result)
+            print("PS result:", ps_result)
             log_l = _imageModel.likelihood_data_given_model(source_marg=False, linear_prior=None,
                                                                   **kwargs_params)
             if len(log_l) > 1:
@@ -165,18 +179,22 @@ class FittingProcess(object):
             else:
                 labels_flux = ["Galaxy_{0} flux".format(i) for i in range(len(fitting_specify_class.light_model_list))]
             if len(self.samples_mcmc) > 10000:  #Only save maximum 10000 chain results.
-                print(f"To save time, cutting from {len(self.samples_mcmc)} chain results to 10000.")
-                trans_steps = [len(self.samples_mcmc)-10000, len(self.samples_mcmc)]
+                if input(f"To save time, do you want to cut from {len(self.samples_mcmc)} chain results to 10000? [y/n]") == "y":
+                    trans_steps = [len(self.samples_mcmc)-10000, len(self.samples_mcmc)]
+                else:
+                    trans_steps = [0, len(self.samples_mcmc)]
             else:
                 trans_steps = [0, len(self.samples_mcmc)]
             print("Start transfering the Params to fluxs...")
+            amplitudes_list = []
             for i in range(trans_steps[0], trans_steps[1]):
                 kwargs_out = Param.args2kwargs(self.samples_mcmc[i])
                 kwargs_out.pop("kwargs_tracer_source", None)
                 if linear_solver == True:
                     # image_reconstructed, _, _, _ = imageLinearFit.image_linear_solve(kwargs_lens_light=kwargs_light_source_out,
                     #                                                                       kwargs_ps=kwargs_ps_out)
-                    model, error_map, cov_param, _ = _imageModel.image_linear_solve(inv_bool=True, **kwargs_out)
+                    model, error_map, cov_param, amps = _imageModel.image_linear_solve(inv_bool=True, **kwargs_out)
+                    amplitudes_list.append(amps)
                 kwargs_light_source_out = kwargs_out['kwargs_lens_light']
                 kwargs_ps_out =  kwargs_out['kwargs_ps']
                 flux_list_quasar = []
@@ -213,6 +231,7 @@ class FittingProcess(object):
         self.source_result = source_result
         self.image_host_list = image_host_list
         self.image_ps_list = image_ps_list
+        self.amplitudes_list = amplitudes_list
         # if 'lens_light_model_list' in fitting_specify_class.kwargs_model.keys():
         self.translate_result()
         self.reduced_Chisq, self.reduced_Chisq_dof = self.cal_chisq() 
