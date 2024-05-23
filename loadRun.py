@@ -31,6 +31,7 @@ def loadRun(ra_dec, type="AGN", band="i"):
     fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
     #fitting_run_result.run_diag() #dont really care about this one, so leave it commented out unless it suddenly becomes interesting
     #fitting_run_result.model_plot() #same here
+    fitting_run_result.mcmc_result_range()
     if fitting_run_result.fitting_kwargs_list[-1][0] == 'MCMC':
         fitting_run_result.plot_params_corner()
         fitting_run_result.plot_flux_corner()  
