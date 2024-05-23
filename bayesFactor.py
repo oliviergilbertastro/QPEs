@@ -84,4 +84,4 @@ from download_data import objects
 if input("Compare specific object? [y/n]") == "y":
     objID = int(input("Enter the object ID you want to load [0-7]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-    getPosteriors(objects[objID], band=band, models=['None', 'AGN'], verbose=False)
+    getPosteriors(objects[objID], band=band, models=['None', 'AGN'], verbose=False, if_plot=True)
