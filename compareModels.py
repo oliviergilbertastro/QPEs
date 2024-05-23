@@ -81,7 +81,16 @@ if input("Compare specific object? [y/n]") == "y":
 
 if input("See best model for all objects? [y/n]") == "y":
     bands_list = ["i", "i", "i", "i", "z", "i", "i", "r"]
-    stellar_mass = []
+    stellar_mass = [
+                (),           # GSN 069
+                (),           # RX J1301.9+2747
+                (3.8E9, 1.9E9, 0.4E9),           # eRO-QPE1
+                (1.01E9, 0.5E9, 0.01E9),           # eRO-QPE2
+                (),           # AT 2019vcb
+                (),           # 2MASX J0249
+                (),           # eRO-QPE3
+                (),           # eRO-QPE4
+                ]
     print("Best models:")
     print("-------------------------------------------------")
     for i in range(8):
