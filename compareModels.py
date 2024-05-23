@@ -4,7 +4,7 @@ import numpy as np
 from galight_modif.tools.plot_tools import total_compare
 from download_data import objects
 
-def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i", verbose=True):
+def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i", stellar_mass=5E9, verbose=True):
         
     if band in ["g", "G"]:
         band = "g"
@@ -50,9 +50,12 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     lo, mid, hi = np.percentile(chain[:, 0],16), np.percentile(chain[:, 0],50), np.percentile(chain[:, 0],84)
     plus, minus = (hi-mid), (mid-lo)
 
-    #I'll need to propagate the uncertainties :)
+    stellar_density_str = "-"
+    if stellar_mass != None:
+        smd = np.array(stellarMassDensity(stellar_mass, [mid, minus, plus]))/1E9
+        stellar_density_str = (f"{smd[0]:.2f}_"+r"{-"+f"{smd[1]:.2f}"+r"}^{+"+f"{smd[2]:.2f}"+r"}")
 
-    return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {sersic_index_str}'
+    return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {sersic_index_str}      \Sigma_star = {stellar_density_str}'
 
 def stellarMassDensity(M_star, r50):
     '''
@@ -81,19 +84,19 @@ if input("Compare specific object? [y/n]") == "y":
 
 if input("See best model for all objects? [y/n]") == "y":
     bands_list = ["i", "i", "i", "i", "z", "i", "i", "r"]
-    stellar_mass = [
-                (),           # GSN 069
-                (),           # RX J1301.9+2747
+    stellar_masses = [
+                (None),           # GSN 069
+                (None),           # RX J1301.9+2747
                 (3.8E9, 1.9E9, 0.4E9),           # eRO-QPE1
                 (1.01E9, 0.5E9, 0.01E9),           # eRO-QPE2
-                (),           # AT 2019vcb
-                (),           # 2MASX J0249
+                (None),           # AT 2019vcb
+                (None),           # 2MASX J0249
                 (2.56E9, 1.40E9, 0.24E9),           # eRO-QPE3
-                (),           # eRO-QPE4
+                (1.6E10, 0.6E10, 0.7E10),           # eRO-QPE4
                 ]
     print("Best models:")
     print("-------------------------------------------------")
     for i in range(8):
-        print(f"Object {i}: {compareModels(objects[i], band=bands_list[i], stellar_masses=stellar_mass[i], models=['None', 'AGN'], verbose=False)}")
+        print(f"Object {i}: {compareModels(objects[i], band=bands_list[i], stellar_mass=stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
     print("-------------------------------------------------")
 
