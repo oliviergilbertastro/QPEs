@@ -44,8 +44,34 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     chain = fitting_run_results[best_model_index].samples_mcmc
     lo, mid, hi = np.percentile(chain[:, 1],16), np.percentile(chain[:, 1],50), np.percentile(chain[:, 1],84)
     plus, minus = (hi-mid), (mid-lo)
-    return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {(f"{mid:.2f}_"+r"{-"+f"{minus:.2f}"+r"}^{+"+f"{plus:.2f}"+r"}")}'
+    sersic_index_str = (f"{mid:.2f}_"+r"{-"+f"{minus:.2f}"+r"}^{+"+f"{plus:.2f}"+r"}")
 
+    #Calculate the Sersic half-light radius + uncertainties:
+    lo, mid, hi = np.percentile(chain[:, 0],16), np.percentile(chain[:, 0],50), np.percentile(chain[:, 0],84)
+    plus, minus = (hi-mid), (mid-lo)
+
+    #I'll need to propagate the uncertainties :)
+
+    return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {sersic_index_str}'
+
+def stellarMassDensity(M_star, r50):
+    '''
+    Calculate the stellar surface mass density \Sigma_{M_\ast} from the total stellar mass and the half-light radius
+
+    M_star: stellar mass tuple/list/array such as (mass, errlo, errhi)
+    r50: half-light radius tuple/list/array such as (radius, errlo, errhi)
+
+    returns [value, errlo, errhi]
+    '''
+    try:
+        res = M_star[0]/r50[0]**2
+        errlo = res*np.sqrt((M_star[1]/M_star[0])**2+(2*r50[2]/r50[0])**2)
+        errhi = res*np.sqrt((M_star[2]/M_star[0])**2+(2*r50[1]/r50[0])**2)
+        return [res, errlo, errhi]
+    except:
+        #In the exception where the user did not input uncertainties, the value will still be calculated.
+        return M_star/r50**2
+    
 
 from download_data import objects
 if input("Compare specific object? [y/n]") == "y":
@@ -55,9 +81,10 @@ if input("Compare specific object? [y/n]") == "y":
 
 if input("See best model for all objects? [y/n]") == "y":
     bands_list = ["i", "i", "i", "i", "z", "i", "i", "r"]
+    stellar_mass = []
     print("Best models:")
     print("-------------------------------------------------")
     for i in range(8):
-        print(f"Object {i}: {compareModels(objects[i], band=bands_list[i], models=['None', 'AGN'], verbose=False)}")
+        print(f"Object {i}: {compareModels(objects[i], band=bands_list[i], stellar_masses=stellar_mass[i], models=['None', 'AGN'], verbose=False)}")
     print("-------------------------------------------------")
 
