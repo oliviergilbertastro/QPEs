@@ -93,8 +93,16 @@ def loadRun(ra_dec, type="AGN", band="i"):
     print('S =', morph.smoothness)
 
 
-from download_data import objects
-objID = int(input("Enter the object ID you want to load [0-7]:\n"))
-band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-type = input("Enter the type of extra-component fitting you want to load [None, AGN, Bulge, Bulge+AGN]:\n")
-loadRun(objects[objID], type=type, band=band)
+from download_data import objects, comparisons
+
+if input("Load QPE host? [y/n]") == "y":
+    objID = int(input("Enter the object ID you want to load [0-7]:\n"))
+    band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+    type = input("Enter the type of extra-component fitting you want to load [None, AGN, Bulge, Bulge+AGN]:\n")
+    loadRun(objects[objID], type=type, band=band)
+
+if input("Load TDE host? [y/n]") == "y":
+    objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
+    band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+    type = input("Enter the type of extra-component fitting you want to load [None, AGN, Bulge, Bulge+AGN]:\n")
+    loadRun(comparisons[objID], type=type, band=band)

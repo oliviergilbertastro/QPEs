@@ -1,5 +1,5 @@
 from galightFitting import galight_fit
-from download_data import objects
+from download_data import objects, comparisons
 
 # If the necessary files are not in the "data/science/" folder, download them from the folowing link (replacing RA and DEC by the ra and dec of the object):
 # https://www.legacysurvey.org/viewer?ra=RA&dec=DEC&layer=ls-dr10&zoom=15
@@ -143,12 +143,10 @@ if input("Fit a QPE host galaxy? [y/n]\n") == "y":
                     )
 
 
-comparisons = [
-    (192.0634, 17.7739), #ASASSN-14li
-]
 
-if input("Fit a TDE host? [y/n]") == "y":
-    objID = int(input("Enter the object ID you want to fit [0-0]:\n"))
+
+if input("Fit a TDE host? [y/n]\n") == "y":
+    objID = int(input(f"Enter the object ID you want to fit [0-{len(comparisons)-1}]:\n"))
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
     type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
 

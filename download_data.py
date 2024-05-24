@@ -26,6 +26,9 @@ objects = [
     (71.3909, -10.2013), #(71.3921,-10.2005),                                   # eRO-QPE4
     ]
 
+comparisons = [
+    (192.0634, 17.7739), #ASASSN-14li
+]
 
 if __name__ == "__main__":
     for i in tqdm(range(len(objects))):

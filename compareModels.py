@@ -76,7 +76,7 @@ def stellarMassDensity(M_star, r50):
         return M_star/r50**2
     
 
-from download_data import objects
+from download_data import objects, comparisons
 if input("Compare specific object? [y/n]") == "y":
     objID = int(input("Enter the object ID you want to load [0-7]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
@@ -100,3 +100,7 @@ if input("See best model for all objects? [y/n]") == "y":
         print(f"Object {i}: {compareModels(objects[i], band=bands_list[i], stellar_mass=stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
     print("-------------------------------------------------")
 
+if input("Compare specific TDE host galaxy? [y/n]") == "y":
+    objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
+    band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+    compareModels(comparisons[objID], band=band, verbose=True)
