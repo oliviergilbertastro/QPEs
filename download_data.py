@@ -27,7 +27,8 @@ objects = [
     ]
 
 comparisons = [
-    (192.0634, 17.7739), #ASASSN-14li
+    (192.0634, 17.7739),                            #ASASSN-14li
+    (224.2632, 49.6113)                       #PTF-09ge
 ]
 
 if __name__ == "__main__":

@@ -164,3 +164,15 @@ if input("Fit a TDE host? [y/n]\n") == "y":
                     PSF_pos_list=None, #We find stars in the image online, click on them and copy their WCS coordinates here
                     band=band,
                     )
+        
+    elif objID == 1:
+        if band == "r" or band == "R" or band == "2":
+            img_path = f"image-90prime-75500054-CCD3-r.fits.gz"
+            oow_path = f"iv-90prime-75500054-CCD3-r.fits.gz"
+        galight_fit(ra_dec=comparisons[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list=[[224.2723, 49.6162]], #We find stars in the image online, click on them and copy their WCS coordinates here
+                    band=band,
+                    )
