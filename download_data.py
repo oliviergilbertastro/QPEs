@@ -15,6 +15,8 @@ def get_file(pos, filenumber, size=512, pixscale=0.262):
 
 #List of objects' RA and DEC to download
 #The ones that are commented out are replaced by a more accurate WCS position to their left
+
+#QPE hosts
 objects = [
     (19.7861250,-34.1916944),                                                   # GSN 069
     (195.500588,+27.7827129),                                                   # RX J1301.9+2747
@@ -26,9 +28,11 @@ objects = [
     (71.3909, -10.2013), #(71.3921,-10.2005),                                   # eRO-QPE4
     ]
 
+#TDE hosts
 comparisons = [
-    (192.0634, 17.7739),                            #ASASSN-14li
-    (224.2632, 49.6113)                       #PTF-09ge
+    (192.0634, 17.7739),                                                        #ASASSN-14li
+    (224.2632, 49.6113),                                                         #PTF-09ge
+    (167.1672, 34.0978),                                                        #ASASSN-14ae
 ]
 
 if __name__ == "__main__":

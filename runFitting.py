@@ -154,7 +154,7 @@ if input("Fit a TDE host? [y/n]\n") == "y":
 
     #-------------------------------------------------------------------object0---------------------------------------------------------
     if objID == 0:
-        if band == "r" or band == 'R' or band == "2":
+        if band == "r" or band == 'R' or band == "1":
             img_path = f"image-decam-722768-S14-r.fits.gz"
             oow_path = f"iv-decam-722768-S14-r.fits.gz"
         galight_fit(ra_dec=comparisons[objID],
@@ -166,7 +166,7 @@ if input("Fit a TDE host? [y/n]\n") == "y":
                     )
         
     elif objID == 1:
-        if band == "r" or band == "R" or band == "2":
+        if band == "r" or band == "R" or band == "1":
             img_path = f"image-90prime-75500054-CCD3-r.fits.gz"
             oow_path = f"iv-90prime-75500054-CCD3-r.fits.gz"
         galight_fit(ra_dec=comparisons[objID],
@@ -174,5 +174,17 @@ if input("Fit a TDE host? [y/n]\n") == "y":
                     oow_path = data_repo+oow_path,
                     type = type,
                     PSF_pos_list=[[224.2723, 49.6162]], #We find stars in the image online, click on them and copy their WCS coordinates here
+                    band=band,
+                    )
+        
+    elif objID == 2:
+        if band == "g" or band == "G" or band == "0":
+            img_path = f"image-90prime-78920101-CCD3-g.fits.gz"
+            oow_path = f"iv-90prime-78920101-CCD3-g.fits.gz"
+        galight_fit(ra_dec=comparisons[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list=[[167.1150, 34.1386], [167.1107, 34.1297], [167.1312, 34.1600]], #We find stars in the image online, click on them and copy their WCS coordinates here
                     band=band,
                     )
