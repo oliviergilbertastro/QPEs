@@ -4,7 +4,7 @@ import numpy as np
 from galight_modif.tools.plot_tools import total_compare
 from download_data import objects
 
-def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i", stellar_mass=5E9, verbose=True):
+def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i", stellar_mass=5E9, verbose=True, returnData=False):
         
     if band in ["g", "G"]:
         band = "g"
@@ -44,6 +44,7 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     chain = fitting_run_results[best_model_index].samples_mcmc
     lo, mid, hi = np.percentile(chain[:, 1],16), np.percentile(chain[:, 1],50), np.percentile(chain[:, 1],84)
     plus, minus = (hi-mid), (mid-lo)
+    sersic_index_data = [mid, minus, plus]
     sersic_index_str = (f"{mid:.2f}_"+r"{-"+f"{minus:.2f}"+r"}^{+"+f"{plus:.2f}"+r"}")
 
     #Calculate the Sersic half-light radius + uncertainties:
@@ -54,6 +55,9 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     if stellar_mass != None:
         smd = np.array(stellarMassDensity(stellar_mass, [mid, minus, plus]))/1E9
         stellar_density_str = (f"{smd[0]:.2f}_"+r"{-"+f"{smd[1]:.2f}"+r"}^{+"+f"{smd[2]:.2f}"+r"}")
+    
+    if returnData:
+        return sersic_index_data, smd*1E9
 
     return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {sersic_index_str}      \Sigma_star = {stellar_density_str}'
 
@@ -74,17 +78,8 @@ def stellarMassDensity(M_star, r50):
     except:
         #In the exception where the user did not input uncertainties, the value will still be calculated.
         return M_star/r50[0]**2
-    
 
-from download_data import objects, comparisons
-if input("Compare specific object? [y/n]") == "y":
-    objID = int(input("Enter the object ID you want to load [0-7]:\n"))
-    band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-    compareModels(objects[objID], band=band, verbose=True)
-
-if input("See best model for all objects? [y/n]") == "y":
-    bands_list = ["i", "i", "i", "i", "z", "i", "i", "r"]
-    stellar_masses = [
+QPE_stellar_masses = [
                 (None),           # GSN 069
                 (None),           # RX J1301.9+2747
                 (3.8E9, 1.9E9, 0.4E9),           # eRO-QPE1
@@ -94,13 +89,35 @@ if input("See best model for all objects? [y/n]") == "y":
                 (2.56E9, 1.40E9, 0.24E9),           # eRO-QPE3
                 (1.6E10, 0.6E10, 0.7E10),           # eRO-QPE4
                 ]
-    print("Best models:")
-    print("-------------------------------------------------")
-    for i in range(8):
-        print(f"Object {i}: {compareModels(objects[i], band=bands_list[i], stellar_mass=stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
-    print("-------------------------------------------------")
 
-if input("Compare specific TDE host galaxy? [y/n]") == "y":
-    objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
-    band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-    compareModels(comparisons[objID], band=band, verbose=True)
+QPE_black_hole_masses = [
+                (None),           # GSN 069
+                (None),           # RX J1301.9+2747
+                (None),           # eRO-QPE1
+                (None),           # eRO-QPE2
+                (None),           # AT 2019vcb
+                (None),           # 2MASX J0249
+                (None),           # eRO-QPE3
+                (None),           # eRO-QPE4
+            ]    
+
+from download_data import objects, comparisons
+
+if __name__ == "__main__":
+    if input("Compare fits for a specific QPE host galaxy? [y/n]") == "y":
+        objID = int(input("Enter the object ID you want to load [0-7]:\n"))
+        band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+        compareModels(objects[objID], band=band, verbose=True)
+
+    if input("See best model for all QPE host galaxies? [y/n]") == "y":
+        bands_list = ["i", "i", "i", "i", "z", "i", "i", "r"]
+        print("Best models:")
+        print("-------------------------------------------------")
+        for i in range(8):
+            print(f"Object {i}: {compareModels(objects[i], band=bands_list[i], stellar_mass=QPE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
+        print("-------------------------------------------------")
+
+    if input("Compare fits for a specific TDE host galaxy? [y/n]") == "y":
+        objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
+        band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+        compareModels(comparisons[objID], band=band, verbose=True)
