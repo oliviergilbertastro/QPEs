@@ -8,7 +8,7 @@ from download_data import objects, comparisons
 #The QPE host galaxies are named "obj" while the TDE host galaxies are named "comp"
 
 if input("Fit a QPE host galaxy? [y/n]\n") == "y":
-    objID = int(input("Enter the object ID you want to fit [0-7]:\n"))
+    objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
     type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
 
@@ -138,6 +138,22 @@ if input("Fit a QPE host galaxy? [y/n]\n") == "y":
                     PSF_pos_list = [[71.4243, -10.2004], [71.4131, -10.2141], [71.4304, -10.2135]],
                     band=band,
                     radius=45,
+                    )
+        
+    #-------------------------------------------------------------------object7---------------------------------------------------------
+    elif objID == 8:
+        if band == "r" or band == "R" or band == "1":
+            img_path = f"image-decam-781092-S28-r.fits.gz"
+            oow_path = f"iv-decam-781092-S28-r.fits.gz"
+        elif band == "z" or band == 'Z' or band == "3":
+            img_path = f"image-decam-780799-S28-z.fits.gz"
+            oow_path = f"iv-decam-780799-S28-z.fits.gz"
+        galight_fit(ra_dec=objects[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list = [],
+                    band=band,
                     )
 
 
