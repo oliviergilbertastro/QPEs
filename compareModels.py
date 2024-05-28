@@ -54,7 +54,10 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     stellar_density_str = "-"
     smd = 0
     if stellar_mass != None:
-        smd = np.array(stellarMassDensity(stellar_mass, [mid, minus, plus]))/1E9
+        print("r50", [mid, minus, plus])
+        smd = np.array(stellarMassDensity(stellar_mass, [mid, minus, plus]))
+        smd = np.log10([smd[0], smd[0]-smd[1], smd[0]+smd[2]])
+        smd = np.array([smd[0], smd[0]-smd[1], smd[2]-smd[0]])
         stellar_density_str = (f"{smd[0]:.2f}_"+r"{-"+f"{smd[1]:.2f}"+r"}^{+"+f"{smd[2]:.2f}"+r"}")
     
     if returnData:
@@ -84,6 +87,7 @@ def stellarMassDensity(M_star, r50):
 
 import matplotlib.pyplot as plt
 import corner
+from scipy.stats import norm
 
 def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices):
     '''
@@ -95,18 +99,50 @@ def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices):
     ax1.set_xscale("log")
     ax1.yaxis.set_tick_params(labelsize=15)
     ax1.xaxis.set_tick_params(labelsize=15)
-    plt.xlabel(r'log($M_\mathrm{BH}$)', size=17)
+    plt.xlabel(r'$M_\mathrm{BH}$ [$M_\odot$]', size=17)
     plt.ylabel(r'Galaxy Sérsic Index', size=17)
     plt.legend(fontsize=15)
     plt.show()
 
-    fig1 = plt.figure(1)
-    plot1 = corner.corner(np.array([QPEmBH[:,0], QPEsersicIndices[:,0]]).T, labels=["Black hole mass", "Sérsic index"], show_titles=True, fig=fig1)
-    plt.suptitle("QPE hosts")
-    fig2 = plt.figure(2)
-    plot2 = corner.corner(np.array([TDEmBH, TDEsersicIndices]).T, labels=["Black hole mass", "Sérsic index"], show_titles=True, fig=fig2)
-    plt.suptitle("TDE hosts")
+
+    #Plot Sérsic difference:
+    # Fit a normal distribution to the data:
+    mu1, std1 = norm.fit(QPEsersicIndices[:,0])
+    mu2, std2 = norm.fit(TDEsersicIndices)
+    alldata = np.concatenate((QPEsersicIndices[:,0], TDEsersicIndices))
+    mini, maxi = np.min(alldata), np.max(alldata)
+    mini, maxi = 0.5, 8.5
+    # Plot the histogram.
+    #plt.hist(QPEsersicIndices[:,0], bins=25, density=False, alpha=0.5, color='b', label='QPE')
+    #plt.hist(TDEsersicIndices, bins=25, density=False, alpha=0.5, color='r', label='TDE')
+    plt.hist(QPEsersicIndices[:,0], range=(mini, maxi), bins=50, density=False, alpha=0.4, color='b')
+    plt.hist(TDEsersicIndices, range=(mini, maxi), bins=50, density=False, alpha=0.4, color='r')
+    # Plot the PDF.
+    xmin, xmax = plt.xlim()
+    x = np.linspace(xmin, xmax, 100)
+    p1 = norm.pdf(x, mu1, std1)
+    plt.plot(x, p1, color='b', linewidth=2, linestyle="dashed", label='QPE hosts')
+    p2 = norm.pdf(x, mu2, std2)
+    plt.plot(x, p2, color='r', linewidth=2, linestyle="dashed", label='TDE hosts')
+    if True: #ADD SDSS CONTROL
+        p3 = norm.pdf(x, 1.21, 1.29)
+        plt.plot(x, p3, color='black', linewidth=2, linestyle="dashed", label="SDSS controls")
+    plt.xlabel("Sérsic index", fontsize=17)
+    plt.ylabel("Number of hosts", fontsize=17)
+    plt.legend(fontsize=14)
+    print("mu1:", mu1)
+    print("mu2:", mu2)
+    print("std1:", std1)
+    print("std2:", std2)
     plt.show()
+
+    #fig1 = plt.figure(1)
+    #plot1 = corner.corner(np.array([np.log10(QPEmBH[:,0]), QPEsersicIndices[:,0]]).T, labels=["Black hole mass", "Sérsic index"], show_titles=True, fig=fig1)
+    #plt.suptitle("QPE hosts")
+    #fig2 = plt.figure(2)
+    #plot2 = corner.corner(np.array([np.log10(TDEmBH), TDEsersicIndices]).T, labels=["Black hole mass", "Sérsic index"], show_titles=True, fig=fig2)
+    #plt.suptitle("TDE hosts")
+    #plt.show()
     return
 
 #M_star in solar masses
@@ -135,9 +171,9 @@ QPE_mBH = [
 
 
 TDE_stellar_masses = [
-                (None),           #ASASSN-14li
-                (None),           #PTF-09ge
-                (None),           #ASASSN-14ae
+                (10**9.3, 10**9.3-10**9.2, 10**9.4-10**9.3),                                #ASASSN-14li
+                (10**9.87, 10**9.87-10**(9.87-0.17), 10**(9.87+0.13)-10**9.87),             #PTF-09ge
+                (10**9.73, 10**9.73-10**(9.73-0.13), 10**(9.73+0.13)-10**9.73),           #ASASSN-14ae
                 ]
 
 
@@ -174,7 +210,7 @@ if __name__ == "__main__":
             print("Best models:")
             print("-------------------------------------------------")
             for i in range(len(comparisons)):
-                print(f"{comparisons_names[i]}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
+                print(f"{comparisons_names[i]}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses[i], models=['None'], verbose=False)}")
             print("-------------------------------------------------")
 
     if input("Plot log(mBH)-Sérsic index for host galaxies comparison? [y/n]") == "y":
