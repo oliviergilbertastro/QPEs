@@ -17,7 +17,7 @@ from matplotlib.colors import LogNorm
 
 SUBTRACT_NOISE = False
 
-def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_list=None, band="i", nsigma=15, radius=60):
+def galight_fit(ra_dec, img_path, oow_path, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
         number_of_ps = 1
@@ -66,7 +66,7 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", median_noise=0, PSF_pos_
     header = img[1].header
     exp =  astro_tools.read_fits_exp(img[0].header)  #Read the exposure time 
     wht = wht_img[1].data
-    mean_wht = exp * (0.262)**2  #The drizzle information is used to derive the mean WHT value.
+    mean_wht = exp * (pixel_scale)**2  #The drizzle information is used to derive the mean WHT value.
     exp_map = exp * wht/mean_wht  #Derive the exposure time map for each pixel
 
     #data_process = DataProcess(fov_image = fov_image, target_pos = [1432., 966.], pos_type = 'pixel', header = header,

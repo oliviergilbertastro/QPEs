@@ -32,9 +32,9 @@ def read_pixel_scale(header):
     # pix_scale = diff_scale * 3600 / 100
     from astropy.wcs.utils import proj_plane_pixel_scales
     scales = proj_plane_pixel_scales(wcs) * 3600  #From degree to arcsec
+    print(scales[0],scales[1])
+    print(abs(scales[0]-scales[1])/scales[0])
     if abs(scales[0]-scales[1])/scales[0]>1.e-5:
-        print(scales[0],scales[1])
-        print(abs(scales[0]-scales[1])/scales[0])
         print('Warning: Pixel scale is not the same along x and y!!!')
     pix_scale = scales[0] 
     return pix_scale

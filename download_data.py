@@ -28,11 +28,28 @@ objects = [
     (71.3909, -10.2013), #(71.3921,-10.2005),                                   # eRO-QPE4
     ]
 
+objects_names = [
+    "GSN 069",
+    "RX J1301.9+2747",
+    "eRO-QPE1",
+    "eRO-QPE2",
+    "AT 2019vcb",
+    "2MASX J0249",
+    "eRO-QPE3",
+    "eRO-QPE4",
+]
+
 #TDE hosts
 comparisons = [
     (192.0634, 17.7739),                                                        #ASASSN-14li
     (224.2632, 49.6113),                                                        #PTF-09ge
     (167.1672, 34.0978),                                                        #ASASSN-14ae
+]
+
+comparisons_names = [
+    "ASASSN-14li",
+    "PTF-09ge",
+    "ASASSN-14ae",
 ]
 
 if __name__ == "__main__":

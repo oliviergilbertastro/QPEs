@@ -149,7 +149,7 @@ TDE_sersicIndices = data[:,1]
 QPE_bands_list = ["i", "i", "i", "i", "z", "i", "i", "r"]
 TDE_bands_list = ["r", "r", "g",]
 
-from download_data import objects, comparisons
+from download_data import objects, comparisons, objects_names, comparisons_names
 
 if __name__ == "__main__":
     if input("See options to compare QPE and TDE fits? [y/n]") == "y":
@@ -162,19 +162,19 @@ if __name__ == "__main__":
             print("Best models:")
             print("-------------------------------------------------")
             for i in range(8):
-                print(f"Object {i}: {compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
+                print(f"{objects_names[i]}: {compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
             print("-------------------------------------------------")
 
         if input("Compare fits for a specific TDE host galaxy? [y/n]") == "y":
             objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
             band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-            compareModels(comparisons[objID], band=band, verbose=True)
+            compareModels(comparisons[objID], band=band, verbose=True, stellar_mass=TDE_stellar_masses[objID])
 
         if input("See best model for all TDE host galaxies? [y/n]") == "y":
             print("Best models:")
             print("-------------------------------------------------")
             for i in range(len(comparisons)):
-                print(f"Object {i}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
+                print(f"{comparisons_names[i]}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
             print("-------------------------------------------------")
 
     if input("Plot log(mBH)-Sérsic index for host galaxies comparison? [y/n]") == "y":

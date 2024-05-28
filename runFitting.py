@@ -26,7 +26,6 @@ if input("Fit a QPE host galaxy? [y/n]\n") == "y":
                     img_path = data_repo+img_path,
                     oow_path = data_repo+oow_path,
                     type = type,
-                    median_noise = 863.3368,
                     PSF_pos_list=[[19.7915, -34.2054], [19.7957, -34.1628], [19.7597, -34.1971]], #We find stars in the image online, click on them and copy their WCS coordinates here
                     band=band,
                     )
@@ -40,7 +39,6 @@ if input("Fit a QPE host galaxy? [y/n]\n") == "y":
                     img_path = data_repo+img_path,
                     oow_path = data_repo+oow_path,
                     type = type,
-                    median_noise = 3944.6768+0.0128,
                     PSF_pos_list = [[195.5072, 27.7707], [195.4652, 27.7651], [195.5622, 27.7844], [195.5709, 27.7705], [195.4288, 27.7695]],
                     band=band,
                     )
@@ -173,6 +171,7 @@ if input("Fit a TDE host? [y/n]\n") == "y":
                     img_path = data_repo+img_path,
                     oow_path = data_repo+oow_path,
                     type = type,
+                    pixel_scale=0.453,
                     PSF_pos_list=[[224.2723, 49.6162]], #We find stars in the image online, click on them and copy their WCS coordinates here
                     band=band,
                     )
@@ -185,6 +184,7 @@ if input("Fit a TDE host? [y/n]\n") == "y":
                     img_path = data_repo+img_path,
                     oow_path = data_repo+oow_path,
                     type = type,
+                    pixel_scale=0.453,
                     PSF_pos_list=[[167.1150, 34.1386], [167.1107, 34.1297], [167.1312, 34.1600]], #We find stars in the image online, click on them and copy their WCS coordinates here
                     band=band,
                     )
