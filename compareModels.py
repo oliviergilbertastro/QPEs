@@ -83,6 +83,7 @@ def stellarMassDensity(M_star, r50):
 
 
 import matplotlib.pyplot as plt
+import corner
 
 def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices):
     '''
@@ -98,31 +99,46 @@ def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices):
     plt.ylabel(r'Galaxy Sérsic Index', size=17)
     plt.legend(fontsize=15)
     plt.show()
+
+    fig1 = plt.figure(1)
+    plot1 = corner.corner(np.array([QPEmBH[:,0], QPEsersicIndices[:,0]]).T, labels=["Black hole mass", "Sérsic index"], show_titles=True, fig=fig1)
+    plt.suptitle("QPE hosts")
+    fig2 = plt.figure(2)
+    plot2 = corner.corner(np.array([TDEmBH, TDEsersicIndices]).T, labels=["Black hole mass", "Sérsic index"], show_titles=True, fig=fig2)
+    plt.suptitle("TDE hosts")
+    plt.show()
     return
 
 #M_star in solar masses
 QPE_stellar_masses = [
-                (None),           # GSN 069
-                (None),           # RX J1301.9+2747
-                (3.8E9, 1.9E9, 0.4E9),           # eRO-QPE1
-                (1.01E9, 0.5E9, 0.01E9),           # eRO-QPE2
-                (None),           # AT 2019vcb
-                (None),           # 2MASX J0249
+                (None),                             # GSN 069
+                (None),                             # RX J1301.9+2747
+                (3.8E9, 1.9E9, 0.4E9),              # eRO-QPE1
+                (1.01E9, 0.5E9, 0.01E9),            # eRO-QPE2
+                (None),                             # AT 2019vcb
+                (None),                             # 2MASX J0249
                 (2.56E9, 1.40E9, 0.24E9),           # eRO-QPE3
                 (1.6E10, 0.6E10, 0.7E10),           # eRO-QPE4
                 ]
 
 #M_BH in solar masses
 QPE_mBH = [
-                (4E5, 0, 0),           # GSN 069
-                (1.8E6, 0.1E6, 0.1E6),           # RX J1301.9+2747
-                (4E6, 0, 0),           # eRO-QPE1
-                (3E6, 0, 0),           # eRO-QPE2
-                (6.5E6, 1.5E6, 1.5E6),           # AT 2019vcb
-                (8.5E4, 0, 0),#or 5E5 depending on paper           # 2MASX J0249
-                (5.3E6, 3.5E6, 0.7E6),           # eRO-QPE3
-                (6.8E7, 3.2E7, 4.8E7),           # eRO-QPE4
-            ]   
+                (4E5, 0, 0),                                    # GSN 069
+                (1.8E6, 0.1E6, 0.1E6),                          # RX J1301.9+2747
+                (4E6, 0, 0),                                    # eRO-QPE1
+                (3E6, 0, 0),                                    # eRO-QPE2
+                (6.5E6, 1.5E6, 1.5E6),                          # AT 2019vcb
+                (8.5E4, 0, 0),#or 5E5 depending on paper        # 2MASX J0249
+                (5.3E6, 3.5E6, 0.7E6),                          # eRO-QPE3
+                (6.8E7, 3.2E7, 4.8E7),                          # eRO-QPE4
+            ]
+
+
+TDE_stellar_masses = [
+                (None),           #ASASSN-14li
+                (None),           #PTF-09ge
+                (None),           #ASASSN-14ae
+                ]
 
 
 #Load TDE host galaxies black hole masses and Sérsic indices:
@@ -131,26 +147,35 @@ data = np.array(pd.read_csv("data/TDEsersic_mBH.csv"))
 TDE_mBH = 10**data[:,0]
 TDE_sersicIndices = data[:,1]
 QPE_bands_list = ["i", "i", "i", "i", "z", "i", "i", "r"]
+TDE_bands_list = ["r", "r", "g",]
 
 from download_data import objects, comparisons
 
 if __name__ == "__main__":
-    if input("Compare fits for a specific QPE host galaxy? [y/n]") == "y":
-        objID = int(input("Enter the object ID you want to load [0-7]:\n"))
-        band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-        compareModels(objects[objID], band=band, verbose=True)
+    if input("See options to compare QPE and TDE fits? [y/n]") == "y":
+        if input("Compare fits for a specific QPE host galaxy? [y/n]") == "y":
+            objID = int(input("Enter the object ID you want to load [0-7]:\n"))
+            band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+            compareModels(objects[objID], band=band, verbose=True)
 
-    if input("See best model for all QPE host galaxies? [y/n]") == "y":
-        print("Best models:")
-        print("-------------------------------------------------")
-        for i in range(8):
-            print(f"Object {i}: {compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
-        print("-------------------------------------------------")
+        if input("See best model for all QPE host galaxies? [y/n]") == "y":
+            print("Best models:")
+            print("-------------------------------------------------")
+            for i in range(8):
+                print(f"Object {i}: {compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
+            print("-------------------------------------------------")
 
-    if input("Compare fits for a specific TDE host galaxy? [y/n]") == "y":
-        objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
-        band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-        compareModels(comparisons[objID], band=band, verbose=True)
+        if input("Compare fits for a specific TDE host galaxy? [y/n]") == "y":
+            objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
+            band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+            compareModels(comparisons[objID], band=band, verbose=True)
+
+        if input("See best model for all TDE host galaxies? [y/n]") == "y":
+            print("Best models:")
+            print("-------------------------------------------------")
+            for i in range(len(comparisons)):
+                print(f"Object {i}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
+            print("-------------------------------------------------")
 
     if input("Plot log(mBH)-Sérsic index for host galaxies comparison? [y/n]") == "y":
         QPE_mBH = np.array(QPE_mBH)

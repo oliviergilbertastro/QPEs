@@ -31,7 +31,7 @@ objects = [
 #TDE hosts
 comparisons = [
     (192.0634, 17.7739),                                                        #ASASSN-14li
-    (224.2632, 49.6113),                                                         #PTF-09ge
+    (224.2632, 49.6113),                                                        #PTF-09ge
     (167.1672, 34.0978),                                                        #ASASSN-14ae
 ]
 
