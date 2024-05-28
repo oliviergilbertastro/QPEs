@@ -60,6 +60,7 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
 
     stellar_density_str = "-"
     smd = 0
+    smd_data = 0
     if stellar_mass != None:
         #print("r50", [mid, minus, plus])
         smd = np.array(stellarMassDensity(stellar_mass, [mid, minus, plus]))
