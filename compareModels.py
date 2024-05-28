@@ -51,17 +51,25 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     lo, mid, hi = np.percentile(chain[:, 0],16), np.percentile(chain[:, 0],50), np.percentile(chain[:, 0],84)
     plus, minus = (hi-mid), (mid-lo)
 
+    theta_rad = np.array([mid, minus, plus])*np.pi/(180*3600)
+    try:
+        index = objects.index(ra_dec)
+    except:
+        index = comparisons.index(ra_dec)
+    #print(index)
+
     stellar_density_str = "-"
     smd = 0
     if stellar_mass != None:
-        print("r50", [mid, minus, plus])
+        #print("r50", [mid, minus, plus])
         smd = np.array(stellarMassDensity(stellar_mass, [mid, minus, plus]))
+        smd_data = smd.copy()
         smd = np.log10([smd[0], smd[0]-smd[1], smd[0]+smd[2]])
         smd = np.array([smd[0], smd[0]-smd[1], smd[2]-smd[0]])
         stellar_density_str = (f"{smd[0]:.2f}_"+r"{-"+f"{smd[1]:.2f}"+r"}^{+"+f"{smd[2]:.2f}"+r"}")
     
     if returnData:
-        return sersic_index_data, smd*1E9
+        return sersic_index_data, smd_data
 
     return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {sersic_index_str}      \Sigma_star = {stellar_density_str}'
 
@@ -70,8 +78,8 @@ def stellarMassDensity(M_star, r50):
     '''
     Calculate the stellar surface mass density \Sigma_{M_\ast} from the total stellar mass and the half-light radius
 
-    M_star: stellar mass tuple/list/array such as (mass, errlo, errhi)
-    r50: half-light radius tuple/list/array such as (radius, errlo, errhi)
+    M_star: stellar mass in solar masses -> tuple/list/array such as (mass, errlo, errhi)
+    r50: half-light radius in kpc -> tuple/list/array such as (radius, errlo, errhi)
 
     returns [value, errlo, errhi]
     '''
@@ -176,6 +184,17 @@ TDE_stellar_masses = [
                 (10**9.73, 10**9.73-10**(9.73-0.13), 10**(9.73+0.13)-10**9.73),           #ASASSN-14ae
                 ]
 
+#distances to targets in kpc
+QPE_distances_from_redshifts = [
+                (None),                             # GSN 069
+                (None),                             # RX J1301.9+2747
+                (None),                             # eRO-QPE1
+                (None),                             # eRO-QPE2
+                (None),                             # AT 2019vcb
+                (None),                             # 2MASX J0249
+                (None),                             # eRO-QPE3
+                (None),                             # eRO-QPE4
+                ]
 
 #Load TDE host galaxies black hole masses and Sérsic indices:
 import pandas as pd
