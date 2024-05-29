@@ -161,8 +161,6 @@ def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices, ver
 
 def plot_surfaceStellarMassDensity_mBH(QPEmBH, QPEstellarDensities, TDEmBH, TDEstellarDensities, verbose=False):
     uplims = TDEstellarDensities[:,1] == "upper limit"
-    print(uplims)
-    print(TDEstellarDensities[np.array(TDEstellarDensities)[:,1] == "upper limit"])
     #TDE_stellarDensities[np.array(TDEstellarDensities)[:,1] == "upper limit"][:,1:] = (0, 0)
     for i in range(len(uplims)):
         if uplims[i]:
