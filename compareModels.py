@@ -3,8 +3,9 @@ import pickle
 import numpy as np
 from galight_modif.tools.plot_tools import total_compare
 from download_data import objects
+from ned_wright_cosmology import calculate_cosmo
 
-def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i", stellar_mass=5E9, verbose=True, returnData=False):
+def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i", stellar_mass=5E9, z=0, verbose=True, returnData=False):
         
     if band in ["g", "G"]:
         band = "g"
@@ -52,6 +53,9 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     plus, minus = (hi-mid), (mid-lo)
 
     theta_rad = np.array([mid, minus, plus])*np.pi/(180*3600)
+    cosmology_params = calculate_cosmo(z, H0=67, Omega_m=0.31, Omega_v=0.69)
+    kpc_per_arcsec = cosmology_params["kpc_DA"]
+    half_light_radius = np.array([mid, minus, plus])*kpc_per_arcsec
     try:
         index = objects.index(ra_dec)
     except:
@@ -63,7 +67,7 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     smd_data = 0
     if stellar_mass != None:
         #print("r50", [mid, minus, plus])
-        smd = np.array(stellarMassDensity(stellar_mass, [mid, minus, plus]))
+        smd = np.array(stellarMassDensity(stellar_mass, half_light_radius))
         smd_data = smd.copy()
         smd = np.log10([smd[0], smd[0]-smd[1], smd[0]+smd[2]])
         smd = np.array([smd[0], smd[0]-smd[1], smd[2]-smd[0]])
@@ -188,7 +192,7 @@ TDE_stellar_masses = [
                 ]
 
 #distances to targets in kpc
-QPE_distances_from_redshifts = [
+QPE_redshifts = [
                 (None),                             # GSN 069
                 (None),                             # RX J1301.9+2747
                 (None),                             # eRO-QPE1

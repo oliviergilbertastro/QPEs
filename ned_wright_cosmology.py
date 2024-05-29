@@ -3,31 +3,44 @@
 import sys
 from math import *
 
-def calculate_cosmo(z, H0=None, Omega_m=None, Omega_v=None, verbose=True):
+def calculate_cosmo(z, H0=None, Omega_m=None, Omega_v=None, verbose=False):
+    """
+    Based on Ned Wright's online cosmology calculator: https://astro.ucla.edu/~wright/CosmoCalc.html
+
+    Calculates a bunch of parameters from a redshift and an input cosmology
+
+    z: Redshift [0,+inf]
+    H0: Hubble constant (km/s)
+    Omega_m: Fraction of matter [0,1]
+    Omega_v: Fraction of vacuum [0,1], Omega_m+Omega_v <= 1
+    verbose: Boolean to decide if parameters are printed out or not
+
+    Returns: dictionnary of parameters, to check what each parameter is, use verbose=True
+    """
     # if no values, assume standard cosmology Model, input is z
     if H0==None and Omega_m==None and Omega_v==None:
-        z = 1+z                         # redshift
+        z = z                         # redshift
         H0 = 67                         # Hubble constant
         WM = 0.31                       # Omega(matter)
         WV = 1.0 - WM - 0.4165/(H0*H0)  # Omega(vacuum) or lambda
 
     # if one value, assume Benchmark Model with given Ho
     elif Omega_m==None and Omega_v==None:
-        z = 1+z                         # redshift
+        z = z                         # redshift
         H0 = H0                         # Hubble constant
         WM = 0.31                       # Omega(matter)
         WV = 1.0 - WM - 0.4165/(H0*H0)  # Omega(vacuum) or lambda
 
     # if Univ is Open, use Ho, Wm and set Wv to 0.
     elif Omega_v==None:
-        z = 1+z                         # redshift
+        z = z                         # redshift
         H0 = H0                         # Hubble constant
         WM = Omega_m                    # Omega(matter)
         WV = 0.0                        # Omega(vacuum) or lambda
 
     # if Univ is General, use Ho, Wm and given Wv
     else:
-        z = 1+z                         # redshift
+        z = z                         # redshift
         H0 = H0                         # Hubble constant
         WM = Omega_m                    # Omega(matter)
         WV = Omega_v                    # Omega(vacuum) or lambda
@@ -135,14 +148,29 @@ def calculate_cosmo(z, H0=None, Omega_m=None, Omega_v=None, verbose=True):
         print('The age at redshift z was ' + '%1.3f' % zage_Gyr + ' Gyr.')
         print('The light travel time was ' + '%1.3f' % DTT_Gyr + ' Gyr.')
         print('The comoving radial distance, which goes into Hubbles law, is',)
-        print('%1.1f' % DCMR_Mpc + ' Mpc or ' + '%1.1f' % DCMR_Gyr + ' Gly.')
-        print('The comoving volume within redshift z is ' + '%1.1f' % V_Gpc + ' Gpc^3.')
-        print('The angular size distance D_A is ' + '%1.1f' % DA_Mpc + ' Mpc or',)
-        print('%1.1f' % DA_Gyr + ' Gly.')
-        print('This gives a scale of ' + '%.2f' % kpc_DA + ' kpc/".')
-        print('The luminosity distance D_L is ' + '%1.1f' % DL_Mpc + ' Mpc or ' + '%1.1f' % DL_Gyr + ' Gly.')
-        print('The distance modulus, m-M, is '+'%1.2f' % (5*log10(DL_Mpc*1e6)-5))
-    print(z, H0, Omega_m, Omega_v)
+        print('%1.3f' % DCMR_Mpc + ' Mpc or ' + '%1.3f' % DCMR_Gyr + ' Gly.')
+        print('The comoving volume within redshift z is ' + '%1.3f' % V_Gpc + ' Gpc^3.')
+        print('The angular size distance D_A is ' + '%1.3f' % DA_Mpc + ' Mpc or',)
+        print('%1.3f' % DA_Gyr + ' Gly.')
+        print('This gives a scale of ' + '%.3f' % kpc_DA + ' kpc/".')
+        print('The luminosity distance D_L is ' + '%1.3f' % DL_Mpc + ' Mpc or ' + '%1.3f' % DL_Gyr + ' Gly.')
+        print('The distance modulus, m-M, is '+'%1.3f' % (5*log10(DL_Mpc*1e6)-5))
+    return {"age_Gyr": age_Gyr,
+            "zage_Gyr": zage_Gyr,
+            "DTT_Gyr": DTT_Gyr,
+            "DCMR_Mpc": DCMR_Mpc,
+            "DCMR_Gyr": DCMR_Gyr,
+            "V_Gpc": V_Gpc,
+            "DA_Mpc": DA_Mpc,
+            "DA_Gyr": DA_Gyr,
+            "kpc_DA": kpc_DA,
+            "DL_Mpc": DL_Mpc,
+            "DL_Gyr": DL_Gyr,
+            "D_mod": (5*log10(DL_Mpc*1e6)-5)
+            }
+
+
+#age_Gyr, zage_Gyr, DTT_Gyr, DCMR_Mpc, DCMR_Gyr, V_Gpc, DA_Mpc, DA_Gyr, kpc_DA, DL_Mpc, DL_Gyr, (5*log10(DL_Mpc*1e6)-5)
 
 if __name__ == "__main__":
-  calculate_cosmo(z=0.246, H0=67, Omega_m=0.31, Omega_v=0.69)
+  res = calculate_cosmo(z=0.246, H0=67, Omega_m=0.31, Omega_v=0.69, verbose=True)
