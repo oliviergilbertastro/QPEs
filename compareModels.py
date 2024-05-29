@@ -74,7 +74,7 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
         stellar_density_str = (f"{smd[0]:.2f}_"+r"{-"+f"{smd[1]:.2f}"+r"}^{+"+f"{smd[2]:.2f}"+r"}")
     
     if returnData:
-        return sersic_index_data, smd_data
+        return sersic_index_data, smd
 
     return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {sersic_index_str}      log(\Sigma_star) = {stellar_density_str}'
 
@@ -159,13 +159,62 @@ def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices, ver
     #plt.show()
     return
 
-def plot_surfaceStellarMassDensity_mBH(QPE_mBH, QPE_stellarDensities, TDE_mBH, TDE_stellarDensities):
+def plot_surfaceStellarMassDensity_mBH(QPEmBH, QPEstellarDensities, TDEmBH, TDEstellarDensities, verbose=False):
+    uplims = TDEstellarDensities[:,1] == "upper limit"
+    print(uplims)
+    print(TDEstellarDensities[np.array(TDEstellarDensities)[:,1] == "upper limit"])
+    #TDE_stellarDensities[np.array(TDEstellarDensities)[:,1] == "upper limit"][:,1:] = (0, 0)
+    for i in range(len(uplims)):
+        if uplims[i]:
+            TDEstellarDensities[i,1:] = (0,0)
+    TDEstellarDensities = np.array(TDEstellarDensities, dtype=float)
+    #plt.errorbar(Edd_ratio, a_ox, [a_ox_err_lo, a_ox_err_hi], [Edd_ratio_err_lo, Edd_ratio_err_hi], fmt='o', markeredgecolor='black', markeredgewidth=2, uplims=uplims, label=r'$\alpha_\mathrm{OX}$')
+    ax1 = plt.subplot(111)
+    ax1.errorbar(QPEmBH[:,0], QPEstellarDensities[:,0], yerr=[QPEstellarDensities[:,1],QPEstellarDensities[:,2]], xerr=[QPEmBH[:,1],QPEmBH[:,2]], fmt='D', color='green', label='QPE hosts')
+    ax1.errorbar(TDEmBH, TDEstellarDensities[:,0], yerr=[TDEstellarDensities[:,1],TDEstellarDensities[:,2]], uplims=uplims, fmt='o', color='orange', label='TDE hosts')
+    ax1.set_xscale("log")
+    ax1.yaxis.set_tick_params(labelsize=15)
+    ax1.xaxis.set_tick_params(labelsize=15)
+    plt.xlabel(r'$M_\mathrm{BH}$ [$M_\odot$]', size=17)
+    plt.ylabel(r'$\log(\Sigma_{M_\star})$', size=17)
+    plt.legend(fontsize=15)
+    plt.show()
+
+
+
+    #Plot Sérsic difference:
+    # Fit a normal distribution to the data:
+    mu1, std1 = norm.fit(QPEstellarDensities[:,0])
+    mu2, std2 = norm.fit(TDEstellarDensities[:,0])
+    alldata = np.concatenate((QPEstellarDensities[:,0], TDEstellarDensities[:,0]))
+    mini, maxi = np.min(alldata), np.max(alldata)
+    # Plot the histogram.
+    #plt.hist(QPEsersicIndices[:,0], bins=25, density=False, alpha=0.5, color='b', label='QPE')
+    #plt.hist(TDEsersicIndices, bins=25, density=False, alpha=0.5, color='r', label='TDE')
+    plt.hist(QPEstellarDensities[:,0], range=(mini, maxi), bins=50, density=False, alpha=0.4, color='b')
+    plt.hist(TDEstellarDensities[:,0], range=(mini, maxi), bins=50, density=False, alpha=0.4, color='r')
+    # Plot the PDF.
+    xmin, xmax = plt.xlim()
+    x = np.linspace(xmin, xmax, 100)
+    p1 = norm.pdf(x, mu1, std1)
+    plt.plot(x, p1, color='b', linewidth=2, linestyle="dashed", label='QPE hosts')
+    p2 = norm.pdf(x, mu2, std2)
+    plt.plot(x, p2, color='r', linewidth=2, linestyle="dashed", label='TDE hosts')
+    plt.xlabel(r'$\log(\Sigma_{M_\star})$', fontsize=17)
+    plt.ylabel("Number of hosts", fontsize=17)
+    plt.legend(fontsize=14)
+    if verbose:
+        print("mu1:", mu1)
+        print("mu2:", mu2)
+        print("std1:", std1)
+        print("std2:", std2)
+    plt.show()
     return
 
 
 
 
-
+#Import all the data from another file for convenience
 from paper_data import TDE_mBH, TDE_sersicIndices, TDE_stellarDensities, QPE_redshifts, TDE_redshifts, QPE_mBH, QPE_stellar_masses, TDE_stellar_masses
 
 
@@ -219,5 +268,8 @@ if __name__ == "__main__":
             if QPE_stellar_masses[i] != None:
                 QPE_stellarDensities.append(stellarDensity)
                 used_QPE_mBH.append(QPE_mBH[i])
+        used_QPE_mBH = np.array(used_QPE_mBH)
         QPE_stellarDensities = np.array(QPE_stellarDensities)
+        TDE_mBH = np.array(TDE_mBH)
+        TDE_stellarDensities = np.array(TDE_stellarDensities)
         plot_surfaceStellarMassDensity_mBH(used_QPE_mBH, QPE_stellarDensities, TDE_mBH, TDE_stellarDensities)
