@@ -164,12 +164,12 @@ def plot_surfaceStellarMassDensity_mBH(QPEmBH, QPEstellarDensities, TDEmBH, TDEs
     #TDE_stellarDensities[np.array(TDEstellarDensities)[:,1] == "upper limit"][:,1:] = (0, 0)
     for i in range(len(uplims)):
         if uplims[i]:
-            TDEstellarDensities[i,1:] = (0,0)
+            TDEstellarDensities[i,1:] = (0.1,0)
     TDEstellarDensities = np.array(TDEstellarDensities, dtype=float)
     #plt.errorbar(Edd_ratio, a_ox, [a_ox_err_lo, a_ox_err_hi], [Edd_ratio_err_lo, Edd_ratio_err_hi], fmt='o', markeredgecolor='black', markeredgewidth=2, uplims=uplims, label=r'$\alpha_\mathrm{OX}$')
     ax1 = plt.subplot(111)
     ax1.errorbar(QPEmBH[:,0], QPEstellarDensities[:,0], yerr=[QPEstellarDensities[:,1],QPEstellarDensities[:,2]], xerr=[QPEmBH[:,1],QPEmBH[:,2]], fmt='D', color='green', label='QPE hosts')
-    ax1.errorbar(TDEmBH, TDEstellarDensities[:,0], yerr=[TDEstellarDensities[:,1],TDEstellarDensities[:,2]], uplims=uplims, fmt='o', color='orange', label='TDE hosts')
+    ax1.errorbar(TDEmBH, TDEstellarDensities[:,0], yerr=[TDEstellarDensities[:,1],TDEstellarDensities[:,2]], uplims=uplims, markeredgewidth=2, fmt='o', color='orange', label='TDE hosts')
     ax1.set_xscale("log")
     ax1.yaxis.set_tick_params(labelsize=15)
     ax1.xaxis.set_tick_params(labelsize=15)
@@ -235,6 +235,7 @@ if __name__ == "__main__":
             for i in range(len(objects)):
                 print(f"{objects_names[i]}: {compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], z=QPE_redshifts[i], models=['None', 'AGN'], verbose=False)}")
             print("-------------------------------------------------")
+            #The Sérsic index of AT 2019qiz is fitted to be 3. something, but according to https://arxiv.org/pdf/2006.0245, it is 5.2 when fitted with a point source AGN
 
         if input("Compare fits for a specific TDE host galaxy? [y/n]") == "y":
             objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
@@ -251,7 +252,7 @@ if __name__ == "__main__":
     if input("Plot log(mBH)-Sérsic index for host galaxies comparison? [y/n]") == "y":
         QPE_mBH = np.array(QPE_mBH)
         QPE_sersicIndices = []
-        for i in range(len(objects)): #NEED TO CHANGE THIS
+        for i in range(len(objects)):
             sersic, stellarDensity = compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], z=QPE_redshifts[i], models=['None', 'AGN'], verbose=False, returnData=True)
             QPE_sersicIndices.append(sersic)
         QPE_sersicIndices = np.array(QPE_sersicIndices)

@@ -47,15 +47,16 @@ TDE_redshifts = [
 
 #M_BH in solar masses
 QPE_mBH = [
-                (4E5, 0, 0),                                    # GSN 069
-                (1.8E6, 0.1E6, 0.1E6),                          # RX J1301.9+2747
-                (4E6, 0, 0),                                    # eRO-QPE1
-                (3E6, 0, 0),                                    # eRO-QPE2
-                (6.5E6, 1.5E6, 1.5E6),                          # AT 2019vcb
-                (8.5E4, 0, 0),#or 5E5 depending on paper        # 2MASX J0249
-                (5.3E6, 3.5E6, 0.7E6),                          # eRO-QPE3
-                (6.8E7, 3.2E7, 4.8E7),                          # eRO-QPE4
-                (1E6, 0, 0),                                    # AT 2019qiz
+                (4E5, 0, 0),                                                        # GSN 069
+                (1.8E6, 0.1E6, 0.1E6),                                              # RX J1301.9+2747
+                (4E6, 0, 0),                                                        # eRO-QPE1
+                (3E6, 0, 0),                                                        # eRO-QPE2
+                (6.5E6, 1.5E6, 1.5E6),                                              # AT 2019vcb
+                (8.5E4, 0, 0),#or 5E5 depending on paper                            # 2MASX J0249
+                (5.3E6, 3.5E6, 0.7E6),                                              # eRO-QPE3
+                (6.8E7, 3.2E7, 4.8E7),                                              # eRO-QPE4
+                (10**6.18, 10**(6.18)-10**(6.18-0.44), 10**(6.18+0.44)-10**(6.18)), # AT 2019qiz
+                
             ]
 
 
