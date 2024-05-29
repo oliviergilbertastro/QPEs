@@ -76,7 +76,7 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     if returnData:
         return sersic_index_data, smd_data
 
-    return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {sersic_index_str}      \Sigma_star = {stellar_density_str}'
+    return types[bics.index(np.min(bics))] + " " + "?"*(len(models)-len(bics)) + f' n = {sersic_index_str}      log(\Sigma_star) = {stellar_density_str}'
 
 
 def stellarMassDensity(M_star, r50):
@@ -102,7 +102,7 @@ import matplotlib.pyplot as plt
 import corner
 from scipy.stats import norm
 
-def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices):
+def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices, verbose=False):
     '''
     Plots the sersic indices as a function of the black hole masses
     '''
@@ -143,10 +143,11 @@ def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices):
     plt.xlabel("Sérsic index", fontsize=17)
     plt.ylabel("Number of hosts", fontsize=17)
     plt.legend(fontsize=14)
-    print("mu1:", mu1)
-    print("mu2:", mu2)
-    print("std1:", std1)
-    print("std2:", std2)
+    if verbose:
+        print("mu1:", mu1)
+        print("mu2:", mu2)
+        print("std1:", std1)
+        print("std2:", std2)
     plt.show()
 
     #fig1 = plt.figure(1)
@@ -158,57 +159,17 @@ def plot_sersicIndex_mBH(QPEmBH, QPEsersicIndices, TDEmBH, TDEsersicIndices):
     #plt.show()
     return
 
-#M_star in solar masses
-QPE_stellar_masses = [
-                (None),                             # GSN 069
-                (None),                             # RX J1301.9+2747
-                (3.8E9, 1.9E9, 0.4E9),              # eRO-QPE1
-                (1.01E9, 0.5E9, 0.01E9),            # eRO-QPE2
-                (None),                             # AT 2019vcb
-                (None),                             # 2MASX J0249
-                (2.56E9, 1.40E9, 0.24E9),           # eRO-QPE3
-                (1.6E10, 0.6E10, 0.7E10),           # eRO-QPE4
-                (None),                             # AT 2019qiz
-                ]
-
-#M_BH in solar masses
-QPE_mBH = [
-                (4E5, 0, 0),                                    # GSN 069
-                (1.8E6, 0.1E6, 0.1E6),                          # RX J1301.9+2747
-                (4E6, 0, 0),                                    # eRO-QPE1
-                (3E6, 0, 0),                                    # eRO-QPE2
-                (6.5E6, 1.5E6, 1.5E6),                          # AT 2019vcb
-                (8.5E4, 0, 0),#or 5E5 depending on paper        # 2MASX J0249
-                (5.3E6, 3.5E6, 0.7E6),                          # eRO-QPE3
-                (6.8E7, 3.2E7, 4.8E7),                          # eRO-QPE4
-                (None),                                         # AT 2019qiz
-            ]
+def plot_surfaceStellarMassDensity_mBH(QPE_mBH, QPE_stellarDensities, TDE_mBH, TDE_stellarDensities):
+    return
 
 
-TDE_stellar_masses = [
-                (10**9.3, 10**9.3-10**9.2, 10**9.4-10**9.3),                                #ASASSN-14li
-                (10**9.87, 10**9.87-10**(9.87-0.17), 10**(9.87+0.13)-10**9.87),             #PTF-09ge
-                (10**9.73, 10**9.73-10**(9.73-0.13), 10**(9.73+0.13)-10**9.73),           #ASASSN-14ae
-                ]
 
-#distances to targets in kpc
-QPE_redshifts = [
-                (None),                             # GSN 069
-                (None),                             # RX J1301.9+2747
-                (None),                             # eRO-QPE1
-                (None),                             # eRO-QPE2
-                (None),                             # AT 2019vcb
-                (None),                             # 2MASX J0249
-                (None),                             # eRO-QPE3
-                (None),                             # eRO-QPE4
-                (None),                             # AT 2019qiz
-                ]
 
-#Load TDE host galaxies black hole masses and Sérsic indices:
-import pandas as pd
-data = np.array(pd.read_csv("data/TDEsersic_mBH.csv"))
-TDE_mBH = 10**data[:,0]
-TDE_sersicIndices = data[:,1]
+
+from paper_data import TDE_mBH, TDE_sersicIndices, TDE_stellarDensities, QPE_redshifts, TDE_redshifts, QPE_mBH, QPE_stellar_masses, TDE_stellar_masses
+
+
+#filter bands used to fit each object to simplify the user input, some other bands were also fitted and/or could be fitted, but these ones work well
 QPE_bands_list = ["i", "i", "i", "i", "z", "i", "i", "r", "r"]
 TDE_bands_list = ["r", "r", "g",]
 
@@ -219,32 +180,44 @@ if __name__ == "__main__":
         if input("Compare fits for a specific QPE host galaxy? [y/n]") == "y":
             objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
             band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-            compareModels(objects[objID], band=band, verbose=True)
+            compareModels(objects[objID], band=band, stellar_mass=QPE_stellar_masses[objID], z=QPE_redshifts[objID], verbose=True)
 
         if input("See best model for all QPE host galaxies? [y/n]") == "y":
             print("Best models:")
             print("-------------------------------------------------")
             for i in range(len(objects)):
-                print(f"{objects_names[i]}: {compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], models=['None', 'AGN'], verbose=False)}")
+                print(f"{objects_names[i]}: {compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], z=QPE_redshifts[i], models=['None', 'AGN'], verbose=False)}")
             print("-------------------------------------------------")
 
         if input("Compare fits for a specific TDE host galaxy? [y/n]") == "y":
             objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
             band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-            compareModels(comparisons[objID], band=band, verbose=True, stellar_mass=TDE_stellar_masses[objID])
+            compareModels(comparisons[objID], band=band, verbose=True, stellar_mass=TDE_stellar_masses[objID], z=TDE_redshifts[objID])
 
         if input("See best model for all TDE host galaxies? [y/n]") == "y":
             print("Best models:")
             print("-------------------------------------------------")
             for i in range(len(comparisons)):
-                print(f"{comparisons_names[i]}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses[i], models=['None'], verbose=False)}")
+                print(f"{comparisons_names[i]}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses[i], z=TDE_redshifts[i], models=['None'], verbose=False)}")
             print("-------------------------------------------------")
 
     if input("Plot log(mBH)-Sérsic index for host galaxies comparison? [y/n]") == "y":
-        QPE_mBH = np.array(QPE_mBH[:-1])
+        QPE_mBH = np.array(QPE_mBH)
         QPE_sersicIndices = []
-        for i in range(len(objects)-1): #NEED TO CHANGE THIS
-            sersic, stellarDensity = compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], models=['None', 'AGN'], verbose=False, returnData=True)
+        for i in range(len(objects)): #NEED TO CHANGE THIS
+            sersic, stellarDensity = compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], z=QPE_redshifts[i], models=['None', 'AGN'], verbose=False, returnData=True)
             QPE_sersicIndices.append(sersic)
         QPE_sersicIndices = np.array(QPE_sersicIndices)
         plot_sersicIndex_mBH(QPE_mBH, QPE_sersicIndices, TDE_mBH, TDE_sersicIndices)
+
+    if input("Plot log(mBH)-Stellar mass surface density for host galaxies comparison? [y/n]") == "y":
+        QPE_mBH = np.array(QPE_mBH)
+        used_QPE_mBH = [] #only temporary until all QPE_stellarMasses are found, then this will be the same as QPE_mBH
+        QPE_stellarDensities = []
+        for i in range(len(objects)): #NEED TO CHANGE THIS
+            sersic, stellarDensity = compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], z=QPE_redshifts[i], models=['None', 'AGN'], verbose=False, returnData=True)
+            if QPE_stellar_masses[i] != None:
+                QPE_stellarDensities.append(stellarDensity)
+                used_QPE_mBH.append(QPE_mBH[i])
+        QPE_stellarDensities = np.array(QPE_stellarDensities)
+        plot_surfaceStellarMassDensity_mBH(used_QPE_mBH, QPE_stellarDensities, TDE_mBH, TDE_stellarDensities)
