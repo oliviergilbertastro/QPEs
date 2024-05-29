@@ -3,6 +3,12 @@ import pickle
 import numpy as np
 from galight_modif.tools.plot_tools import total_compare
 from download_data import objects
+import matplotlib.pyplot as plt
+import copy
+from matplotlib.colors import LogNorm
+import matplotlib
+my_cmap = copy.copy(matplotlib.cm.get_cmap('gist_heat')) # copy the default cmap
+my_cmap.set_bad('black')
 
 def loadRun(ra_dec, type="AGN", band="i"):
     if type in ["AGN", "agn", "Agn"]:
@@ -69,6 +75,24 @@ def loadRun(ra_dec, type="AGN", band="i"):
         flux_list_1d = [data, model, galaxy_list[0], -model]
         label_list_1d = ['data', 'model', 'Sérsic']
     symbol = "+" if ra_dec[1] > 0 else ""
+    #Sanity check to verify that galight DOES give us the Half-light Sérsic radius in arcsec (")
+    chain = fitting_run_result.samples_mcmc
+    halfLightSersicRadius = np.percentile(chain[:, 0],50)
+    shapeOfImage = flux_list_2d[1].shape
+    smallSquareSize = int(np.round(halfLightSersicRadius/np.sqrt(2)/0.262))
+    bigSquareSize = int(np.round(halfLightSersicRadius/0.262))
+    print("Square sizes:", smallSquareSize, bigSquareSize)
+    smallFlux = np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-smallSquareSize:int(shapeOfImage[0]/2)+smallSquareSize,int(shapeOfImage[0]/2)-smallSquareSize:int(shapeOfImage[0]/2)+smallSquareSize])
+    bigFlux = np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize,int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize])
+    smallDensity = smallFlux/(2*smallSquareSize)**2
+    bigDensity = bigFlux/(2*bigSquareSize)**2
+    
+    #Calculated analytically an approximation that the flux in the Sérsic radius is around (pi/4)*smallFlux+(2/pi)*bigFlux
+    #print("Total flux:", np.sum(flux_list_2d[1]))
+    #print(f"Flux inside a {squareSize}x{squareSize} square centered:", np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-squareSize:int(shapeOfImage[0]/2)+squareSize,int(shapeOfImage[0]/2)-squareSize:int(shapeOfImage[0]/2)+squareSize]))
+    print(f"Ratio of flux inside a Sérsic radius to total flux is approximately:", ((np.pi/4)*smallFlux+(2/np.pi)*bigFlux)/np.sum(flux_list_2d[1]))
+    plt.imshow(flux_list_2d[1], origin='lower',cmap=my_cmap, norm=LogNorm())
+    plt.show()
     total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d, deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
                         zp=fitting_run_result.zp, if_annuli=False, arrows= False, show_plot = True, mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
                         target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}-{band}', sum_rest = True)
@@ -80,7 +104,6 @@ def loadRun(ra_dec, type="AGN", band="i"):
 
 
     from statmorph.utils.image_diagnostics import make_figure
-    import matplotlib.pyplot as plt
     fig = make_figure(morph)
     plt.show()
     print('xc_asymmetry =', morph.xc_asymmetry)

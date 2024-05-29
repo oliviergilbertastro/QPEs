@@ -628,6 +628,7 @@ def detect_obj(image, detect_tool = 'phot', exp_sz= 1.2, if_plot=False, auto_sor
             a_o = obj.semimajor_sigma.value
             b_o = obj.semiminor_sigma.value
             size_o = np.pi * a_o * b_o
+            #print(exp_sz)
             r = np.sqrt(size/size_o)*exp_sz
             a, b = a_o*r, b_o*r
             if version.parse(photutils.__version__) > version.parse("0.7"):

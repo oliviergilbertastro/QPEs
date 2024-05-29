@@ -17,7 +17,7 @@ from matplotlib.colors import LogNorm
 
 SUBTRACT_NOISE = False
 
-def galight_fit(ra_dec, img_path, oow_path, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60):
+def galight_fit(ra_dec, img_path, oow_path, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
         number_of_ps = 1
@@ -75,7 +75,7 @@ def galight_fit(ra_dec, img_path, oow_path, type="AGN", pixel_scale=0.262, PSF_p
                             rm_bkglight = True, exptime = exp_map, if_plot=(not SUBTRACT_NOISE), zp = 22.5)  #zp use 27.0 for convinence.
 
     data_process.generate_target_materials(radius=radius, create_mask = (not SUBTRACT_NOISE), nsigma=nsigma,
-                                        exp_sz= 1, npixels = 5, if_plot=(not SUBTRACT_NOISE))
+                                        exp_sz= exp_sz_multiplier, npixels = npixels, if_plot=(not SUBTRACT_NOISE))
     
     if SUBTRACT_NOISE:
         #To get a good fit, we remove the median noise from the initial image and restart the procedure

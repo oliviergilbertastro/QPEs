@@ -35,7 +35,7 @@ QPE_redshifts = [
                 (0.0186),                               # 2MASX J0249
                 (0.024),                                # eRO-QPE3
                 (0.044),                                # eRO-QPE4
-                (0.0151),                               # AT 2019qiz
+                (0.01513),                               # AT 2019qiz
                 ]
 
 TDE_redshifts = [

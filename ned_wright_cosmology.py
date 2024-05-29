@@ -173,4 +173,4 @@ def calculate_cosmo(z, H0=None, Omega_m=None, Omega_v=None, verbose=False):
 #age_Gyr, zage_Gyr, DTT_Gyr, DCMR_Mpc, DCMR_Gyr, V_Gpc, DA_Mpc, DA_Gyr, kpc_DA, DL_Mpc, DL_Gyr, (5*log10(DL_Mpc*1e6)-5)
 
 if __name__ == "__main__":
-  res = calculate_cosmo(z=0.246, H0=67, Omega_m=0.31, Omega_v=0.69, verbose=True)
+  res = calculate_cosmo(z=0.01513, H0=67, Omega_m=0.31, Omega_v=0.69, verbose=True)
