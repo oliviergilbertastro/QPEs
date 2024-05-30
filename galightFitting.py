@@ -108,6 +108,7 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
     coolinfos = data_process.arguments.copy()
     coolinfos["cutout_radius"] = radius
     coolinfos["survey"] = survey
+    coolinfos["pix_scale"] = pixel_scale
     print('---------------DATA PROCESS PARAMETERS-------------')
     print('target_pos:', data_process.target_pos)
     print('zero point:', data_process.zp) #zp is in the AB system and should be 22.5: https://www.legacysurvey.org/svtips/

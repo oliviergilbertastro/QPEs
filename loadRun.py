@@ -37,9 +37,11 @@ def loadRun(ra_dec, type="AGN", band="i"):
     fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
 
     try:
+        pixel_scale = fitting_run_result.coolinfo["pixel_scale"]
         for i in range(len(fitting_run_result.coolinfo)):
             print(fitting_run_result.coolinfo[i])
     except:
+        pixel_scale = 0.262 #Default value for almost all of the runs anyway
         print("No informations on the original fitting parameters used was stored! Running the fit again will solve this.")
 
     print(fitting_run_result.final_result_galaxy[0])
