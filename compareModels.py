@@ -178,7 +178,13 @@ def plot_surfaceStellarMassDensity_mBH(QPEmBH, QPEstellarDensities, TDEmBH, TDEs
     plt.legend(fontsize=15)
     plt.show()
 
-
+    
+    if input("Include the upper limits as data points in histogram? [y/n]") != "y":
+        TDEstellarDensities_withoutUplims = []
+        for i in range(len(uplims)):
+            if not uplims[i]:
+                TDEstellarDensities_withoutUplims.append(TDEstellarDensities[i])
+        TDEstellarDensities = np.array(TDEstellarDensities_withoutUplims)
 
     #Plot Sérsic difference:
     # Fit a normal distribution to the data:

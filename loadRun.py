@@ -86,8 +86,9 @@ def loadRun(ra_dec, type="AGN", band="i"):
     bigFlux = np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize,int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize])
     smallDensity = smallFlux/(2*smallSquareSize)**2
     bigDensity = bigFlux/(2*bigSquareSize)**2
+    densityInsideCutout = (bigFlux-smallFlux)/((2*bigSquareSize)**2-(2*smallSquareSize)**2)
 
-    fluxInsideRadius = (smallDensity+bigDensity)/2 * (halfLightSersicRadius/0.262)**2*np.pi
+    fluxInsideRadius = smallFlux + (halfLightSersicRadius/0.262)**2*(np.pi-2)*densityInsideCutout
     
     #Calculated analytically an approximation that the flux in the Sérsic radius is around (pi/4)*smallFlux+(2/pi)*bigFlux
     #print("Total flux:", np.sum(flux_list_2d[1]))
