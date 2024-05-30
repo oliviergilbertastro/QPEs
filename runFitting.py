@@ -154,9 +154,9 @@ if input("Fit a QPE host galaxy? [y/n]\n") == "y":
                     type = type,
                     PSF_pos_list = [],
                     band=band,
-                    radius=60,
+                    radius=100,
                     nsigma=15,
-                    exp_sz_multiplier=3,
+                    exp_sz_multiplier=2,
                     npixels=10,
                     )
 
