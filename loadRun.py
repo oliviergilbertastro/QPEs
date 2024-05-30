@@ -35,6 +35,13 @@ def loadRun(ra_dec, type="AGN", band="i"):
 
     picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}.pkl'
     fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
+
+    try:
+        for i in range(len(fitting_run_result.coolinfo)):
+            print(fitting_run_result.coolinfo[i])
+    except:
+        print("No informations on the original fitting parameters used was stored! Running the fit again will solve this.")
+
     print(fitting_run_result.final_result_galaxy[0])
     print("Flux of galaxy:", fitting_run_result.final_result_galaxy[0]['flux_within_frame'])
     print("Magnitude of galaxy:", fitting_run_result.final_result_galaxy[0]['magnitude'])

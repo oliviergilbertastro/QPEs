@@ -104,6 +104,10 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
         data_process.generate_target_materials(radius=radius, create_mask = True, nsigma=nsigma,
                                         exp_sz= 1, npixels = 5, if_plot=True)
 
+    #Create a dictionnary of all informations that could be useful for us
+    coolinfos = data_process.arguments.copy()
+    coolinfos["cutout_radius"] = radius
+    coolinfos["survey"] = survey
     print('---------------DATA PROCESS PARAMETERS-------------')
     print('target_pos:', data_process.target_pos)
     print('zero point:', data_process.zp) #zp is in the AB system and should be 22.5: https://www.legacysurvey.org/svtips/
@@ -179,6 +183,6 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
     fit_run.mcmc_result_range()
     # Plot all the fitting results:
     fit_run.plot_all(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
-
+    fit_run.coolinfos = coolinfos
     #Save the fitting class as pickle format:
     fit_run.dump_result()
