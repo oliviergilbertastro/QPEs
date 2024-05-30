@@ -86,11 +86,13 @@ def loadRun(ra_dec, type="AGN", band="i"):
     bigFlux = np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize,int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize])
     smallDensity = smallFlux/(2*smallSquareSize)**2
     bigDensity = bigFlux/(2*bigSquareSize)**2
+
+    fluxInsideRadius = (smallDensity+bigDensity)/2 * (halfLightSersicRadius/0.262)**2*np.pi
     
     #Calculated analytically an approximation that the flux in the Sérsic radius is around (pi/4)*smallFlux+(2/pi)*bigFlux
     #print("Total flux:", np.sum(flux_list_2d[1]))
     #print(f"Flux inside a {squareSize}x{squareSize} square centered:", np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-squareSize:int(shapeOfImage[0]/2)+squareSize,int(shapeOfImage[0]/2)-squareSize:int(shapeOfImage[0]/2)+squareSize]))
-    print(f"Ratio of flux inside a Sérsic radius to total flux is approximately:", ((np.pi/4)*smallFlux+(2/np.pi)*bigFlux)/np.sum(flux_list_2d[1]))
+    print(f"Ratio of flux inside a Sérsic radius to total flux is approximately:", (fluxInsideRadius)/np.sum(flux_list_2d[1]))
     plt.imshow(flux_list_2d[1], origin='lower',cmap=my_cmap, norm=LogNorm())
     plt.show()
     total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d, deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
