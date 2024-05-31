@@ -215,6 +215,24 @@ def plot_surfaceStellarMassDensity_mBH(QPEmBH, QPEstellarDensities, TDEmBH, TDEs
     plt.show()
     return
 
+def plot_sersicIndex_surfaceStellarMassDensity(QPEsersicIndices, QPEstellarDensities, TDEsersicIndices, TDEstellarDensities):
+    uplims = TDEstellarDensities[:,1] == "upper limit"
+    #TDE_stellarDensities[np.array(TDEstellarDensities)[:,1] == "upper limit"][:,1:] = (0, 0)
+    for i in range(len(uplims)):
+        if uplims[i]:
+            TDEstellarDensities[i,1:] = (0.1,0)
+    TDEstellarDensities = np.array(TDEstellarDensities, dtype=float)
+    #plt.errorbar(Edd_ratio, a_ox, [a_ox_err_lo, a_ox_err_hi], [Edd_ratio_err_lo, Edd_ratio_err_hi], fmt='o', markeredgecolor='black', markeredgewidth=2, uplims=uplims, label=r'$\alpha_\mathrm{OX}$')
+    ax1 = plt.subplot(111)
+    ax1.errorbar(QPEsersicIndices[:,0], QPEstellarDensities[:,0], yerr=[QPEstellarDensities[:,1],QPEstellarDensities[:,2]], xerr=[QPEsersicIndices[:,1],QPEsersicIndices[:,2]], fmt='D', color='green', label='QPE hosts')
+    ax1.errorbar(TDEsersicIndices, TDEstellarDensities[:,0], yerr=[TDEstellarDensities[:,1],TDEstellarDensities[:,2]], uplims=uplims, markeredgewidth=2, fmt='o', color='orange', label='TDE hosts')
+    #ax1.set_xscale("log")
+    ax1.yaxis.set_tick_params(labelsize=15)
+    ax1.xaxis.set_tick_params(labelsize=15)
+    plt.xlabel(r'Sérsic index', size=17)
+    plt.ylabel(r'$\log(\Sigma_{M_\star})$', size=17)
+    plt.legend(fontsize=15)
+    plt.show()
 
 
 
@@ -268,7 +286,7 @@ if __name__ == "__main__":
         QPE_mBH = np.array(QPE_mBH)
         used_QPE_mBH = [] #only temporary until all QPE_stellarMasses are found, then this will be the same as QPE_mBH
         QPE_stellarDensities = []
-        for i in range(len(objects)): #NEED TO CHANGE THIS
+        for i in range(len(objects)):
             sersic, stellarDensity = compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], z=QPE_redshifts[i], models=['None', 'AGN'], verbose=False, returnData=True)
             if QPE_stellar_masses[i] != None:
                 QPE_stellarDensities.append(stellarDensity)
@@ -278,3 +296,21 @@ if __name__ == "__main__":
         TDE_mBH = np.array(TDE_mBH)
         TDE_stellarDensities = np.array(TDE_stellarDensities)
         plot_surfaceStellarMassDensity_mBH(used_QPE_mBH, QPE_stellarDensities, TDE_mBH, TDE_stellarDensities)
+
+    if input("Plot Sérsic index - Stellar mass surface density for host galaxies comparison? [y/n]") == "y":
+        QPE_mBH = np.array(QPE_mBH)
+        used_QPE_mBH = [] #only temporary until all QPE_stellarMasses are found, then this will be the same as QPE_mBH
+        QPE_sersicIndices = []
+        QPE_stellarDensities = []
+        for i in range(len(objects)):
+            sersic, stellarDensity = compareModels(objects[i], band=QPE_bands_list[i], stellar_mass=QPE_stellar_masses[i], z=QPE_redshifts[i], models=['None', 'AGN'], verbose=False, returnData=True)
+            if QPE_stellar_masses[i] != None:
+                QPE_stellarDensities.append(stellarDensity)
+                QPE_sersicIndices.append(sersic)
+                used_QPE_mBH.append(QPE_mBH[i])
+        used_QPE_mBH = np.array(used_QPE_mBH)
+        QPE_sersicIndices = np.array(QPE_sersicIndices)
+        QPE_stellarDensities = np.array(QPE_stellarDensities)
+        TDE_mBH = np.array(TDE_mBH)
+        TDE_stellarDensities = np.array(TDE_stellarDensities)
+        plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellarDensities, TDE_sersicIndices, TDE_stellarDensities)
