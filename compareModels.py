@@ -95,7 +95,7 @@ def stellarMassDensity(M_star, r50):
         return [res, errlo, errhi]
     except:
         #In the exception where the user did not input uncertainties, the value will still be calculated.
-        return M_star/r50[0]**2
+        return M_star/r50[0]**2#/(2*np.pi) #is there a constant 2pi we need to divide by???
 
 
 import matplotlib.pyplot as plt
