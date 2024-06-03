@@ -1,5 +1,6 @@
 import os
 import sys
+import copy
 
 #Little code to ensure we are in the user directory running this code so the env variable works correctly  
 home = os.getcwd()
@@ -71,7 +72,6 @@ def fit_thingamabob(pos):
     fitting_kwargs = dict(nlive_init=400, nested_method="rwalk", nested_target_n_effective=1000, nested_dlogz_init=0.05)
     output = fit_model(obs, model, sps, optimize=False, dynesty=True, lnprobfn=lnprobfn, noise=noise_model, **fitting_kwargs)
     result, duration = output["sampling"]
-    print("This is still running... line74")
     from prospect.io import write_results as writer
     hfile = f"/Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}.h5"
     writer.write_hdf5(hfile, {}, model, obs,
@@ -95,6 +95,17 @@ def read_thingamabob(pos):
 
     from prospect.plotting.utils import best_sample
     pbest = best_sample(out)
+    corner.scatter(pbest[:, None], axes, color="firebrick", marker="o")
+    plt.show()
+
+    #Making my own version with log(Mass):
+    data = copy.copy(out)
+    mass = data["chain"][:,0]
+    logMass = np.log10(mass)
+    data["chain"][:,0] = logMass
+    cfig, axes = plt.subplots(ndim, ndim, figsize=(10,9))
+    axes = corner.allcorner(data["chain"].T, out["theta_labels"], axes, weights=out["weights"], color="royalblue", show_titles=True)
+    pbest = best_sample(data)
     corner.scatter(pbest[:, None], axes, color="firebrick", marker="o")
     plt.show()
 
