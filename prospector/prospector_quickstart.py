@@ -1,6 +1,22 @@
+'''
+Get SDSS photometry data of objects, fit galaxy models to it using nested sampling to obtain the total stellar mass in the galaxy
+'''
+
+
 import os
 import sys
 import copy
+import importlib.util
+import sys
+spec = importlib.util.spec_from_file_location("download_data", "/Users/oliviergilbert/Desktop/QPEs/QPEs/download_data.py")
+download_data = importlib.util.module_from_spec(spec)
+sys.modules["download_data"] = download_data
+spec.loader.exec_module(download_data)
+spec = importlib.util.spec_from_file_location("paper_data", "/Users/oliviergilbert/Desktop/QPEs/QPEs/paper_data.py")
+paper_data = importlib.util.module_from_spec(spec)
+sys.modules["paper_data"] = paper_data
+spec.loader.exec_module(paper_data)
+
 
 #Little code to ensure we are in the user directory running this code so the env variable works correctly  
 home = os.getcwd()
@@ -17,31 +33,42 @@ import h5py, astropy
 import numpy as np
 import astroquery
 
-def fit_thingamabob(pos):
+def fit_thingamabob(pos, bands="ugriz", redshift=0):
     """
     pos = (ra,dec)
     """
     ra, dec = pos
+    print(ra, dec)
     from astroquery.sdss import SDSS
     from astropy.coordinates import SkyCoord
-    bands = "ugriz"
     mcol = [f"cModelMag_{b}" for b in bands]
     ecol = [f"cModelMagErr_{b}" for b in bands]
     cat = SDSS.query_crossid(SkyCoord(ra=ra, dec=dec, unit="deg"),
                             data_release=16,
                             photoobj_fields=mcol + ecol + ["specObjID"])
-    shdus = SDSS.get_spectra(plate=2101, mjd=53858, fiberID=220)[0]
-    assert int(shdus[2].data["SpecObjID"][0]) == cat[0]["specObjID"]
+    
+    #This code is only if you don't have a redshift for the source and find the redshift in the spectra
+    #shdus = SDSS.get_spectra(plate=2101, mjd=53858, fiberID=220)[0]
+    #assert int(shdus[2].data["SpecObjID"][0]) == cat[0]["specObjID"]
+    #redshift = shdus[2].data[0]["z"]
 
     from sedpy.observate import load_filters
     from prospect.utils.obsutils import fix_obs
 
     filters = load_filters([f"sdss_{b}0" for b in bands])
+    working_filters = ""
+    for b in bands:
+        try:
+            cat[0][f"cModelMag_{b}"]
+            working_filters += b
+        except:
+            pass
+    print("working_filters:", working_filters)
     maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in bands])
     magerr = np.array([cat[0][f"cModelMagErr_{b}"] for b in bands])
     magerr = np.hypot(magerr, 0.05)
 
-    obs = dict(wavelength=None, spectrum=None, unc=None, redshift=shdus[2].data[0]["z"],
+    obs = dict(wavelength=None, spectrum=None, unc=None, redshift=redshift,
             maggies=maggies, maggies_unc=magerr * maggies / 1.086, filters=filters)
     obs = fix_obs(obs)
     print(obs)
@@ -103,11 +130,16 @@ def read_thingamabob(pos):
     mass = data["chain"][:,0]
     logMass = np.log10(mass)
     data["chain"][:,0] = logMass
+    data["theta_labels"][0] = r"$\log(M_\star)$"
+    data["theta_labels"][1] = r"$\log(Z_\star/Z_\odot)$"
     cfig, axes = plt.subplots(ndim, ndim, figsize=(10,9))
     axes = corner.allcorner(data["chain"].T, out["theta_labels"], axes, weights=out["weights"], color="royalblue", show_titles=True)
     pbest = best_sample(data)
+    print(pbest)
     corner.scatter(pbest[:, None], axes, color="firebrick", marker="o")
     plt.show()
+
+
 
     #Plot the observed SED of the spectrum and SED of the highest probability posterior sample
     sfig, saxes = plt.subplots(2, 1, gridspec_kw=dict(height_ratios=[1, 4]), sharex=True)
@@ -121,12 +153,10 @@ def read_thingamabob(pos):
     ax.set_xlim(3e3, 1e4)
     ax.set_ylim(out_obs["maggies"].min() * 0.1, out_obs["maggies"].max() * 5)
     ax.set_yscale("log")
-
     # get the best-fit SED
     bsed = out["bestfit"]
     ax.plot(bsed["restframe_wavelengths"] * (1+out_obs["redshift"]), bsed["spectrum"], color="firebrick", label="MAP sample")
     ax.plot(pwave, bsed["photometry"], linestyle="", marker="s", markersize=10, mec="orange", mew=3, mfc="none")
-
     ax = saxes[0]
     chi = (out_obs["maggies"] - bsed["photometry"]) / out_obs["maggies_unc"]
     ax.plot(pwave, chi, linestyle="", marker="o", color="k")
@@ -137,10 +167,25 @@ def read_thingamabob(pos):
 
 
 
-
 if __name__ == "__main__":
+    objects = download_data.objects
+    QPE_redshifts = paper_data.QPE_redshifts
+    bands_for_each_obj = ["ugriz", 
+                          "ugriz", 
+                          "ugriz", 
+                          "ugriz", 
+                          "ugriz", 
+                          "ugriz", 
+                          "ugriz", 
+                          "ugriz", 
+                          "ugriz",
+                          ]
     if input("Fit objects? [y/n]") == "y":
-        fit_thingamabob((204.46376, 35.79883))
+        #fit_thingamabob((204.46376, 35.79883), redshift=0.07260209)
+        objID = int(input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n"))
+        fit_thingamabob(objects[objID], bands=bands_for_each_obj[objID], redshift=QPE_redshifts[objID])
 
     if input("Read object? [y/n]") == "y":
-        read_thingamabob((204.46376, 35.79883))
+        #read_thingamabob((204.46376, 35.79883))
+        objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
+        read_thingamabob(objects[objID])

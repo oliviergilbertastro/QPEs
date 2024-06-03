@@ -6,9 +6,13 @@ import numpy as np
 import pandas as pd
 
 # Load TDE host galaxies black hole masses and Sérsic indices:
-data = np.array(pd.read_csv("data/TDEsersic_mBH.csv"))
-TDE_mBH = 10**data[:,0]
-TDE_sersicIndices = data[:,1]
+# Only load them if we are in the correct directory, otherwise don't bother, it's not like we're going to use them
+import os
+home = os.getcwd()
+if home != "/Users/oliviergilbert":
+    data = np.array(pd.read_csv("data/TDEsersic_mBH.csv"))
+    TDE_mBH = 10**data[:,0]
+    TDE_sersicIndices = data[:,1]
 
 # log(Surface stellar densities) for the 10 TDE hosts used in Law-Smith paper, as found in the Graur paper. My own calculations of the stellar mass surface densities approximately
 # give me the same thing as the Graur paper result, which is a good sanity check.
