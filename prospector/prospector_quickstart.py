@@ -26,6 +26,7 @@ if home != "/Users/oliviergilbert":
 
 #Need to download fsps from https://github.com/cconroy20/fsps and put it locally, change the path in .bash_profile to point to it
 
+import astropy.table
 import fsps
 import dynesty
 import sedpy
@@ -33,7 +34,7 @@ import h5py, astropy
 import numpy as np
 import astroquery
 
-def fit_SED(pos, bands="ugriz", redshift=0):
+def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None):
     """
     pos = (ra,dec)
     """
@@ -47,7 +48,6 @@ def fit_SED(pos, bands="ugriz", redshift=0):
     cat = SDSS.query_crossid(SkyCoord(ra=ra, dec=dec, unit="deg"),
                             data_release=data_release,
                             photoobj_fields=mcol + ecol + ["specObjID"])
-    print(cat)
     #This code is only if you don't have a redshift for the source and find the redshift in the spectra
     #shdus = SDSS.get_spectra(plate=2101, mjd=53858, fiberID=220)[0]
     #assert int(shdus[2].data["SpecObjID"][0]) == cat[0]["specObjID"]
@@ -65,6 +65,13 @@ def fit_SED(pos, bands="ugriz", redshift=0):
         except:
             pass
     print("working_filters:", working_filters)
+    print("--------------------------------------------------------")
+    print(type(cat))
+    print(cat)
+    print("--------------------------------------------------------")
+    if magnitudes_dict != None:
+        cat = copy.copy(magnitudes_dict)
+
     maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in bands])
     magerr = np.array([cat[0][f"cModelMagErr_{b}"] for b in bands])
     magerr = np.hypot(magerr, 0.05)
@@ -72,7 +79,7 @@ def fit_SED(pos, bands="ugriz", redshift=0):
     obs = dict(wavelength=None, spectrum=None, unc=None, redshift=redshift,
             maggies=maggies, maggies_unc=magerr * maggies / 1.086, filters=filters)
     obs = fix_obs(obs)
-    print(obs)
+    #print(obs)
 
 
     from prospect.models.templates import TemplateLibrary
@@ -83,13 +90,13 @@ def fit_SED(pos, bands="ugriz", redshift=0):
 
     model = SpecModel(model_params)
     assert len(model.free_params) == 5
-    print(model)
+    #print(model)
 
     noise_model = (None, None)
 
     from prospect.sources import CSPSpecBasis
     sps = CSPSpecBasis(zcontinuous=1)
-    print(sps.ssp.libraries)
+    #print(sps.ssp.libraries)
 
     current_parameters = ",".join([f"{p}={v}" for p, v in zip(model.free_params, model.theta)])
     print(current_parameters)
@@ -183,6 +190,10 @@ if __name__ == "__main__":
                           "ugriz", 
                           "ugriz",
                           ]
+    magnitudes_dicts = [
+        astropy.table.table.Table(np.array(["obj_0",1237667444048855291,16.92195,15.41549,14.9153,14.63878,14.35094,0.009043842,0.002720573,0.002580761,0.00274345,0.004231831,2523306138166913024,"GALAXY"]), names=np.array(["name","objID","cModelMag_u","cModelMag_g","cModelMag_r","cModelMag_i","cModelMag_z","cModelMagErr_u","cModelMagErr_g","cModelMagErr_r","cModelMagErr_i","cModelMagErr_z","specObjID","type"]))
+    ]
+    #print(magnitudes_dicts[0]["name"])
     if input("Fit objects? [y/n]") == "y":
         #fit_thingamabob((204.46376, 35.79883), redshift=0.07260209)
         objID = int(input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n"))
