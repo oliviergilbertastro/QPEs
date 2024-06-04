@@ -43,10 +43,11 @@ def fit_thingamabob(pos, bands="ugriz", redshift=0):
     from astropy.coordinates import SkyCoord
     mcol = [f"cModelMag_{b}" for b in bands]
     ecol = [f"cModelMagErr_{b}" for b in bands]
+    data_release = int(input("Which data release do you want to use? [1-18]"))
     cat = SDSS.query_crossid(SkyCoord(ra=ra, dec=dec, unit="deg"),
-                            data_release=16,
+                            data_release=data_release,
                             photoobj_fields=mcol + ecol + ["specObjID"])
-    
+    print(cat)
     #This code is only if you don't have a redshift for the source and find the redshift in the spectra
     #shdus = SDSS.get_spectra(plate=2101, mjd=53858, fiberID=220)[0]
     #assert int(shdus[2].data["SpecObjID"][0]) == cat[0]["specObjID"]
@@ -100,16 +101,16 @@ def fit_thingamabob(pos, bands="ugriz", redshift=0):
     output = fit_model(obs, model, sps, optimize=False, dynesty=True, lnprobfn=lnprobfn, noise=noise_model, **fitting_kwargs)
     result, duration = output["sampling"]
     from prospect.io import write_results as writer
-    hfile = f"/Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}.h5"
+    hfile = f"/Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}_{data_release}.h5"
     writer.write_hdf5(hfile, {}, model, obs,
                     output["sampling"][0], None,
                     sps=sps,
                     tsample=output["sampling"][1],
                     toptimize=0.0)
 
-def read_thingamabob(pos):
+def read_thingamabob(pos, data_release=16):
     ra, dec = pos
-    hfile = f"/Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}.h5"
+    hfile = f"/Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}_{data_release}.h5"
     from prospect.io import read_results as reader
     out, out_obs, out_model = reader.results_from(hfile)
     for k in out.keys():
@@ -190,4 +191,4 @@ if __name__ == "__main__":
     if input("Read object? [y/n]") == "y":
         #read_thingamabob((204.46376, 35.79883))
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
-        read_thingamabob(objects[objID])
+        read_thingamabob(objects[objID], data_release=int(input("Which data release?")))
