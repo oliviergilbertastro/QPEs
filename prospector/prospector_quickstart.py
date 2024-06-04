@@ -33,7 +33,7 @@ import h5py, astropy
 import numpy as np
 import astroquery
 
-def fit_thingamabob(pos, bands="ugriz", redshift=0):
+def fit_SED(pos, bands="ugriz", redshift=0):
     """
     pos = (ra,dec)
     """
@@ -108,7 +108,7 @@ def fit_thingamabob(pos, bands="ugriz", redshift=0):
                     tsample=output["sampling"][1],
                     toptimize=0.0)
 
-def read_thingamabob(pos, data_release=16):
+def read_SED(pos, data_release=16):
     ra, dec = pos
     hfile = f"/Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}_{data_release}.h5"
     from prospect.io import read_results as reader
@@ -186,9 +186,11 @@ if __name__ == "__main__":
     if input("Fit objects? [y/n]") == "y":
         #fit_thingamabob((204.46376, 35.79883), redshift=0.07260209)
         objID = int(input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n"))
-        fit_thingamabob(objects[objID], bands=bands_for_each_obj[objID], redshift=QPE_redshifts[objID])
+        fit_SED(objects[objID], bands=bands_for_each_obj[objID], redshift=QPE_redshifts[objID])
 
     if input("Read object? [y/n]") == "y":
         #read_thingamabob((204.46376, 35.79883))
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
-        read_thingamabob(objects[objID], data_release=int(input("Which data release?")))
+        data_release = input("Which data release?")
+        data_release = 16 if data_release == "" else int(data_release)
+        read_SED(objects[objID], data_release=data_release)

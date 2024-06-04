@@ -76,6 +76,18 @@ QPE_stellar_masses = [
                 (1.6E10, 0.6E10, 0.7E10),                                           # eRO-QPE4
                 (10**10.04, 10**10.04-10**(10.04-0.14), 10**(10.04+0.10)-10**10.04),# AT 2019qiz
                 ]
+if False:
+    QPE_stellar_masses = [
+                    (None),                                                             # GSN 069
+                    (None),# RX J1301.9+2747       #Prospector
+                    (3.8E9, 1.9E9, 0.4E9),                                              # eRO-QPE1
+                    (1.01E9, 0.5E9, 0.01E9),                                            # eRO-QPE2
+                    (None),# AT 2019vcb            #Prospector
+                    (None),     # 2MASX J0249           #Prospector
+                    (2.56E9, 1.40E9, 0.24E9),                                           # eRO-QPE3
+                    (1.6E10, 0.6E10, 0.7E10),                                           # eRO-QPE4
+                    (10**10.04, 10**10.04-10**(10.04-0.14), 10**(10.04+0.10)-10**10.04),# AT 2019qiz
+                    ]
 
 TDE_stellar_masses = [
                 (10**9.3, 10**9.3-10**9.2, 10**9.4-10**9.3),                                #ASASSN-14li
