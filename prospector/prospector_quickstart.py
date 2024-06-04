@@ -112,6 +112,8 @@ def read_thingamabob(pos):
     hfile = f"/Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}.h5"
     from prospect.io import read_results as reader
     out, out_obs, out_model = reader.results_from(hfile)
+    for k in out.keys():
+        print(k, ":", out[k])
 
     import matplotlib.pyplot as plt
     #Plot the posterior's corner plot

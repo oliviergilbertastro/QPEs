@@ -67,10 +67,10 @@ QPE_mBH = [
 #M_star in solar masses
 QPE_stellar_masses = [
                 (None),                                                             # GSN 069
-                (None),                                                             # RX J1301.9+2747
+                (10**10.44, 10**10.44-10**(10.44-0.21), 10**(10.44+0.15)-10**10.44),# RX J1301.9+2747       #Prospector
                 (3.8E9, 1.9E9, 0.4E9),                                              # eRO-QPE1
                 (1.01E9, 0.5E9, 0.01E9),                                            # eRO-QPE2
-                (None),                                                             # AT 2019vcb
+                (10**10.06, 10**10.06-10**(10.06-0.10), 10**(10.06+0.08)-10**10.06),# AT 2019vcb            #Prospector
                 (None),                                                             # 2MASX J0249
                 (2.56E9, 1.40E9, 0.24E9),                                           # eRO-QPE3
                 (1.6E10, 0.6E10, 0.7E10),                                           # eRO-QPE4
