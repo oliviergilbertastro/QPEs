@@ -8,6 +8,8 @@ import sys
 import copy
 import importlib.util
 import sys
+
+import astropy.units
 spec = importlib.util.spec_from_file_location("download_data", "/Users/oliviergilbert/Desktop/QPEs/QPEs/download_data.py")
 download_data = importlib.util.module_from_spec(spec)
 sys.modules["download_data"] = download_data
@@ -34,42 +36,47 @@ import h5py, astropy
 import numpy as np
 import astroquery
 
-def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None):
+def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=16):
     """
     pos = (ra,dec)
     """
     ra, dec = pos
-    print(ra, dec)
+    #print(ra, dec)
     from astroquery.sdss import SDSS
     from astropy.coordinates import SkyCoord
-    mcol = [f"cModelMag_{b}" for b in bands]
-    ecol = [f"cModelMagErr_{b}" for b in bands]
-    data_release = int(input("Which data release do you want to use? [1-18]"))
-    cat = SDSS.query_crossid(SkyCoord(ra=ra, dec=dec, unit="deg"),
-                            data_release=data_release,
-                            photoobj_fields=mcol + ecol + ["specObjID"])
-    #This code is only if you don't have a redshift for the source and find the redshift in the spectra
-    #shdus = SDSS.get_spectra(plate=2101, mjd=53858, fiberID=220)[0]
-    #assert int(shdus[2].data["SpecObjID"][0]) == cat[0]["specObjID"]
-    #redshift = shdus[2].data[0]["z"]
+    if magnitudes_dict == None:
+        mcol = [f"cModelMag_{b}" for b in bands]
+        ecol = [f"cModelMagErr_{b}" for b in bands]
+        #data_release = int(input("Which data release do you want to use? [1-18]"))
+        cat = SDSS.query_crossid(SkyCoord(ra=ra, dec=dec, unit="deg"),
+                                data_release=data_release,
+                                photoobj_fields=mcol + ecol + ["specObjID"],
+                                )
+        #This code is only if you don't have a redshift for the source and find the redshift in the spectra
+        #shdus = SDSS.get_spectra(plate=2101, mjd=53858, fiberID=220)[0]
+        #assert int(shdus[2].data["SpecObjID"][0]) == cat[0]["specObjID"]
+        #redshift = shdus[2].data[0]["z"]
 
-    from sedpy.observate import load_filters
-    from prospect.utils.obsutils import fix_obs
+        from sedpy.observate import load_filters
+        from prospect.utils.obsutils import fix_obs
 
-    filters = load_filters([f"sdss_{b}0" for b in bands])
-    working_filters = ""
-    for b in bands:
-        try:
-            cat[0][f"cModelMag_{b}"]
-            working_filters += b
-        except:
-            pass
-    print("working_filters:", working_filters)
-    print("--------------------------------------------------------")
-    print(type(cat))
-    print(cat)
-    print("--------------------------------------------------------")
-    if magnitudes_dict != None:
+        filters = load_filters([f"sdss_{b}0" for b in bands])
+        working_filters = ""
+        for b in bands:
+            try:
+                cat[0][f"cModelMag_{b}"]
+                working_filters += b
+            except:
+                pass
+        print("working_filters:", working_filters)
+        #print("--------------------------------------------------------")
+        #print(type(cat))
+        #print(cat)
+        #print("--------------------------------------------------------")
+    else:
+        from sedpy.observate import load_filters
+        from prospect.utils.obsutils import fix_obs
+        filters = load_filters([f"sdss_{b}0" for b in bands])
         cat = copy.copy(magnitudes_dict)
 
     maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in bands])
@@ -85,11 +92,19 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None):
     from prospect.models.templates import TemplateLibrary
     from prospect.models import SpecModel
     model_params = TemplateLibrary["parametric_sfh"]
-    model_params.update(TemplateLibrary["nebular"])
+    #model_params.update(TemplateLibrary["nebular"]) #This is to add nebular emission lines (I don't care about that)
+    #model_params.update(TemplateLibrary["continuity_psb_sfh"]) #This is to add additional parameters
     model_params["zred"]["init"] = obs["redshift"]
 
+    #Let's fix some of the parameters:
+    #model_params["dust2"]["isfree"] = False
+    #model_params["tage"]["isfree"] = False
+    model_params["tau"]["isfree"] = False
+
+
     model = SpecModel(model_params)
-    assert len(model.free_params) == 5
+    print("Number of free parameters:", len(model.free_params))
+    #assert len(model.free_params) == 5
     #print(model)
 
     noise_model = (None, None)
@@ -101,7 +116,7 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None):
     current_parameters = ",".join([f"{p}={v}" for p, v in zip(model.free_params, model.theta)])
     print(current_parameters)
     spec, phot, mfrac = model.predict(model.theta, obs=obs, sps=sps)
-    print(phot / obs["maggies"])
+    #print(phot / obs["maggies"])
 
     from prospect.fitting import lnprobfn, fit_model
     fitting_kwargs = dict(nlive_init=400, nested_method="rwalk", nested_target_n_effective=1000, nested_dlogz_init=0.05)
@@ -176,11 +191,18 @@ def read_SED(pos, data_release=16):
     plt.show()
 
 
+def makeAstropyTableFromDictionnary(dict):
+    if dict == None:
+        return None
+    names = np.array([key for key in dict.keys()])
+    data = np.array([val for val in dict.values()])
+    return astropy.table.table.Table(data=data, names=names, dtype=[str, str, float, float, float, float, float, float, float, float, float, float, str, str])
+
 
 if __name__ == "__main__":
     objects = download_data.objects
     QPE_redshifts = paper_data.QPE_redshifts
-    bands_for_each_obj = ["ugriz", 
+    bands_for_each_obj = ["gr", 
                           "ugriz", 
                           "ugriz", 
                           "ugriz", 
@@ -190,18 +212,45 @@ if __name__ == "__main__":
                           "ugriz", 
                           "ugriz",
                           ]
+    #This is mainly for GSN069 and its data comes from https://simbad.u-strasbg.fr/simbad/sim-id?protocol=html&Ident=GSN_069&bibdisplay=none
     magnitudes_dicts = [
-        astropy.table.table.Table(np.array(["obj_0",1237667444048855291,16.92195,15.41549,14.9153,14.63878,14.35094,0.009043842,0.002720573,0.002580761,0.00274345,0.004231831,2523306138166913024,"GALAXY"]), names=np.array(["name","objID","cModelMag_u","cModelMag_g","cModelMag_r","cModelMag_i","cModelMag_z","cModelMagErr_u","cModelMagErr_g","cModelMagErr_r","cModelMagErr_i","cModelMagErr_z","specObjID","type"]))
+        {"name":"GSN 069",
+         "objID": "idk",
+         "cModelMag_u": 0,
+         "cModelMag_g": 17.563261,
+         "cModelMag_r": 15.275,
+         "cModelMag_i": 0,
+         "cModelMag_z": 0,
+         "cModelMagErr_u": 0,
+         "cModelMagErr_g": 0.003699,
+         "cModelMagErr_r": 0,
+         "cModelMagErr_i": 0,
+         "cModelMagErr_z": 0,
+         "specObjID": "idk",
+         "type": "GALAXY"},
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
+        None,
     ]
+    for i in range(len(magnitudes_dicts)):
+        magnitudes_dicts[i] = makeAstropyTableFromDictionnary(magnitudes_dicts[i])
+
     #print(magnitudes_dicts[0]["name"])
     if input("Fit objects? [y/n]") == "y":
         #fit_thingamabob((204.46376, 35.79883), redshift=0.07260209)
         objID = int(input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n"))
-        fit_SED(objects[objID], bands=bands_for_each_obj[objID], redshift=QPE_redshifts[objID])
+        data_release = input("Which data release?")
+        data_release = 18 if data_release == "" else int(data_release)
+        fit_SED(objects[objID], bands=bands_for_each_obj[objID], redshift=QPE_redshifts[objID], data_release=data_release, magnitudes_dict=magnitudes_dicts[objID])
 
     if input("Read object? [y/n]") == "y":
         #read_thingamabob((204.46376, 35.79883))
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
         data_release = input("Which data release?")
-        data_release = 16 if data_release == "" else int(data_release)
+        data_release = 18 if data_release == "" else int(data_release)
         read_SED(objects[objID], data_release=data_release)

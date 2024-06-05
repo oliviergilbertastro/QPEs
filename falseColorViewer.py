@@ -76,6 +76,6 @@ if input("Show all false color images? [y/n]") == "y":
 
 #exp =  astro_tools.read_fits_exp(fitsFile_qso[0].header)  #Read the exposure time
 
-choose_object = int(input("Enter the object's number [0-7]:"))
+choose_object = int(input("Enter the object's number [0-8]:"))
 
 showFalseColorImage(choose_object)
