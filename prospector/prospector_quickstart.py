@@ -81,9 +81,13 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=1
     #model_params.update(TemplateLibrary["nebular"]) #This is to add nebular emission lines (I don't care about that)
     #model_params.update(TemplateLibrary["continuity_psb_sfh"]) #This is to add additional parameters
     model_params["zred"]["init"] = obs["redshift"]
-
+    print("-------------------------------------")
+    for k in model_params.keys():
+        string = "free" if model_params[k]["isfree"] else "fixed"
+        print(f"{k}: {string}")
+    print("-------------------------------------")
     #Let's fix some of the parameters:
-    #model_params["dust2"]["isfree"] = False
+    model_params["dust2"]["isfree"] = False
     #model_params["tage"]["isfree"] = False
     model_params["tau"]["isfree"] = False
 
@@ -109,7 +113,7 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=1
     output = fit_model(obs, model, sps, optimize=False, dynesty=True, lnprobfn=lnprobfn, noise=noise_model, **fitting_kwargs)
     result, duration = output["sampling"]
     from prospect.io import write_results as writer
-    hfile = f"/Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}_{data_release}.h5"
+    hfile = f"prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}_{data_release}.h5"
     writer.write_hdf5(hfile, {}, model, obs,
                     output["sampling"][0], None,
                     sps=sps,
@@ -118,7 +122,7 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=1
 
 def read_SED(pos, data_release=16):
     ra, dec = pos
-    hfile = f"/Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}_{data_release}.h5"
+    hfile = f"prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}_{data_release}.h5"
     from prospect.io import read_results as reader
     out, out_obs, out_model = reader.results_from(hfile)
     for k in out.keys():
