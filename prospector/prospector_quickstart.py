@@ -6,28 +6,14 @@ Get SDSS photometry data of objects, fit galaxy models to it using nested sampli
 import os
 import sys
 import copy
-import importlib.util
 import sys
-
+import parse
 import astropy.units
-spec = importlib.util.spec_from_file_location("download_data", "/Users/oliviergilbert/Desktop/QPEs/QPEs/download_data.py")
-download_data = importlib.util.module_from_spec(spec)
-sys.modules["download_data"] = download_data
-spec.loader.exec_module(download_data)
-spec = importlib.util.spec_from_file_location("paper_data", "/Users/oliviergilbert/Desktop/QPEs/QPEs/paper_data.py")
-paper_data = importlib.util.module_from_spec(spec)
-sys.modules["paper_data"] = paper_data
-spec.loader.exec_module(paper_data)
-
-
-#Little code to ensure we are in the user directory running this code so the env variable works correctly  
-home = os.getcwd()
-if home != "/Users/oliviergilbert":
-    os.system("cd ../../../ \nsource .bash_profile \npython3 /Users/oliviergilbert/Desktop/QPEs/QPEs/prospector/prospector_quickstart.py")
-    sys.exit()
-
-#Need to download fsps from https://github.com/cconroy20/fsps and put it locally, change the path in .bash_profile to point to it
-
+#Let's just go in the parent directory since all of our imports are from there (much less complicated)
+parent_dir = parse.parse("{}/prospector", os.path.dirname(os.path.realpath(__file__)))[0]
+sys.path.append(parent_dir)
+import download_data, paper_data
+os.environ["SPS_HOME"] = "/Users/oliviergilbert/Desktop/QPEs/fsps-master" #Need to download fsps from https://github.com/cconroy20/fsps and put it locally, change the path in .bash_profile to point to it
 import astropy.table
 import fsps
 import dynesty
