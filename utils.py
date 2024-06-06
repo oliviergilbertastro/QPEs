@@ -16,7 +16,7 @@ def print_table(a, header=None, title=None, space_between_columns=1, space_betwe
         pass
     elif (type(header) == bool and header == False) or header == None:
         header = None
-    elif header != None:
+    else:
         a = np.vstack((header, a))
 
     #Initialize the ascii characters to create the table depending on the borders parameter:
@@ -29,56 +29,33 @@ def print_table(a, header=None, title=None, space_between_columns=1, space_betwe
     else:
         raise ValueError(f"Border style '{borders}' does not exist, use the keyword 'none', 'normal' or 'bold'.")
     
+    possible_colors = ["black","red","green","yellow","blue","magenta","cyan","white"]
     #Initialize the colors:
+    #Header color
     if header_color == None or header_color == "grey":
         header_color = "0"
     elif type(header_color) == str:
         header_color = header_color.lower()
+        if header_color in possible_colors:
+            header_color = str(possible_colors.index(header_color)+30)
+        else:
+            print(f"Color '{header_color}' not implemented, defaulting to grey.\nPossible colors are: {['grey']+possible_colors}")
+            header_color = "0"
     else:
-        raise ValueError("Parameter 'header_color' needs to be a string.")
-    if header_color == "black":
-        header_color = "30"
-    elif header_color == "red":
-        header_color = "31"
-    elif header_color == "green":
-        header_color = "32"
-    elif header_color == "yellow":
-        header_color = "33"
-    elif header_color == "blue":
-        header_color = "34"
-    elif header_color == "magenta":
-        header_color = "35"
-    elif header_color == "cyan":
-        header_color = "36"
-    elif header_color == "white":
-        header_color = "37"
-    else:
-        header_color = "0"
-
+        raise ValueError(f"Parameter 'header_color' needs to be a string.")
+    #Borders color
     if border_color == None or border_color == "grey":
         border_color = "0"
     elif type(border_color) == str:
         border_color = border_color.lower()
+        if border_color in possible_colors:
+            border_color = str(possible_colors.index(border_color)+30)
+        else:
+            print(f"Color '{border_color}' not implemented, defaulting to grey.\nPossible colors are: {['grey']+possible_colors}")
+            border_color = "0"
     else:
         raise ValueError("Parameter 'border_color' needs to be a string.")
-    if border_color == "black":
-        border_color = "30"
-    elif border_color == "red":
-        border_color = "31"
-    elif border_color == "green":
-        border_color = "32"
-    elif border_color == "yellow":
-        border_color = "33"
-    elif border_color == "blue":
-        border_color = "34"
-    elif border_color == "magenta":
-        border_color = "35"
-    elif border_color == "cyan":
-        border_color = "36"
-    elif border_color == "white":
-        border_color = "37"
-    else:
-        border_color = "0"
+
     for i in range(len(characters)):
         characters[i] = f"\x1b[{border_color}m{characters[i]}\x1b[0m"
 
@@ -127,5 +104,5 @@ if __name__ == "__main__":
                 title="My Table",
                 borders=2,
                 header_color="yellow",
-                border_color="white",
+                border_color="blue",
                 )
