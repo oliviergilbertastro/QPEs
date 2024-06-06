@@ -21,8 +21,10 @@ import sedpy
 import h5py, astropy
 import numpy as np
 import astroquery
+from sedpy.observate import load_filters
+from prospect.utils.obsutils import fix_obs
 
-def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=16):
+def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=18, survey="sdss"):
     """
     pos = (ra,dec)
     """
@@ -43,25 +45,8 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=1
         #assert int(shdus[2].data["SpecObjID"][0]) == cat[0]["specObjID"]
         #redshift = shdus[2].data[0]["z"]
 
-        from sedpy.observate import load_filters
-        from prospect.utils.obsutils import fix_obs
-
         filters = load_filters([f"sdss_{b}0" for b in bands])
-        working_filters = ""
-        for b in bands:
-            try:
-                cat[0][f"cModelMag_{b}"]
-                working_filters += b
-            except:
-                pass
-        print("working_filters:", working_filters)
-        #print("--------------------------------------------------------")
-        #print(type(cat))
-        #print(cat)
-        #print("--------------------------------------------------------")
     else:
-        from sedpy.observate import load_filters
-        from prospect.utils.obsutils import fix_obs
         filters = load_filters([f"sdss_{b}0" for b in bands])
         cat = copy.copy(magnitudes_dict)
 
@@ -186,13 +171,14 @@ def makeAstropyTableFromDictionnary(dict):
         return None
     names = np.array([key for key in dict.keys()])
     data = np.array([val for val in dict.values()])
-    return astropy.table.table.Table(data=data, names=names, dtype=[str, str, float, float, float, float, float, float, float, float, float, float, str, str])
+    dtypes = [type(val) for val in dict.values()]
+    return astropy.table.table.Table(data=data, names=names, dtype=dtypes)
 
 
 if __name__ == "__main__":
     objects = download_data.objects
     QPE_redshifts = paper_data.QPE_redshifts
-    bands_for_each_obj = ["gr", 
+    bands_for_each_obj = [["H","J","Ks"], 
                           "ugriz", 
                           "ugriz", 
                           "ugriz", 
@@ -227,6 +213,7 @@ if __name__ == "__main__":
         None,
         None,
     ]
+    surveys = ["twomass", "sdss", "sdss", "sdss", "sdss", "sdss", "sdss", "sdss", "sdss"]
     for i in range(len(magnitudes_dicts)):
         magnitudes_dicts[i] = makeAstropyTableFromDictionnary(magnitudes_dicts[i])
 
@@ -234,13 +221,19 @@ if __name__ == "__main__":
     if input("Fit objects? [y/n]") == "y":
         #fit_thingamabob((204.46376, 35.79883), redshift=0.07260209)
         objID = int(input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n"))
-        data_release = input("Which data release?")
-        data_release = 18 if data_release == "" else int(data_release)
-        fit_SED(objects[objID], bands=bands_for_each_obj[objID], redshift=QPE_redshifts[objID], data_release=data_release, magnitudes_dict=magnitudes_dicts[objID])
+        if magnitudes_dicts[objID] != None:
+            data_release = "custom" #Not really a data release, just to make file name
+        else:
+            data_release = input("Which data release?")
+            data_release = 18 if data_release == "" else int(data_release)
+        fit_SED(objects[objID], bands=bands_for_each_obj[objID], redshift=QPE_redshifts[objID], data_release=data_release, magnitudes_dict=magnitudes_dicts[objID], survey=surveys[objID])
 
     if input("Read object? [y/n]") == "y":
         #read_thingamabob((204.46376, 35.79883))
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
-        data_release = input("Which data release?")
-        data_release = 18 if data_release == "" else int(data_release)
+        if magnitudes_dicts[objID] != None:
+            data_release = "custom" #Not really a data release, just to read file name
+        else:
+            data_release = input("Which data release? [default=18]")
+            data_release = 18 if data_release == "" else int(data_release)
         read_SED(objects[objID], data_release=data_release)
