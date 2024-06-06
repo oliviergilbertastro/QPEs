@@ -189,8 +189,8 @@ if __name__ == "__main__":
     QPE_redshifts = paper_data.QPE_redshifts
     bands_for_each_obj = [["H","J","Ks"], 
                           "ugriz", 
-                          "ugriz", 
-                          "ugriz", 
+                          ["H","J"], 
+                          ["H","J", "Ks"], 
                           "ugriz", 
                           "ugriz", 
                           "ugriz", 
@@ -210,8 +210,18 @@ if __name__ == "__main__":
          "specObjID": "idk",
          "type": "GALAXY"},
         None,
-        None,
-        None,
+        {"name":"eRO-QPE1",
+         "cModelMag_J": 16.685,
+         "cModelMag_H": 15.759,
+         "cModelMagErr_J": 0.129,
+         "cModelMagErr_H": 0.141,},
+        {"name":"eRO-QPE2",
+         "cModelMag_J": 14.745,
+         "cModelMag_H": 13.692,
+         "cModelMag_Ks": 13.726,
+         "cModelMagErr_J": 0.120,
+         "cModelMagErr_H": 0.114,
+         "cModelMagErr_Ks": 0.211},
         None,
         {"name":"2MASX J0249",
          "cModelMag_u": 17.847,
@@ -228,7 +238,7 @@ if __name__ == "__main__":
         None,
         None,
     ]
-    surveys = ["twomass", "sdss", "sdss", "sdss", "sdss", "sdss", "sdss", "sdss", "sdss"]
+    surveys = ["twomass", "sdss", "twomass", "twomass", "sdss", "sdss", "sdss", "sdss", "sdss"]
     for i in range(len(magnitudes_dicts)):
         magnitudes_dicts[i] = makeAstropyTableFromDictionnary(magnitudes_dicts[i])
 

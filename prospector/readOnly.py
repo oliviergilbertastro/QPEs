@@ -72,42 +72,7 @@ def read_SED(pos, data_release=16):
 
 
 if __name__ == "__main__":
-
-    #This is mainly for GSN069 and its data comes from https://simbad.u-strasbg.fr/simbad/sim-id?protocol=html&Ident=GSN_069&bibdisplay=none
-    magnitudes_dicts = [
-        {"name":"GSN 069",
-         "objID": "idk",
-         "cModelMag_J": 13.579,
-         "cModelMag_H": 12.888,
-         "cModelMag_Ks": 12.748,
-         "cModelMagErr_J": 0.056,
-         "cModelMagErr_H": 0.069,
-         "cModelMagErr_Ks": 0.123,
-         "specObjID": "idk",
-         "type": "GALAXY"},
-        None,
-        None,
-        None,
-        None,
-        {"name":"2MASX J0249",
-         "cModelMag_u": 17.847,
-         "cModelMag_g": 16.715,
-         "cModelMag_r": 16.125,
-         "cModelMag_i": 15.823,
-         "cModelMag_z": 15.592,
-         "cModelMagErr_u": 0.024,
-         "cModelMagErr_g": 0.004,
-         "cModelMagErr_r": 0.004,
-         "cModelMagErr_i": 0.004,
-         "cModelMagErr_z": 0.008},
-        None,
-        None,
-        None,
-    ]
-
-    if input("Read object? [y/n]") == "y":
-        #read_thingamabob((204.46376, 35.79883))
-        objID = int(input(f"Input object ID you want to read [0-{len(download_data.objects)-1}]:\n"))
-        data_release = input("Which data release? If custom magnitudes, enter nothing.")
-        data_release = "custom" if data_release == "" else int(data_release)
-        read_SED(download_data.objects[objID], data_release=data_release)
+    objID = int(input(f"Input object ID you want to read [0-{len(download_data.objects)-1}]:\n"))
+    data_release = input("Which data release? If custom magnitudes, enter nothing.")
+    data_release = "custom" if data_release == "" else int(data_release)
+    read_SED(download_data.objects[objID], data_release=data_release)
