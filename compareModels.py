@@ -313,4 +313,10 @@ if __name__ == "__main__":
         QPE_stellarDensities = np.array(QPE_stellarDensities)
         TDE_mBH = np.array(TDE_mBH)
         TDE_stellarDensities = np.array(TDE_stellarDensities)
+        from utils import print_table
+        print_table(np.array([objects_names, QPE_sersicIndices[:,0], QPE_stellarDensities[:,0], QPE_mBH[:,0]]).T,
+                    header=["Name", "Sérsic index", "Stellar mass density", "Black hole mass"],
+                    space_between_columns=4,
+                    space_between_rows=0,
+                    sides=True)
         plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellarDensities, TDE_sersicIndices, TDE_stellarDensities)

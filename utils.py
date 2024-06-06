@@ -1,6 +1,6 @@
 import numpy as np
 
-def print_table(a, space_between_columns=1, space_between_rows=0, header=None):
+def print_table(a, space_between_columns=1, space_between_rows=0, header=None, sides=False):
     """
     Nicely print out a table
 
@@ -29,7 +29,10 @@ def print_table(a, space_between_columns=1, space_between_rows=0, header=None):
     total_length = np.sum(column_maxes)+(len(column_maxes)-1)*space_between_columns #To include spaces between each column
 
     #Actually start printing table:
-    print("-"*total_length)
+    top_and_bottom_bounds = "-"*total_length
+    if sides:
+        top_and_bottom_bounds = " "+"-"*(total_length+2)+" "
+    print(top_and_bottom_bounds)
     #Print each row:
     for row in range(a.shape[0]):
         row_string = ""
@@ -38,11 +41,20 @@ def print_table(a, space_between_columns=1, space_between_rows=0, header=None):
             if column < a.shape[1]-1:
                 row_string += " "*space_between_columns
         if row == 0 and header != None:
-            row_string = f"\x1b[33m{row_string}\x1b[0m\n"
+            row_string = f"\x1b[33m{row_string}\x1b[0m"
+        if sides:
+            row_string = f"| {row_string} |"
         if row != (a.shape[0]-1):
-            row_string += "\n"*space_between_rows
+            if sides:
+                row_string += f"\n| {' '*(total_length)} |"*space_between_rows
+                if row == 0 and header != None:
+                    row_string += f"\n| {' '*(total_length)} |"
+            else:
+                row_string += "\n"*space_between_rows
+                if row == 0 and header != None:
+                    row_string += "\n"
         print(row_string)
-    print("-"*total_length)
+    print(top_and_bottom_bounds)
 
 if __name__ == "__main__":
-    print_table([["potato", 5178, 13095], ["123", None, 1023]], space_between_columns=4, space_between_rows=0, header=False)
+    print_table([["potato", 5178, 13095], ["123", None, 1023]], space_between_columns=4, space_between_rows=0, header=False, sides=True)
