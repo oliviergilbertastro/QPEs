@@ -1,11 +1,13 @@
 import numpy as np
+from math import floor, ceil
 
-def print_table(a, space_between_columns=1, space_between_rows=0, header=None, sides=False):
+def print_table(a, header=None, title=None, space_between_columns=1, space_between_rows=0, sides=False):
     """
     Nicely print out a table
 
     a: array to print
     header: either an array of column names or a boolean. True -> first row will be header
+    title: string, title that will be centered above the table
     space_between_columns: int, self-explanatory
     space_between_rows: int, self-explanatory
     """
@@ -32,6 +34,11 @@ def print_table(a, space_between_columns=1, space_between_rows=0, header=None, s
     top_and_bottom_bounds = "-"*total_length
     if sides:
         top_and_bottom_bounds = " "+"-"*(total_length+2)+" "
+    print()
+    usable_length = total_length+4 if sides else total_length
+    if title != None:
+        title = floor((usable_length-len(title))/2)*" "+title+ceil((usable_length-len(title))/2)*" "
+        print(f"\x1b[33m{title}\x1b[0m")
     print(top_and_bottom_bounds)
     #Print each row:
     for row in range(a.shape[0]):
@@ -55,6 +62,12 @@ def print_table(a, space_between_columns=1, space_between_rows=0, header=None, s
                     row_string += "\n"
         print(row_string)
     print(top_and_bottom_bounds)
+    print()
 
 if __name__ == "__main__":
-    print_table([["potato", 5178, 13095], ["123", None, 1023]], space_between_columns=4, space_between_rows=0, header=False, sides=True)
+    print_table([["potato", 5178, 13095], ["123", None, 1023]],
+                space_between_columns=4,
+                space_between_rows=0,
+                header=False,
+                title="My Table",
+                sides=True)
