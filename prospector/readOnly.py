@@ -98,9 +98,6 @@ if __name__ == "__main__":
     if input("Read object? [y/n]") == "y":
         #read_thingamabob((204.46376, 35.79883))
         objID = int(input(f"Input object ID you want to read [0-{len(download_data.objects)-1}]:\n"))
-        if magnitudes_dicts[objID] != None:
-            data_release = "custom" #Not really a data release, just to read file name
-        else:
-            data_release = input("Which data release? [default=18]")
-            data_release = 18 if data_release == "" else int(data_release)
+        data_release = input("Which data release? If custom magnitudes, enter nothing.")
+        data_release = "custom" if data_release == "" else int(data_release)
         read_SED(download_data.objects[objID], data_release=data_release)

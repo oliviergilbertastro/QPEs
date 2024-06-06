@@ -54,7 +54,8 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=1
         else:
             raise ValueError(f"Survey {survey} is not implemented yet.")
         cat = copy.copy(magnitudes_dict)
-
+    for b in bands:
+        print(b, cat[0][f"cModelMag_{b}"])
     maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in bands])
     magerr = np.array([cat[0][f"cModelMagErr_{b}"] for b in bands])
     magerr = np.hypot(magerr, 0.05)
@@ -212,7 +213,20 @@ if __name__ == "__main__":
         None,
         None,
         None,
-        None,
+        {"name":"2MASX J0249",
+         "objID": "idk",
+         "cModelMag_u": 17.847,
+         "cModelMag_g": 16.715,
+         "cModelMag_r": 16.125,
+         "cModelMag_i": 15.823,
+         "cModelMag_z": 15.592,
+         "cModelMagErr_u": 0.024,
+         "cModelMagErr_g": 0.004,
+         "cModelMagErr_r": 0.004,
+         "cModelMagErr_i": 0.004,
+         "cModelMagErr_z": 0.008,
+         "specObjID": "idk",
+         "type": "GALAXY"},
         None,
         None,
         None,
@@ -235,9 +249,6 @@ if __name__ == "__main__":
     if input("Read object? [y/n]") == "y":
         #read_thingamabob((204.46376, 35.79883))
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
-        if magnitudes_dicts[objID] != None:
-            data_release = "custom" #Not really a data release, just to read file name
-        else:
-            data_release = input("Which data release? [default=18]")
-            data_release = 18 if data_release == "" else int(data_release)
+        data_release = input("Which data release? If custom magnitudes, enter nothing.")
+        data_release = "custom" if data_release == "" else int(data_release)
         read_SED(objects[objID], data_release=data_release)
