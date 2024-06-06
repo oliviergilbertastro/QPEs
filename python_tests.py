@@ -18,3 +18,5 @@ test.var["potato"] = 2
 print(var)
 print(var2)
 print(res)
+
+print("\x1b[33mYELLOW\x1b[0m")

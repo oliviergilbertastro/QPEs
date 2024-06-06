@@ -71,15 +71,18 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=1
     #model_params.update(TemplateLibrary["nebular"]) #This is to add nebular emission lines (I don't care about that)
     #model_params.update(TemplateLibrary["continuity_psb_sfh"]) #This is to add additional parameters
     model_params["zred"]["init"] = obs["redshift"]
-    print("-------------------------------------")
-    for k in model_params.keys():
-        string = "free" if model_params[k]["isfree"] else "fixed"
-        print(f"{k}: {string}")
-    print("-------------------------------------")
     #Let's fix some of the parameters:
     model_params["dust2"]["isfree"] = False
     #model_params["tage"]["isfree"] = False
     model_params["tau"]["isfree"] = False
+
+
+    print("-------------------------------------")
+    for k in model_params.keys():
+        string = "\x1b[32mfree\x1b[0m" if model_params[k]["isfree"] else "\x1b[31mfixed\x1b[0m"
+        print(f"{k}: {string}")
+    print("-------------------------------------")
+    
 
 
     model = SpecModel(model_params)
