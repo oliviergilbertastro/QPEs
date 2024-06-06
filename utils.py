@@ -1,7 +1,7 @@
 import numpy as np
 from math import floor, ceil
 
-def print_table(a, header=None, title=None, space_between_columns=1, space_between_rows=0, sides=False):
+def print_table(a, header=None, title=None, space_between_columns=1, space_between_rows=0, sides=True):
     """
     Nicely print out a table
 
