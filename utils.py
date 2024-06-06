@@ -1,7 +1,7 @@
 import numpy as np
 from math import floor, ceil
 
-def print_table(a, header=None, title=None, space_between_columns=1, space_between_rows=0, borders=1, header_color="yellow", border_color="grey"):
+def print_table(a, header=None, title=None, space_between_columns=2, space_between_rows=0, borders=1, header_color="yellow", border_color="grey"):
     """
     Nicely print out a table
 
@@ -27,7 +27,10 @@ def print_table(a, header=None, title=None, space_between_columns=1, space_betwe
     elif borders == 1 or borders == True or borders == "normal":
         characters = ["─","│","┌","┐","└","┘"]
     else:
-        raise ValueError(f"Border style '{borders}' does not exist, use the keyword 'none', 'normal' or 'bold'.")
+        if type(borders) == str and len(borders) == 1:
+            characters = [*(borders*6)]
+        else:
+            raise ValueError(f"Border style '{borders}' does not exist, use the keyword 'none', 'normal' or 'bold'.")
     
     possible_colors = ["black","red","green","yellow","blue","magenta","cyan","white"]
     #Initialize the colors:
@@ -97,12 +100,20 @@ def print_table(a, header=None, title=None, space_between_columns=1, space_betwe
     print()
 
 if __name__ == "__main__":
-    print_table([["potato", 5178, 13095], ["123", None, 1023],["potato", 5178, 13012495], ["123", 123, 1024443],["potaawddwto", 5178, 13095], ["123", "something", 1023],["potato", 5178, 13095], ["123", None, 1023]],
+    data = np.array([["potato", 5178, 13095, 3151],
+            ["123", None, 1023, 51515],
+            ["potato", 5178, 13012495, 51515],
+            ["123", 123, 1024443, 51515],
+            ["potaawddwto", 5178, 13095, 51515],
+            ["123", "something", 1023, 51515],
+            ["potato", 5178, 13095, 51515],
+            ["123", None, 1023, 51515]])
+    print_table(data,
                 space_between_columns=4,
                 space_between_rows=0,
-                header=["Column1", "Column2", "Column3"],
+                header=[f"Column{i}" for i in range(data.shape[1])],
                 title="My Table",
-                borders=2,
+                borders="bold",
                 header_color="yellow",
                 border_color="blue",
                 )
