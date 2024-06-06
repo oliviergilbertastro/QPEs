@@ -319,5 +319,5 @@ if __name__ == "__main__":
                     title="QPE hosts properties",
                     space_between_columns=4,
                     space_between_rows=0,
-                    sides=True)
+                    borders=2)
         plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellarDensities, TDE_sersicIndices, TDE_stellarDensities)
