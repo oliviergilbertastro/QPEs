@@ -31,15 +31,15 @@ def print_table(a, header=None, title=None, space_between_columns=1, space_betwe
     total_length = np.sum(column_maxes)+(len(column_maxes)-1)*space_between_columns #To include spaces between each column
 
     #Actually start printing table:
-    top_and_bottom_bounds = "-"*total_length
+    top_and_bottom_bounds = ("─"*total_length, "─"*total_length)
     if sides:
-        top_and_bottom_bounds = " "+"-"*(total_length+2)+" "
+        top_and_bottom_bounds = ("┌"+"─"*(total_length+2)+"┐", "└"+"─"*(total_length+2)+"┘")
     print()
     usable_length = total_length+4 if sides else total_length
     if title != None:
         title = floor((usable_length-len(title))/2)*" "+title+ceil((usable_length-len(title))/2)*" "
         print(f"\x1b[33m{title}\x1b[0m")
-    print(top_and_bottom_bounds)
+    print(top_and_bottom_bounds[0])
     #Print each row:
     for row in range(a.shape[0]):
         row_string = ""
@@ -50,18 +50,18 @@ def print_table(a, header=None, title=None, space_between_columns=1, space_betwe
         if row == 0 and header != None:
             row_string = f"\x1b[33m{row_string}\x1b[0m"
         if sides:
-            row_string = f"| {row_string} |"
+            row_string = f"│ {row_string} │"
         if row != (a.shape[0]-1):
             if sides:
-                row_string += f"\n| {' '*(total_length)} |"*space_between_rows
+                row_string += f"\n│ {' '*(total_length)} │"*space_between_rows
                 if row == 0 and header != None:
-                    row_string += f"\n| {' '*(total_length)} |"
+                    row_string += f"\n│ {' '*(total_length)} │"
             else:
                 row_string += "\n"*space_between_rows
                 if row == 0 and header != None:
                     row_string += "\n"
         print(row_string)
-    print(top_and_bottom_bounds)
+    print(top_and_bottom_bounds[1])
     print()
 
 if __name__ == "__main__":

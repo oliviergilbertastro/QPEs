@@ -314,8 +314,8 @@ if __name__ == "__main__":
         TDE_mBH = np.array(TDE_mBH)
         TDE_stellarDensities = np.array(TDE_stellarDensities)
         from utils import print_table
-        print_table(np.array([objects_names, QPE_sersicIndices[:,0], QPE_stellarDensities[:,0], QPE_mBH[:,0]]).T,
-                    header=["Name", "Sérsic index", "log Stellar mass density", "Black hole mass"],
+        print_table(np.array([objects_names, QPE_sersicIndices[:,0], QPE_stellarDensities[:,0], np.around(np.log10(QPE_mBH[:,0]), 4)]).T,
+                    header=["Name", "Sérsic index", "log Stellar mass density", "log M_BH"],
                     title="QPE hosts properties",
                     space_between_columns=4,
                     space_between_rows=0,
