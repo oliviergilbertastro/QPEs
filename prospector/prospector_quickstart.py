@@ -47,7 +47,12 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=1
 
         filters = load_filters([f"sdss_{b}0" for b in bands])
     else:
-        filters = load_filters([f"sdss_{b}0" for b in bands])
+        if survey == "sdss":
+            filters = load_filters([f"sdss_{b}0" for b in bands])
+        elif survey == "twomass":
+            filters = load_filters([f"twomass_{b}" for b in bands])
+        else:
+            raise ValueError(f"Survey {survey} is not implemented yet.")
         cat = copy.copy(magnitudes_dict)
 
     maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in bands])
@@ -192,16 +197,12 @@ if __name__ == "__main__":
     magnitudes_dicts = [
         {"name":"GSN 069",
          "objID": "idk",
-         "cModelMag_u": 0,
-         "cModelMag_g": 17.563261,
-         "cModelMag_r": 15.275,
-         "cModelMag_i": 0,
-         "cModelMag_z": 0,
-         "cModelMagErr_u": 0,
-         "cModelMagErr_g": 0.003699,
-         "cModelMagErr_r": 0,
-         "cModelMagErr_i": 0,
-         "cModelMagErr_z": 0,
+         "cModelMag_J": 13.579,
+         "cModelMag_H": 12.888,
+         "cModelMag_Ks": 12.748,
+         "cModelMagErr_J": 0.056,
+         "cModelMagErr_H": 0.069,
+         "cModelMagErr_Ks": 0.123,
          "specObjID": "idk",
          "type": "GALAXY"},
         None,
