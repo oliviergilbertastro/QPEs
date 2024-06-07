@@ -73,9 +73,9 @@ def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=1
     #model_params.update(TemplateLibrary["continuity_psb_sfh"]) #This is to add additional parameters
     model_params["zred"]["init"] = obs["redshift"]
     #Let's fix some of the parameters:
-    model_params["dust2"]["isfree"] = False
+    #model_params["dust2"]["isfree"] = False
     #model_params["tage"]["isfree"] = False
-    model_params["tau"]["isfree"] = False
+    #model_params["tau"]["isfree"] = False
 
 
     print("-------------------------------------")
@@ -193,7 +193,7 @@ if __name__ == "__main__":
                           ["H","J", "Ks"], 
                           "ugriz", 
                           "ugriz", 
-                          "ugriz", 
+                          ["H","J"], 
                           "ugriz", 
                           "ugriz",
                           ]
@@ -234,18 +234,29 @@ if __name__ == "__main__":
          "cModelMagErr_r": 0.004,
          "cModelMagErr_i": 0.004,
          "cModelMagErr_z": 0.008},
-        None,
+        {"name":"eRO-QPE3",
+         "cModelMag_J": 16.274,
+         "cModelMag_H": 15.770,
+         "cModelMagErr_J": 0.112,
+         "cModelMagErr_H": 0.142,},
         None,
         None,
     ]
-    surveys = ["twomass", "sdss", "twomass", "twomass", "sdss", "sdss", "sdss", "sdss", "sdss"]
+    surveys = ["twomass", "sdss", "twomass", "twomass", "sdss", "sdss", "twomass", "sdss", "sdss"]
     for i in range(len(magnitudes_dicts)):
         magnitudes_dicts[i] = makeAstropyTableFromDictionnary(magnitudes_dicts[i])
 
     #print(magnitudes_dicts[0]["name"])
     if input("Fit objects? [y/n]") == "y":
         #fit_thingamabob((204.46376, 35.79883), redshift=0.07260209)
-        objID = int(input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n"))
+        objID = input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n")
+        if objID == "":
+            print("Choose an object in this list:")
+            for i in range(len(objects)):
+                print(f"{i}: {download_data.objects_names[i]}")
+            objID = int(input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n"))
+        else:
+            objID = int(objID)
         if magnitudes_dicts[objID] != None:
             data_release = "custom" #Not really a data release, just to make file name
         else:
