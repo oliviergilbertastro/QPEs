@@ -72,7 +72,15 @@ def read_SED(pos, data_release=16):
 
 
 if __name__ == "__main__":
-    objID = int(input(f"Input object ID you want to read [0-{len(download_data.objects)-1}]:\n"))
+    #objID = int(input(f"Input object ID you want to read [0-{len(download_data.objects)-1}]:\n"))
+    objID = input(f"Input object ID you want to read [0-{len(download_data.objects)-1}] (hit enter for more details):\n")
+    if objID == "":
+        print("Choose an object in this list:")
+        for i in range(len(download_data.objects)):
+            print(f"{i}: {download_data.objects_names[i]}")
+        objID = int(input(f"Input object ID you want to read [0-{len(download_data.objects)-1}]:\n"))
+    else:
+        objID = int(objID)
     data_release = input("Which data release? If custom magnitudes, enter nothing.")
     data_release = "custom" if data_release == "" else int(data_release)
     read_SED(download_data.objects[objID], data_release=data_release)
