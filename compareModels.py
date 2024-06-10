@@ -263,7 +263,6 @@ if __name__ == "__main__":
         QPE_stellar_masses = stellarMass_mBH(QPE_mBH)
         QPE_stellar_masses[:,1:] = np.ones_like(QPE_stellar_masses[:,1:]) #Make all uncertainties zero as they are currently not calculated properly
         QPE_stellar_masses = list(QPE_stellar_masses)
-        print(np.log10(QPE_stellar_masses))
         for i in range(len(QPE_stellar_masses)):
             QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
             #if QPE_stellar_masses_litterature[i] == None:      #This if statement is useful to compare the litterature stellar mass densities to the relation
@@ -340,14 +339,12 @@ if __name__ == "__main__":
         used_QPE_mBH = np.array(used_QPE_mBH)
         QPE_sersicIndices = np.array(QPE_sersicIndices)
         QPE_stellarDensities = np.array(QPE_stellarDensities)
+        logQPE_stellar_masses = np.log10(QPE_stellar_masses)
         TDE_mBH = np.array(TDE_mBH)
         TDE_stellarDensities = np.array(TDE_stellarDensities)
         from utils import print_table
-        print(QPE_stellarDensities[:,0])
-        print(used_QPE_mBH[:,0])
-        print(QPE_sersicIndices[:,0])
-        print_table(np.array([used_objNames, QPE_sersicIndices[:,0], QPE_stellarDensities[:,0], np.around(np.log10(used_QPE_mBH[:,0]), 4)]).T,
-                    header=["Name", "Sérsic index", "log Stellar mass density", "log M_BH"],
+        print_table(np.array([used_objNames, QPE_sersicIndices[:,0], logQPE_stellar_masses[:,0], QPE_stellarDensities[:,0], np.around(np.log10(used_QPE_mBH[:,0]), 4)]).T,
+                    header=["Name", "Sérsic index", "log Stellar mass", "log Surface mass density", "log M_BH"],
                     title="QPE hosts properties",
                     space_between_columns=4,
                     space_between_rows=0,
