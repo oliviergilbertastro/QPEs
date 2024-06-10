@@ -24,12 +24,16 @@ def loadRun(ra_dec, type="AGN", band="i"):
     
     if band in ["g", "G"]:
         band = "g"
+        central_wav = 4730 #\AA
     elif band in ["r", "R"]:
         band = "r"
+        central_wav = 6420 #\AA
     elif band in ["i", "I"]:
         band = "i"
+        central_wav = 7840 #\AA
     elif band in ["z", "Z"]:
         band = "z"
+        central_wav = 9260 #\AA
     else:
         raise ValueError(f"band {band} is not a supported filter band")
 
@@ -45,7 +49,15 @@ def loadRun(ra_dec, type="AGN", band="i"):
         print("No informations on the original fitting parameters used was stored! Running the fit again will solve this.")
 
     print(fitting_run_result.final_result_galaxy[0])
-    print("Flux of galaxy:", fitting_run_result.final_result_galaxy[0]['flux_within_frame'])
+    print("Flux of galaxy:", fitting_run_result.final_result_galaxy[0]['flux_sersic_model'])
+    flux_density = fitting_run_result.final_result_galaxy[0]['flux_sersic_model'] #erg/s/cm2/Hz
+    # We want to convert this to a flux in erg/s/cm2
+    frequency = 299792458/(central_wav/(1E10))
+    flux = flux_density*frequency
+    #Calculate a magnitude:
+    mag = fitting_run_result.zp-2.5*np.log10(flux)
+    print("Magnitude of galaxy:", mag)
+    print(fitting_run_result.zp)
     print("Magnitude of galaxy:", fitting_run_result.final_result_galaxy[0]['magnitude'])
     #fitting_run_result.run_diag() #dont really care about this one, so leave it commented out unless it suddenly becomes interesting
     #fitting_run_result.model_plot() #same here
