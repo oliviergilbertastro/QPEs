@@ -20,14 +20,14 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     
     fitting_run_results = []
     types = []
-    for type in models:
-        picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}.pkl'
+    for type1 in models:
+        picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type1}_{band}.pkl'
         try:
             fitting_run_results.append(pickle.load(open("galight_fitruns/"+picklename,'rb')))  #fitting_run_result is actually the fit_run in galightFitting.py.
-            types.append(type)
+            types.append(type1)
         except:
             if verbose:
-                print(f"Model {type} has not been computed yet. Skipping it.")
+                print(f"Model {type1} has not been computed yet. Skipping it.")
 
     bics = []
     if verbose:
@@ -237,7 +237,7 @@ def plot_sersicIndex_surfaceStellarMassDensity(QPEsersicIndices, QPEstellarDensi
 
 
 #Import all the data from another file for convenience
-from paper_data import TDE_mBH, TDE_sersicIndices, TDE_stellarDensities, QPE_redshifts, TDE_redshifts, QPE_mBH, QPE_stellar_masses, TDE_stellar_masses
+from paper_data import *
 
 
 #filter bands used to fit each object to simplify the user input, some other bands were also fitted and/or could be fitted, but these ones work well
@@ -245,8 +245,31 @@ QPE_bands_list = ["i", "i", "i", "i", "z", "i", "i", "r", "r"]
 TDE_bands_list = ["r", "r", "g",]
 
 from download_data import objects, comparisons, objects_names, comparisons_names
+from stellarMassblackHoleMass import stellarMass_mBH, log10_stellarMass_mBH
 
 if __name__ == "__main__":
+
+    sMass_option = input("Which stellar mass method do you want to use?\n    1. Litterature\n    2. Litterature + SDSS prospector\n    3. BH mass relation\n")
+    try:
+        sMass_option = int(sMass_option)
+    except:
+        sMass_option = 1
+    
+    if sMass_option == 1:
+        QPE_stellar_masses = QPE_stellar_masses_litterature
+    elif sMass_option == 2:
+        QPE_stellar_masses = QPE_stellar_masses_litterature_sdssProspector
+    elif sMass_option == 3:
+        QPE_stellar_masses = stellarMass_mBH(QPE_mBH)
+        QPE_stellar_masses[:,1:] = np.ones_like(QPE_stellar_masses[:,1:]) #Make all uncertainties zero as they are currently not calculated properly
+        QPE_stellar_masses = list(QPE_stellar_masses)
+        for i in range(len(QPE_stellar_masses)):
+            QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
+            #if QPE_stellar_masses_litterature[i] == None:      #This if statement is useful to compare the litterature stellar mass densities to the relation
+            #    QPE_stellar_masses[i] = None
+    else:
+        raise ValueError("This is not a valide option.")
+
     if input("See options to compare QPE and TDE fits? [y/n]") == "y":
         if input("Compare fits for a specific QPE host galaxy? [y/n]") == "y":
             objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
@@ -282,6 +305,9 @@ if __name__ == "__main__":
         QPE_sersicIndices = np.array(QPE_sersicIndices)
         plot_sersicIndex_mBH(QPE_mBH, QPE_sersicIndices, TDE_mBH, TDE_sersicIndices)
 
+
+
+
     if input("Plot log(mBH)-Stellar mass surface density for host galaxies comparison? [y/n]") == "y":
         QPE_mBH = np.array(QPE_mBH)
         used_QPE_mBH = [] #only temporary until all QPE_stellarMasses are found, then this will be the same as QPE_mBH
@@ -300,6 +326,7 @@ if __name__ == "__main__":
     if input("Plot Sérsic index - Stellar mass surface density for host galaxies comparison? [y/n]") == "y":
         QPE_mBH = np.array(QPE_mBH)
         used_QPE_mBH = [] #only temporary until all QPE_stellarMasses are found, then this will be the same as QPE_mBH
+        used_objNames = []
         QPE_sersicIndices = []
         QPE_stellarDensities = []
         for i in range(len(objects)):
@@ -308,13 +335,17 @@ if __name__ == "__main__":
                 QPE_stellarDensities.append(stellarDensity)
                 QPE_sersicIndices.append(sersic)
                 used_QPE_mBH.append(QPE_mBH[i])
+                used_objNames.append(objects_names[i])
         used_QPE_mBH = np.array(used_QPE_mBH)
         QPE_sersicIndices = np.array(QPE_sersicIndices)
         QPE_stellarDensities = np.array(QPE_stellarDensities)
         TDE_mBH = np.array(TDE_mBH)
         TDE_stellarDensities = np.array(TDE_stellarDensities)
         from utils import print_table
-        print_table(np.array([objects_names, QPE_sersicIndices[:,0], QPE_stellarDensities[:,0], np.around(np.log10(QPE_mBH[:,0]), 4)]).T,
+        print(QPE_stellarDensities[:,0])
+        print(used_QPE_mBH[:,0])
+        print(QPE_sersicIndices[:,0])
+        print_table(np.array([used_objNames, QPE_sersicIndices[:,0], QPE_stellarDensities[:,0], np.around(np.log10(used_QPE_mBH[:,0]), 4)]).T,
                     header=["Name", "Sérsic index", "log Stellar mass density", "log M_BH"],
                     title="QPE hosts properties",
                     space_between_columns=4,
