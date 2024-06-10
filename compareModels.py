@@ -263,6 +263,7 @@ if __name__ == "__main__":
         QPE_stellar_masses = stellarMass_mBH(QPE_mBH)
         QPE_stellar_masses[:,1:] = np.ones_like(QPE_stellar_masses[:,1:]) #Make all uncertainties zero as they are currently not calculated properly
         QPE_stellar_masses = list(QPE_stellar_masses)
+        print(np.log10(QPE_stellar_masses))
         for i in range(len(QPE_stellar_masses)):
             QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
             #if QPE_stellar_masses_litterature[i] == None:      #This if statement is useful to compare the litterature stellar mass densities to the relation

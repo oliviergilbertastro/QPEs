@@ -22,19 +22,22 @@ def stellarMass_mBH(mBH):
     '''
     Calculate the stellar Mass (in solar masses) from the black hole mass (in solar masses)
     '''
-    if mBH == None:
-        return None
-    if type(mBH) == int or type(mBH) == float:
-        return 10**(log10_stellarMass_mBH(np.log10(mBH)))
-    else:
-        #Propagate the uncertainties
-        val = np.log10(mBH[0])
-        lo = mBH[1]/(mBH[0]*np.log(10))
-        hi = mBH[2]/(mBH[0]*np.log(10))
+    if False:
+        if mBH == None:
+            return None
+        if type(mBH) == int or type(mBH) == float:
+            return 10**(log10_stellarMass_mBH(np.log10(mBH)))
+        else:
+            #Propagate the uncertainties
+            step1 = np.log10(mBH[0])
+            lo = mBH[1]/(mBH[0]*np.log(10))
+            hi = mBH[2]/(mBH[0]*np.log(10))
 
-        val = (val-res[0])/1.12
+            step2 = (step1-res[0])/1.12 #Let's consider no uncertainty on res[0]
+            lo = np.abs(step2)*np.sqrt(()**2+()**2)
         
         return (10**(log10_stellarMass_mBH(np.log10(mBH[0]))), )
+    return 10**(log10_stellarMass_mBH(np.log10(mBH)))
 
 if __name__ == "__main__":
     print(res)

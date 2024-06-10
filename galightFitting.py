@@ -64,6 +64,7 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
 
         fov_image = img[1].data
         header = img[1].header
+        print(header)
         exp =  astro_tools.read_fits_exp(img[0].header)  #Read the exposure time 
         wht = wht_img[1].data
         mean_wht = exp * (pixel_scale)**2  #The drizzle information is used to derive the mean WHT value.
