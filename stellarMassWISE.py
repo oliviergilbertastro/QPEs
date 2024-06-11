@@ -52,6 +52,7 @@ def getStarMass_W1_W2(M_W1, M_W2, returnLog=False):
 
 #WISE DATA FOR EACH OBJECT:
 from download_data import objects_names
+from utils import print_table
 
 #Dictionnary of magnitudes (and their uncertainties)
 wise_mags = {
@@ -78,10 +79,46 @@ sigma_wise_mags = {
     "AT 2019qiz":       {"W1":0.024,"W2":0.024},
     }
 
+    
+
+#Get apparent magnitudes:
+w1_mags = []
+w2_mags = []
+w1_mags_unc = []
+w2_mags_unc = []
+for i in range(len(wise_mags)):
+    w1_mags.append(wise_mags[objects_names[i]]["W1"])
+    w2_mags.append(wise_mags[objects_names[i]]["W2"])
+    w1_mags_unc.append(sigma_wise_mags[objects_names[i]]["W1"])
+    w2_mags_unc.append(sigma_wise_mags[objects_names[i]]["W2"])
+#w1_mags, w2_mags, w1_mags_unc, w2_mags_unc = np.array(w1_mags), np.array(w2_mags), np.array(w1_mags_unc), np.array(w2_mags_unc)
+
+#Get absolute magnitudes:
+from ned_wright_cosmology import calculate_cosmo
+from paper_data import QPE_redshifts
+distances = []
+w1_abs_mags = []
+w2_abs_mags = []
+
+for i in range(len(wise_mags)):
+    distances.append(calculate_cosmo(QPE_redshifts[i])["DL_Mpc"])
+    w1_abs_mags.append(w1_mags[i]-2.5*np.log10((distances[i]*1E6/10)**2))
+    w2_abs_mags.append(w2_mags[i]-2.5*np.log10((distances[i]*1E6/10)**2))
+
+
+#Calculate stellar masses:
+stellarMasses_WISE = []
+for i in range(len(wise_mags)):
+    sm = getStarMass_W1_W2(w1_abs_mags[i], w2_abs_mags[i])
+    stellarMasses_WISE.append(sm)
+
 if __name__ == "__main__":
-    lw1s = 10**(np.linspace(7,12,100))
-    mw1s = getMW1(lw1s)
-    plt.plot(np.log10(lw1s), getStarMass_W1(mw1s, returnLog=True), "--")
-    plt.xlabel(r"$\log(L_\mathrm{W1})$ [$L_\odot$]", fontsize=16)
-    plt.ylabel(r"$\log(M_\star)$ [$M_\odot$]", fontsize=16)
-    plt.show()
+    print_table(np.array([objects_names, np.around(distances, 2), np.around(w1_abs_mags, 2), w1_mags_unc, np.around(w2_abs_mags, 2), w2_mags_unc, np.around(np.log10(stellarMasses_WISE), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="WISE magnitudes", borders=2)
+    if False:
+        lw1s = 10**(np.linspace(7,12,100))
+        mw1s = getMW1(lw1s)
+        print(mw1s)
+        plt.plot(np.log10(lw1s), getStarMass_W1(mw1s, returnLog=True), "--")
+        plt.xlabel(r"$\log(L_\mathrm{W1})$ [$L_\odot$]", fontsize=16)
+        plt.ylabel(r"$\log(M_\star)$ [$M_\odot$]", fontsize=16)
+        plt.show()
