@@ -6,12 +6,12 @@ DOWNLOADS THE NECESSARY FITS FILES (IMAGES) IN THE GRIZ BANDS
 import requests
 from tqdm import tqdm
 
-def get_file(pos, filenumber, size=512, pixscale=0.262):
+def get_file(pos, filenumber, size=512, pixscale=0.262, band="i"):
     ra, dec = pos
-    url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&size={size}&layer=ls-dr10&pixscale={pixscale}'
+    url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&size={size}&layer=ls-dr10&pixscale={pixscale}&bands={band}'
     #url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&layer=ls-dr10'
     r = requests.get(url)
-    open(r'data/images/object'+str(filenumber)+r'.fits' , 'wb').write(r.content)
+    open(r'data/images/object'+str(filenumber)+f"_{band}"+r'.fits' , 'wb').write(r.content)
 
 #List of objects' RA and DEC to download
 #The ones that are commented out are replaced by a more accurate WCS position to their left
@@ -56,4 +56,4 @@ comparisons_names = [
 
 if __name__ == "__main__":
     for i in tqdm(range(len(objects))):
-        get_file(objects[i], i, size=1024, pixscale=0.262)
+        get_file(objects[i], i, size=1024, pixscale=0.262, band=input("Which band do you want to download? ['griz']"))

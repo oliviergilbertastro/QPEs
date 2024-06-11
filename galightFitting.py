@@ -73,7 +73,9 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
         wht = wht_img[1].data
         mean_wht = exp * (pixel_scale)**2  #The drizzle information is used to derive the mean WHT value.
         exp_map = exp * wht/mean_wht  #Derive the exposure time map for each pixel
-
+        plt.imshow(exp_map)
+        plt.title("Exposure map")
+        plt.show()
     elif survey == "PANSTARRS":
         ax1 = plt.subplot(211)
         ax2 = plt.subplot(212, sharex=ax1, sharey=ax1)
@@ -92,6 +94,23 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
             exp_img = pyfits.open(exp_path)
             exp_map = exp_img[0].data
             #print(exp_img[0].header)
+
+    elif survey == "COADDED_DESI":
+        
+        band_index = ["g","r","i","z"].index(band)
+        print(band_index)
+        fov_image = (img[0].data)#[:,:,band_index]
+        plt.imshow(fov_image)
+        plt.show()
+        header = img[0].header
+        for i in range(len(img)):
+            try:
+                print(img[i].header)
+            except:
+                print("No header info")
+        exp =  1  #Read the exposure time
+        exp_map = exp
+
 
     #data_process = DataProcess(fov_image = fov_image, target_pos = [1432., 966.], pos_type = 'pixel', header = header,
     #                        rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)  #zp use 27.0 for convinence.
@@ -120,8 +139,9 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
     print('zero point:', data_process.zp) #zp is in the AB system and should be 22.5: https://www.legacysurvey.org/svtips/
     print('kwargs: ', data_process.arguments)
     print('---------------------------------------------------')
-
-    if PSF_pos_list == None:
+    if PSF_pos_list == None and survey == "COADDED_DESI":
+        data_process.find_PSF(radius = 30, user_option = True)  #Try this line out!
+    elif PSF_pos_list == None:
         data_process.find_PSF(radius = 30, user_option = True, threshold=20000)  #Try this line out!
     else:
         data_process.find_PSF(radius = 30, PSF_pos_list = PSF_pos_list, pos_type="wcs", user_option=True)

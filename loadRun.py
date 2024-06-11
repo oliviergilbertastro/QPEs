@@ -50,7 +50,7 @@ def loadRun(ra_dec, type="AGN", band="i"):
 
     print(fitting_run_result.final_result_galaxy[0])
     print("Flux of galaxy:", fitting_run_result.final_result_galaxy[0]['flux_sersic_model'])
-    flux_density = fitting_run_result.final_result_galaxy[0]['flux_sersic_model'] #erg/s/cm2/Hz
+    flux_density = copy.copy(fitting_run_result.final_result_galaxy[0]['flux_sersic_model']) #erg/s/cm2/Hz
     # We want to convert this to a flux in erg/s/cm2
     frequency = 299792458/(central_wav/(1E10))
     flux = flux_density*frequency
@@ -75,6 +75,9 @@ def loadRun(ra_dec, type="AGN", band="i"):
     galaxy_list = fitting_run_result.image_host_list
     ps_list = fitting_run_result.image_ps_list
     galaxy_total_image = np.zeros_like(galaxy_list[0])
+    print("Number of galaxies:", len(galaxy_list))
+    print("Number of point sources:", len(ps_list))
+
     for i in range(len(galaxy_list)):
         galaxy_total_image = galaxy_total_image+galaxy_list[i]
     for i in range(len(ps_list)):
@@ -97,29 +100,66 @@ def loadRun(ra_dec, type="AGN", band="i"):
         label_list_1d = ['data', 'model', 'Sérsic']
     symbol = "+" if ra_dec[1] > 0 else ""
     #Sanity check to verify that galight DOES give us the Half-light Sérsic radius in arcsec (")
-    chain = fitting_run_result.samples_mcmc
-    halfLightSersicRadius = np.percentile(chain[:, 0],50)
-    shapeOfImage = flux_list_2d[1].shape
-    smallSquareSize = int(np.round(halfLightSersicRadius/np.sqrt(2)/0.262))
-    bigSquareSize = int(np.round(halfLightSersicRadius/0.262))
-    print("Square sizes:", smallSquareSize, bigSquareSize)
-    smallFlux = np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-smallSquareSize:int(shapeOfImage[0]/2)+smallSquareSize,int(shapeOfImage[0]/2)-smallSquareSize:int(shapeOfImage[0]/2)+smallSquareSize])
-    bigFlux = np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize,int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize])
-    smallDensity = smallFlux/(2*smallSquareSize)**2
-    bigDensity = bigFlux/(2*bigSquareSize)**2
-    densityInsideCutout = (bigFlux-smallFlux)/((2*bigSquareSize)**2-(2*smallSquareSize)**2)
+    #chain = fitting_run_result.samples_mcmc
+    #halfLightSersicRadius = np.percentile(chain[:, 0],50)
+    #shapeOfImage = flux_list_2d[1].shape
+    ##smallSquareSize = int(np.round(halfLightSersicRadius/np.sqrt(2)/0.262))
+    #bigSquareSize = int(np.round(halfLightSersicRadius/0.262))
+    #print("Square sizes:", smallSquareSize, bigSquareSize)
+    #smallFlux = np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-smallSquareSize:int(shapeOfImage[0]/2)+smallSquareSize,int(shapeOfImage[0]/2)-smallSquareSize:int(shapeOfImage[0]/2)+smallSquareSize])
+    #bigFlux = np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize,int(shapeOfImage[0]/2)-bigSquareSize:int(shapeOfImage[0]/2)+bigSquareSize])
+    #smallDensity = smallFlux/(2*smallSquareSize)**2
+    #bigDensity = bigFlux/(2*bigSquareSize)**2
+    #densityInsideCutout = (bigFlux-smallFlux)/((2*bigSquareSize)**2-(2*smallSquareSize)**2)
 
-    fluxInsideRadius = smallFlux + (halfLightSersicRadius/0.262)**2*(np.pi-2)*densityInsideCutout
+    #fluxInsideRadius = smallFlux + (halfLightSersicRadius/0.262)**2*(np.pi-2)*densityInsideCutout
     
     #Calculated analytically an approximation that the flux in the Sérsic radius is around (pi/4)*smallFlux+(2/pi)*bigFlux
     #print("Total flux:", np.sum(flux_list_2d[1]))
     #print(f"Flux inside a {squareSize}x{squareSize} square centered:", np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-squareSize:int(shapeOfImage[0]/2)+squareSize,int(shapeOfImage[0]/2)-squareSize:int(shapeOfImage[0]/2)+squareSize]))
-    print(f"Ratio of flux inside a Sérsic radius to total flux is approximately:", (fluxInsideRadius)/np.sum(flux_list_2d[1]))
+    #print(f"Ratio of flux inside a Sérsic radius to total flux is approximately:", (fluxInsideRadius)/np.sum(flux_list_2d[1]))
     plt.imshow(flux_list_2d[1], origin='lower',cmap=my_cmap, norm=LogNorm())
     plt.show()
     total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d, deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
                         zp=fitting_run_result.zp, if_annuli=False, arrows= False, show_plot = True, mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
                         target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}-{band}', sum_rest = True)
+    #fitting_run_result.plot_final_qso_fit(target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}-{band}')
+
+    from galight_modif.fitting_process import ModelPlot
+    data = fitting_run_result.fitting_specify_class.kwargs_data['image_data']
+    if 'psf_error_map' in fitting_run_result.fitting_specify_class.kwargs_psf.keys():
+        _modelPlot = ModelPlot(fitting_run_result.fitting_specify_class.kwargs_data_joint['multi_band_list'],
+                                fitting_run_result.fitting_specify_class.kwargs_model, fitting_run_result.kwargs_result,
+                                arrow_size=0.02, cmap_string="gist_heat", 
+                                image_likelihood_mask_list=fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'] )    
+        _, psf_error_map, _, _ = _modelPlot._imageModel.image_linear_solve(inv_bool=True, **fitting_run_result.kwargs_result)
+        noise = np.sqrt(fitting_run_result.fitting_specify_class.kwargs_data['noise_map']**2+np.abs(psf_error_map[0]))
+    else:
+        noise = fitting_run_result.fitting_specify_class.kwargs_data['noise_map']
+    
+    ps_list = fitting_run_result.image_ps_list
+    ps_image = np.zeros_like(ps_list[0])
+    target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}-{band}'
+    for i in range(len(ps_list)):
+        ps_image = ps_image+ps_list[i]
+    galaxy_list = fitting_run_result.image_host_list
+    galaxy_image = np.zeros_like(data)
+    for i in range(len(galaxy_list)):
+        galaxy_image = galaxy_image+galaxy_list[i]
+    model = ps_image + galaxy_image
+    data_removePSF = data - ps_image
+    norm_residual = (data - model)/noise
+    flux_dict_2d = {'data':data, 'model':model, 'normalized residual':norm_residual}
+    flux_dict_1d = {'data':data, 'model':model, 'AGN':ps_image, 'Sérsic':galaxy_image}
+    fig = total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
+                    zp=fitting_run_result.zp, if_annuli=False,
+                    mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
+                    target_ID = target_ID, cmap=my_cmap, center_pos= [-fitting_run_result.final_result_ps[0]['ra_image'][0]/fitting_run_result.fitting_specify_class.deltaPix, 
+                                                                    fitting_run_result.final_result_ps[0]['dec_image'][0]/fitting_run_result.fitting_specify_class.deltaPix] )
+    #flux_dict_2d['data-point source'] = flux_dict_2d.pop('data$-$point source')
+    fitting_run_result.flux_2d_out = flux_dict_2d
+    fitting_run_result.flux_1d_out = flux_dict_1d
+    plt.show()
 
 
     fitting_run_result.fitting_specify_class.plot_fitting_sets()

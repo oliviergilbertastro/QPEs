@@ -22,12 +22,23 @@ if input("Fit a QPE host galaxy? [y/n]\n") == "y":
         elif band == "z" or band == 'Z' or band == "3":
             img_path = f"image-decam-498254-N24-z.fits.gz"
             oow_path = f"iv-decam-498254-N24-z.fits.gz"
-        galight_fit(ra_dec=objects[objID],
+        if input("Use co-added i-band instead? [y/n]") == "y":
+            galight_fit(ra_dec=objects[objID],
+                    img_path = f"data/images/object0_{band}.fits",
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list=None, #We find stars in the image online, click on them and copy their WCS coordinates here
+                    band=band,
+                    survey="COADDED_DESI",
+                    )
+        else:
+            galight_fit(ra_dec=objects[objID],
                     img_path = data_repo+img_path,
                     oow_path = data_repo+oow_path,
                     type = type,
                     PSF_pos_list=[[19.7915, -34.2054], [19.7957, -34.1628], [19.7597, -34.1971]], #We find stars in the image online, click on them and copy their WCS coordinates here
                     band=band,
+                    nsigma=3,
                     )
 
     #-------------------------------------------------------------------object1---------------------------------------------------------

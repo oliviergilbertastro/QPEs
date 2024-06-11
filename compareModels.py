@@ -65,6 +65,7 @@ def compareModels(ra_dec, models=["None", "AGN", "Bulge", "Bulge+AGN"], band="i"
     stellar_density_str = "-"
     smd = 0
     smd_data = 0
+    print(stellar_mass)
     if stellar_mass != None:
         #print("r50", [mid, minus, plus])
         smd = np.array(stellarMassDensity(stellar_mass, half_light_radius))
@@ -246,10 +247,11 @@ TDE_bands_list = ["r", "r", "g",]
 
 from download_data import objects, comparisons, objects_names, comparisons_names
 from stellarMassblackHoleMass import stellarMass_mBH, log10_stellarMass_mBH
+from stellarMassWISE import stellarMasses_WISE
 
 if __name__ == "__main__":
 
-    sMass_option = input("Which stellar mass method do you want to use?\n    1. Litterature\n    2. Litterature + SDSS prospector\n    3. BH mass relation\n")
+    sMass_option = input("Which stellar mass method do you want to use?\n    1. Litterature\n    2. Litterature + SDSS prospector\n    3. BH mass relation\n    4. WISE mass relation\n")
     try:
         sMass_option = int(sMass_option)
     except:
@@ -261,12 +263,17 @@ if __name__ == "__main__":
         QPE_stellar_masses = QPE_stellar_masses_litterature_sdssProspector
     elif sMass_option == 3:
         QPE_stellar_masses = stellarMass_mBH(QPE_mBH)
-        QPE_stellar_masses[:,1:] = np.ones_like(QPE_stellar_masses[:,1:]) #Make all uncertainties zero as they are currently not calculated properly
+        QPE_stellar_masses[:,1:] = np.zeros_like(QPE_stellar_masses[:,1:]) #Make all uncertainties zero as they are currently not calculated properly
         QPE_stellar_masses = list(QPE_stellar_masses)
         for i in range(len(QPE_stellar_masses)):
             QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
             #if QPE_stellar_masses_litterature[i] == None:      #This if statement is useful to compare the litterature stellar mass densities to the relation
             #    QPE_stellar_masses[i] = None
+    elif sMass_option == 4:
+        QPE_stellar_masses = stellarMasses_WISE
+        QPE_stellar_masses = list(QPE_stellar_masses)
+        for i in range(len(QPE_stellar_masses)):
+            QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
     else:
         raise ValueError("This is not a valide option.")
 

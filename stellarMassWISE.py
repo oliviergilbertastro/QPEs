@@ -110,10 +110,10 @@ for i in range(len(wise_mags)):
 stellarMasses_WISE = []
 for i in range(len(wise_mags)):
     sm = getStarMass_W1_W2(w1_abs_mags[i], w2_abs_mags[i])
-    stellarMasses_WISE.append(sm)
-
+    stellarMasses_WISE.append((sm, 0, 0))
+stellarMasses_WISE = np.array(stellarMasses_WISE)
 if __name__ == "__main__":
-    print_table(np.array([objects_names, np.around(distances, 2), np.around(w1_abs_mags, 2), w1_mags_unc, np.around(w2_abs_mags, 2), w2_mags_unc, np.around(np.log10(stellarMasses_WISE), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="WISE magnitudes", borders=2)
+    print_table(np.array([objects_names, np.around(distances, 2), np.around(w1_abs_mags, 2), w1_mags_unc, np.around(w2_abs_mags, 2), w2_mags_unc, np.around(np.log10(stellarMasses_WISE[:,0]), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="WISE magnitudes", borders=2)
     if False:
         lw1s = 10**(np.linspace(7,12,100))
         mw1s = getMW1(lw1s)
