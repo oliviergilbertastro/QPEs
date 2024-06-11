@@ -51,6 +51,7 @@ def getStarMass_W1_W2(M_W1, M_W2, returnLog=False):
 if __name__ == "__main__":
     lw1s = 10**(np.linspace(7,12,100))
     mw1s = getMW1(lw1s)
+    print(mw1s)
     plt.plot(np.log10(lw1s), getStarMass_W1(mw1s, returnLog=True), "--")
     plt.xlabel(r"$\log(L_\mathrm{W1})$ [$L_\odot$]", fontsize=16)
     plt.ylabel(r"$\log(M_\star)$ [$M_\odot$]", fontsize=16)
