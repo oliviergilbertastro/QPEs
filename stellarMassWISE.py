@@ -48,10 +48,39 @@ def getStarMass_W1_W2(M_W1, M_W2, returnLog=False):
 
 
 
+
+
+#WISE DATA FOR EACH OBJECT:
+from download_data import objects_names
+
+#Dictionnary of magnitudes (and their uncertainties)
+wise_mags = {
+    "GSN 069":          {"W1":12.838,"W2":12.828},
+    "RX J1301.9+2747":  {"W1":12.580,"W2":12.558},
+    "eRO-QPE1":         {"W1":15.327,"W2":15.266},
+    "eRO-QPE2":         {"W1":13.674,"W2":13.518},
+    "AT 2019vcb":       {"W1":15.778,"W2":15.525},
+    "2MASX J0249":      {"W1":13.753,"W2":13.700},
+    "eRO-QPE3":         {"W1":15.075,"W2":15.393},
+    "eRO-QPE4":         {"W1":13.989,"W2":13.922},
+    "AT 2019qiz":       {"W1":12.481,"W2":12.521},
+    }
+
+sigma_wise_mags = {
+    "GSN 069":          {"W1":0.023,"W2":0.026},
+    "RX J1301.9+2747":  {"W1":0.023,"W2":0.024},
+    "eRO-QPE1":         {"W1":0.036,"W2":0.083},
+    "eRO-QPE2":         {"W1":0.025,"W2":0.028},
+    "AT 2019vcb":       {"W1":0.046,"W2":0.108},
+    "2MASX J0249":      {"W1":0.026,"W2":0.033},
+    "eRO-QPE3":         {"W1":0.036,"W2":0.096},
+    "eRO-QPE4":         {"W1":0.026,"W2":0.036},
+    "AT 2019qiz":       {"W1":0.024,"W2":0.024},
+    }
+
 if __name__ == "__main__":
     lw1s = 10**(np.linspace(7,12,100))
     mw1s = getMW1(lw1s)
-    print(mw1s)
     plt.plot(np.log10(lw1s), getStarMass_W1(mw1s, returnLog=True), "--")
     plt.xlabel(r"$\log(L_\mathrm{W1})$ [$L_\odot$]", fontsize=16)
     plt.ylabel(r"$\log(M_\star)$ [$M_\odot$]", fontsize=16)
