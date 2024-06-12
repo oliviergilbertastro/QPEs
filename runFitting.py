@@ -35,7 +35,7 @@ if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
                     threshold=5,
                     )
 
-if input("Fit a QPE host galaxy? [y/n]\n") == "y":
+elif input("Fit a QPE host galaxy? [y/n]\n") == "y":
     objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
     type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
@@ -211,7 +211,7 @@ if input("Fit a QPE host galaxy? [y/n]\n") == "y":
 
 
 
-if input("Fit a TDE host? [y/n]\n") == "y":
+elif input("Fit a TDE host? [y/n]\n") == "y":
     objID = int(input(f"Enter the object ID you want to fit [0-{len(comparisons)-1}]:\n"))
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
     type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
