@@ -43,6 +43,33 @@ objects_names = [
 
 objects_types = ["AGN", "AGN", "None", "None", "None", "AGN", "None", "AGN", "AGN"]
 
+
+TDE_names = [
+    "ASASSN-14ae",
+    "ASASSN-14li",
+    "PTF-09ge",
+    "RBS 1032",
+    "SDSS J1323",
+    "SDSS J0748",
+    "SDSS J1342",
+    "SDSS J1350",
+    "SDSS J0952",
+    "SDSS J1201",
+]
+
+TDE_coords = [
+                (167.1671500, 34.0978417),         #ASASSN-14ae
+                (192.0634583, 17.7740139),        #ASASSN-14li
+                (224.2632500, 49.6113806),          #PTF-09ge
+                (176.8616667, 49.7163889),        #RBS 1032
+                (200.9248875, 48.4503500),         #SDSS J1323
+                (117.0861125, 47.2039528),         #SDSS J0748
+                (205.6850667, 5.5155944),         #SDSS J1342
+                (207.5062792, 29.2693639),         #SDSS J1350
+                (148.0398125, 21.7203444),         #SDSS J0952
+                (180.4001167, 30.0515333),          #SDSS J1201
+]
+
 #TDE hosts
 comparisons = [
     (192.0634, 17.7739),                                                        #ASASSN-14li

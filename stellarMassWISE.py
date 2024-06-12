@@ -75,6 +75,7 @@ from utils import print_table
 
 #Dictionnary of magnitudes (and their uncertainties)
 wise_mags = {
+    # QPE hosts
     "GSN 069":          {"W1":12.838,"W2":12.828},
     "RX J1301.9+2747":  {"W1":12.580,"W2":12.558},
     "eRO-QPE1":         {"W1":15.327,"W2":15.266},
@@ -84,9 +85,22 @@ wise_mags = {
     "eRO-QPE3":         {"W1":15.075,"W2":15.393},
     "eRO-QPE4":         {"W1":13.989,"W2":13.922},
     "AT 2019qiz":       {"W1":12.481,"W2":12.521},
+
+    # TDE hosts
+    "ASASSN-14ae":      {"W1":0,"W2":0},
+    "ASASSN-14li":      {"W1":0,"W2":0},
+    "PTF-09ge":         {"W1":0,"W2":0},
+    "RBS 1032":         {"W1":0,"W2":0},
+    "SDSS J1323":       {"W1":0,"W2":0},
+    "SDSS J0748":       {"W1":0,"W2":0},
+    "SDSS J1342":       {"W1":0,"W2":0},
+    "SDSS J1350":       {"W1":0,"W2":0},
+    "SDSS J0952":       {"W1":0,"W2":0},
+    "SDSS J1201":       {"W1":0,"W2":0},
     }
 
 sigma_wise_mags = {
+    # QPE hosts
     "GSN 069":          {"W1":0.023,"W2":0.026},
     "RX J1301.9+2747":  {"W1":0.023,"W2":0.024},
     "eRO-QPE1":         {"W1":0.036,"W2":0.083},
@@ -96,6 +110,18 @@ sigma_wise_mags = {
     "eRO-QPE3":         {"W1":0.036,"W2":0.096},
     "eRO-QPE4":         {"W1":0.026,"W2":0.036},
     "AT 2019qiz":       {"W1":0.024,"W2":0.024},
+
+    # TDE hosts
+    "ASASSN-14ae":      {"W1":0,"W2":0},
+    "ASASSN-14li":      {"W1":0,"W2":0},
+    "PTF-09ge":         {"W1":0,"W2":0},
+    "RBS 1032":         {"W1":0,"W2":0},
+    "SDSS J1323":       {"W1":0,"W2":0},
+    "SDSS J0748":       {"W1":0,"W2":0},
+    "SDSS J1342":       {"W1":0,"W2":0},
+    "SDSS J1350":       {"W1":0,"W2":0},
+    "SDSS J0952":       {"W1":0,"W2":0},
+    "SDSS J1201":       {"W1":0,"W2":0},
     }
 
     
@@ -105,7 +131,7 @@ w1_mags = []
 w2_mags = []
 w1_mags_unc = []
 w2_mags_unc = []
-for i in range(len(wise_mags)):
+for i in range(len(objects_names)):
     w1_mags.append(wise_mags[objects_names[i]]["W1"])
     w2_mags.append(wise_mags[objects_names[i]]["W2"])
     w1_mags_unc.append(sigma_wise_mags[objects_names[i]]["W1"])
@@ -119,7 +145,7 @@ distances = []
 w1_abs_mags = []
 w2_abs_mags = []
 
-for i in range(len(wise_mags)):
+for i in range(len(objects_names)):
     distances.append(calculate_cosmo(QPE_redshifts[i])["DL_Mpc"])
     w1_abs_mags.append(w1_mags[i]-2.5*np.log10((distances[i]*1E6/10)**2))
     w2_abs_mags.append(w2_mags[i]-2.5*np.log10((distances[i]*1E6/10)**2))
@@ -127,12 +153,13 @@ for i in range(len(wise_mags)):
 
 #Calculate stellar masses:
 stellarMasses_WISE = []
-for i in range(len(wise_mags)):
+for i in range(len(objects_names)):
     sm = getStarMass_W1_W2(w1_abs_mags[i], w2_abs_mags[i], w1_mags_unc[i], w2_mags_unc[i])
     stellarMasses_WISE.append((sm[0], sm[1], sm[1])) #Setting 0 uncertainty for the moment
 stellarMasses_WISE = np.array(stellarMasses_WISE)
+
 if __name__ == "__main__":
-    print_table(np.array([objects_names, np.around(distances, 2), np.around(w1_abs_mags, 2), w1_mags_unc, np.around(w2_abs_mags, 2), w2_mags_unc, np.around(np.log10(stellarMasses_WISE[:,0]), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="WISE magnitudes", borders=2)
+    print_table(np.array([objects_names, np.around(distances, 2), np.around(w1_abs_mags, 2), w1_mags_unc, np.around(w2_abs_mags, 2), w2_mags_unc, np.around(np.log10(stellarMasses_WISE[:,0]), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="QPE hosts WISE properties", borders=2)
     if False:
         lw1s = 10**(np.linspace(7,12,100))
         mw1s = getMW1(lw1s)

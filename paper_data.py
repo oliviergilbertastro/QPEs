@@ -42,10 +42,36 @@ QPE_redshifts = [
                 (0.01513),                               # AT 2019qiz
                 ]
 
-TDE_redshifts = [
-                (0.0206),            #ASASSN-14li
+old_TDE_redshifts = [
+                (0.0206),           #ASASSN-14li
                 (0.064),            #PTF-09ge
                 (0.0436),           #ASASSN-14ae
+                ]
+
+TDE_redshifts = [                   
+                0.0436,         #ASASSN-14ae
+                0.02058,        #ASASSN-14li
+                0.064,          #PTF-09ge
+                0.02604,        #RBS 1032
+                0.0875,         #SDSS J1323
+                0.0615,         #SDSS J0748
+                0.0366,         #SDSS J1342
+                0.0777,         #SDSS J1350
+                0.0789,         #SDSS J0952
+                0.146,          #SDSS J1201
+                ]
+
+TDE_r50s = [          #in kpc          
+                1.3,            #ASASSN-14ae
+                0.4,            #ASASSN-14li
+                2.3,            #PTF-09ge
+                0.7,            #RBS 1032
+                2.7,            #SDSS J1323
+                2.3,            #SDSS J0748
+                0.9,            #SDSS J1342
+                2.0,            #SDSS J1350
+                1.0, #low-lim   #SDSS J0952
+                3.6,            #SDSS J1201
                 ]
 
 
@@ -90,7 +116,7 @@ QPE_stellar_masses_litterature = [
                     ]
 
 
-TDE_stellar_masses = [
+TDE_stellar_masses_litterature = [
                 (10**9.3, 10**9.3-10**9.2, 10**9.4-10**9.3),                                #ASASSN-14li
                 (10**9.87, 10**9.87-10**(9.87-0.17), 10**(9.87+0.13)-10**9.87),             #PTF-09ge
                 (10**9.73, 10**9.73-10**(9.73-0.13), 10**(9.73+0.13)-10**9.73),           #ASASSN-14ae

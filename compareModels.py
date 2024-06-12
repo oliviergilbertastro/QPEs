@@ -294,13 +294,13 @@ if __name__ == "__main__":
         if input("Compare fits for a specific TDE host galaxy? [y/n]") == "y":
             objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
             band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-            compareModels(comparisons[objID], band=band, verbose=True, stellar_mass=TDE_stellar_masses[objID], z=TDE_redshifts[objID])
+            compareModels(comparisons[objID], band=band, verbose=True, stellar_mass=TDE_stellar_masses_litterature[objID], z=old_TDE_redshifts[objID])
 
         if input("See best model for all TDE host galaxies? [y/n]") == "y":
             print("Best models:")
             print("-------------------------------------------------")
             for i in range(len(comparisons)):
-                print(f"{comparisons_names[i]}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses[i], z=TDE_redshifts[i], models=['None'], verbose=False)}")
+                print(f"{comparisons_names[i]}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses_litterature[i], z=old_TDE_redshifts[i], models=['None'], verbose=False)}")
             print("-------------------------------------------------")
 
     if input("Plot log(mBH)-Sérsic index for host galaxies comparison? [y/n]") == "y":
