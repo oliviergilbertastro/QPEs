@@ -194,13 +194,12 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     print('S =', morph.smoothness)
 
 
-from download_data import objects, comparisons, objects_names
+from download_data import objects, comparisons, objects_names, objects_types
 
 if input("Load CO-ADDED QPE host? [y/n]") == "y":
-    extraComps = ["AGN", "AGN", "None", "None", "None", "AGN", "None", "AGN", "AGN"]
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-    loadRun(objects[objID], type=extraComps[objID], band=band, picklename=f"{objects_names[objID]}_{band}-band_{extraComps[objID]}_DESI.pkl")
+    loadRun(objects[objID], type=objects_types[objID], band=band, picklename=f"{objects_names[objID]}_{band}-band_{objects_types[objID]}_DESI.pkl")
 
 elif input("Load QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))

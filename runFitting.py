@@ -27,7 +27,7 @@ if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
     #obj5 ra and dec should be (42.3222,-4.2146)
     #obj7 ra and dec should be (71.3910, -10.2014)
     #obj8 ra and dec should be (71.6579, -10.2264)
-    galight_fit(ra_dec=(71.6579, -10.2264),#objects[objID],
+    galight_fit(ra_dec=objects[objID],
                     img_path = img_path,
                     oow_path = None,
                     type = type,
@@ -36,7 +36,7 @@ if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
                     survey="COADDED_DESI",
                     savename=f"{objects_names[objID]}_{band}-band_{type}_DESI",
                     threshold=5,
-                    exp_sz_multiplier=3,
+                    exp_sz_multiplier=1,
                     )
 
 elif input("Fit a QPE host galaxy? [y/n]\n") == "y":

@@ -41,6 +41,8 @@ objects_names = [
     "AT 2019qiz"
 ]
 
+objects_types = ["AGN", "AGN", "None", "None", "None", "AGN", "None", "AGN", "AGN"]
+
 #TDE hosts
 comparisons = [
     (192.0634, 17.7739),                                                        #ASASSN-14li
