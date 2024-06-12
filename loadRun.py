@@ -10,7 +10,7 @@ import matplotlib
 my_cmap = copy.copy(matplotlib.cm.get_cmap('gist_heat')) # copy the default cmap
 my_cmap.set_bad('black')
 
-def loadRun(ra_dec, type="AGN", band="i"):
+def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
     elif type in ["Bulge", "BULGE", "bulge"]:
@@ -37,7 +37,8 @@ def loadRun(ra_dec, type="AGN", band="i"):
     else:
         raise ValueError(f"band {band} is not a supported filter band")
 
-    picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}.pkl'
+    if picklename == None:
+        picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}.pkl'
     fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
 
     try:
@@ -180,7 +181,13 @@ def loadRun(ra_dec, type="AGN", band="i"):
     print('S =', morph.smoothness)
 
 
-from download_data import objects, comparisons
+from download_data import objects, comparisons, objects_names
+
+if input("Load CO-ADDED QPE host? [y/n]") == "y":
+    extraComps = ["AGN", "AGN", "None", "None", "None", "AGN", "None", "AGN", "AGN"]
+    objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
+    band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+    loadRun(objects[objID], type=extraComps[objID], band=band, picklename=f"{objects_names[objID]}_{band}-band_DESI.pkl")
 
 if input("Load QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))

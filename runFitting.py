@@ -1,11 +1,26 @@
 from galightFitting import galight_fit
-from download_data import objects, comparisons
+from download_data import objects, comparisons, objects_names
 
 # If the necessary files are not in the "data/science/" folder, download them from the folowing link (replacing RA and DEC by the ra and dec of the object):
 # https://www.legacysurvey.org/viewer?ra=RA&dec=DEC&layer=ls-dr10&zoom=15
 # You should go to the section "CCDs overlapping RA,Dec:" and download the filter band you want. You need the image (ooi) and the weight map (oow)
 
 #The QPE host galaxies are named "obj" while the TDE host galaxies are named "comp"
+
+if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
+    objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
+    band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
+    type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
+    img_path = f"data/images/object{objID}_{band}.fits"
+    galight_fit(ra_dec=objects[objID],
+                    img_path = img_path,
+                    oow_path = None,
+                    type = type,
+                    PSF_pos_list=None, #We find stars in the image online, click on them and copy their WCS coordinates here
+                    band=band,
+                    survey="COADDED_DESI",
+                    savename=f"{objects_names[objID]}_{band}-band_DESI"
+                    )
 
 if input("Fit a QPE host galaxy? [y/n]\n") == "y":
     objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
@@ -22,24 +37,14 @@ if input("Fit a QPE host galaxy? [y/n]\n") == "y":
         elif band == "z" or band == 'Z' or band == "3":
             img_path = f"image-decam-498254-N24-z.fits.gz"
             oow_path = f"iv-decam-498254-N24-z.fits.gz"
-        if input("Use co-added i-band instead? [y/n]") == "y":
-            galight_fit(ra_dec=objects[objID],
-                    img_path = f"data/images/object0_{band}.fits",
-                    oow_path = data_repo+oow_path,
-                    type = type,
-                    PSF_pos_list=None, #We find stars in the image online, click on them and copy their WCS coordinates here
-                    band=band,
-                    survey="COADDED_DESI",
-                    )
-        else:
-            galight_fit(ra_dec=objects[objID],
-                    img_path = data_repo+img_path,
-                    oow_path = data_repo+oow_path,
-                    type = type,
-                    PSF_pos_list=[[19.7915, -34.2054], [19.7957, -34.1628], [19.7597, -34.1971]], #We find stars in the image online, click on them and copy their WCS coordinates here
-                    band=band,
-                    nsigma=3,
-                    )
+        galight_fit(ra_dec=objects[objID],
+                img_path = data_repo+img_path,
+                oow_path = data_repo+oow_path,
+                type = type,
+                PSF_pos_list=[[19.7915, -34.2054], [19.7957, -34.1628], [19.7597, -34.1971]], #We find stars in the image online, click on them and copy their WCS coordinates here
+                band=band,
+                nsigma=3,
+                )
 
     #-------------------------------------------------------------------object1---------------------------------------------------------
     elif objID == 1:

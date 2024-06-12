@@ -17,7 +17,7 @@ from matplotlib.colors import LogNorm
 
 SUBTRACT_NOISE = False
 
-def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI"):
+def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
         number_of_ps = 1
@@ -52,7 +52,8 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
         PSF_pos_list = None
 
     img = pyfits.open(img_path)
-    wht_img = pyfits.open(oow_path)
+    if oow_path != None:
+        wht_img = pyfits.open(oow_path)
     if survey == "DESI":
     #Showing the image in the selected band
         ax1 = plt.subplot(211)
@@ -202,7 +203,9 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
     #Setting the fitting method and run.
 
     #Pass fit_sepc to FittingProcess,
-    fit_run = FittingProcess(fit_sepc, savename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}', fitting_level='deep') 
+    if savename == None:
+        savename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}'
+    fit_run = FittingProcess(fit_sepc, savename = savename, fitting_level='deep') 
 
     #Setting the fitting approach and Run:
     fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = None)
