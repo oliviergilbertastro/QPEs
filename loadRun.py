@@ -202,13 +202,13 @@ if input("Load CO-ADDED QPE host? [y/n]") == "y":
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
     loadRun(objects[objID], type=extraComps[objID], band=band, picklename=f"{objects_names[objID]}_{band}-band_{extraComps[objID]}_DESI.pkl")
 
-if input("Load QPE host? [y/n]") == "y":
+elif input("Load QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
     type = input("Enter the type of extra-component fitting you want to load [None, AGN, Bulge, Bulge+AGN]:\n")
     loadRun(objects[objID], type=type, band=band)
 
-if input("Load TDE host? [y/n]") == "y":
+elif input("Load TDE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
     type = input("Enter the type of extra-component fitting you want to load [None, AGN, Bulge, Bulge+AGN]:\n")

@@ -18,12 +18,13 @@ if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
                     None,
                     [[38.7643, -44.3211], [38.6746, -44.3405], [38.6773, -44.3321]],
                     None,
-                    None,
+                    [[42.3057, -4.1936], [42.3714, -4.1891], [42.3621, -4.1921]],
                     None,
                     None,
                     None,
                     ]
-    #obj2 ra and dec should be 37.9466, -10.3362
+    #obj2 ra and dec should be (37.9466, -10.3362)
+    #obj5 ra and dec should be (42.3222,-4.2146)
     galight_fit(ra_dec=objects[objID],
                     img_path = img_path,
                     oow_path = None,
