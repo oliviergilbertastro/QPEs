@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import corner
 from scipy.stats import norm
 from paper_data import *
-from download_data import objects, comparisons, objects_names, comparisons_names, objects_types, QPE_bands_list
+from download_data import *#objects, comparisons, objects_names, comparisons_names, objects_types, QPE_bands_list
 from stellarMassblackHoleMass import stellarMass_mBH, log10_stellarMass_mBH
 from stellarMassWISE import TDE_stellarMasses_WISE, QPE_stellarMasses_WISE
 
@@ -55,7 +55,7 @@ def chooseStellarMassMethod():
         for i in range(len(QPE_stellar_masses)):
             QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
         TDE_stellar_masses = stellarMass_mBH(TDE_mBH)
-        TDE_stellar_masses[:,1:] = np.zeros_like(TDE_stellar_masses[:,1:]) #Make all uncertainties zero as they are currently not calculated properly
+        TDE_stellar_masses = add_0_uncertainties(TDE_stellar_masses)
         TDE_stellar_masses = list(TDE_stellar_masses)
         for i in range(len(TDE_stellar_masses)):
             TDE_stellar_masses[i] = tuple(TDE_stellar_masses[i])
@@ -72,6 +72,12 @@ def chooseStellarMassMethod():
         raise ValueError("This is not a valide option.")
     return QPE_stellar_masses, TDE_stellar_masses
 
+def add_0_uncertainties(a):
+    a = np.array(a)
+    placeholder = np.zeros((a.shape[0],3))
+    placeholder[:,0] = a
+    a = placeholder
+    return a
 
 def stellarMassDensity(M_star, r50):
     '''
@@ -108,9 +114,21 @@ if __name__ == "__main__":
         QPE_r50s.append(r50)
     QPE_stellar_masses, TDE_stellar_masses = chooseStellarMassMethod()
     #Transform lists into arrays
-    QPE_sersicIndices, QPE_r50s, QPE_stellar_masses, QPE_mBH, TDE_stellar_masses = np.array(QPE_sersicIndices), np.array(QPE_r50s), np.array(QPE_stellar_masses), np.array(QPE_mBH), np.array(TDE_stellar_masses)
+    QPE_sersicIndices, QPE_r50s, QPE_stellar_masses, QPE_mBH, TDE_stellar_masses, TDE_r50s, TDE_mBH = np.array(QPE_sersicIndices), np.array(QPE_r50s), np.array(QPE_stellar_masses), np.array(QPE_mBH), np.array(TDE_stellar_masses), np.array(TDE_r50s), np.array(TDE_mBH)
+    TDE_r50s = add_0_uncertainties(TDE_r50s)
+    #Calculate stellar mass surface densities
+    QPE_stellarDensities = []
+    for i in range(len(objects)):
+        QPE_stellarDensities.append(stellarMassDensity(QPE_stellar_masses[i], QPE_r50s[i]))
+    QPE_stellarDensities = np.array(QPE_stellarDensities)
+
+    TDE_stellarDensities = []
+    for i in range(len(TDE_names)):
+        TDE_stellarDensities.append(stellarMassDensity(TDE_stellar_masses[i], TDE_r50s[i]))
+    TDE_stellarDensities = np.array(TDE_stellarDensities)
 
 
+    # QPE hosts properties
     print_table(np.array([objects_names, np.around(QPE_sersicIndices[:,0], 4), np.around(QPE_r50s[:,0], 4), np.around(np.log10(QPE_stellar_masses[:,0]), 4), np.around(np.log10(QPE_mBH[:,0]), 4)]).T,
                     header=["Name", "Sérsic index", "r50", "log Stellar mass", "log M_BH"],
                     title="QPE hosts properties",
@@ -118,5 +136,12 @@ if __name__ == "__main__":
                     space_between_rows=0,
                     borders=2)
     
+    # TDE hosts properties
+    print_table(np.array([TDE_names, np.around(TDE_sersicIndices, 4), np.around(TDE_r50s[:,0], 4), np.around(np.log10(TDE_stellar_masses[:,0]), 4), np.around(np.log10(TDE_mBH), 4)]).T,
+                    header=["Name", "Sérsic index", "r50", "log Stellar mass", "log M_BH"],
+                    title="TDE hosts properties",
+                    space_between_columns=4,
+                    space_between_rows=0,
+                    borders=2)
 
     
