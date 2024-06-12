@@ -120,11 +120,15 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     #print(f"Flux inside a {squareSize}x{squareSize} square centered:", np.sum(flux_list_2d[1][int(shapeOfImage[0]/2)-squareSize:int(shapeOfImage[0]/2)+squareSize,int(shapeOfImage[0]/2)-squareSize:int(shapeOfImage[0]/2)+squareSize]))
     #print(f"Ratio of flux inside a Sérsic radius to total flux is approximately:", (fluxInsideRadius)/np.sum(flux_list_2d[1]))
     plt.imshow(flux_list_2d[1], origin='lower',cmap=my_cmap, norm=LogNorm())
+    plt.title("Model", fontsize=16)
     plt.show()
-    total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d, deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
-                        zp=fitting_run_result.zp, if_annuli=False, arrows= False, show_plot = True, mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
-                        target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}-{band}', sum_rest = True)
+    if False: #Not sure why this doesn't work anymore, it used to
+        total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d, deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
+                            zp=fitting_run_result.zp, if_annuli=False, arrows= False, show_plot = True, mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
+                            target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}-{band}', sum_rest = True)
     #fitting_run_result.plot_final_qso_fit(target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}-{band}')
+
+
 
     from galight_modif.fitting_process import ModelPlot
     data = fitting_run_result.fitting_specify_class.kwargs_data['image_data']
@@ -139,7 +143,8 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
         noise = fitting_run_result.fitting_specify_class.kwargs_data['noise_map']
     
     ps_list = fitting_run_result.image_ps_list
-    ps_image = np.zeros_like(ps_list[0])
+
+    ps_image = np.zeros_like(data)
     target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}-{band}'
     for i in range(len(ps_list)):
         ps_image = ps_image+ps_list[i]
@@ -150,13 +155,21 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     model = ps_image + galaxy_image
     data_removePSF = data - ps_image
     norm_residual = (data - model)/noise
-    flux_dict_2d = {'data':data, 'model':model, 'normalized residual':norm_residual}
-    flux_dict_1d = {'data':data, 'model':model, 'AGN':ps_image, 'Sérsic':galaxy_image}
-    fig = total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
-                    zp=fitting_run_result.zp, if_annuli=False,
-                    mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
-                    target_ID = target_ID, cmap=my_cmap, center_pos= [-fitting_run_result.final_result_ps[0]['ra_image'][0]/fitting_run_result.fitting_specify_class.deltaPix, 
-                                                                    fitting_run_result.final_result_ps[0]['dec_image'][0]/fitting_run_result.fitting_specify_class.deltaPix] )
+    if len(ps_list) != 0: #If there is an AGN
+        flux_dict_2d = {'data':data, 'model':model, 'normalized residual':norm_residual}
+        flux_dict_1d = {'data':data, 'model':model, 'AGN':ps_image, 'Sérsic':galaxy_image}
+        fig = total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
+                        zp=fitting_run_result.zp, if_annuli=False,
+                        mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
+                        target_ID = target_ID, cmap=my_cmap, center_pos= [-fitting_run_result.final_result_ps[0]['ra_image'][0]/fitting_run_result.fitting_specify_class.deltaPix, 
+                                                                        fitting_run_result.final_result_ps[0]['dec_image'][0]/fitting_run_result.fitting_specify_class.deltaPix] )
+    else: #If there is no AGN
+        flux_dict_2d = {'data':data, 'model':model, 'normalized residual':norm_residual}
+        flux_dict_1d = {'data':data, 'model':model, 'Sérsic':galaxy_image}
+        fig = total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
+                        zp=fitting_run_result.zp, if_annuli=False,
+                        mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
+                        target_ID = target_ID, cmap=my_cmap)
     #flux_dict_2d['data-point source'] = flux_dict_2d.pop('data$-$point source')
     fitting_run_result.flux_2d_out = flux_dict_2d
     fitting_run_result.flux_1d_out = flux_dict_1d
