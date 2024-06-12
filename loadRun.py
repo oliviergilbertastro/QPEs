@@ -200,7 +200,7 @@ if input("Load CO-ADDED QPE host? [y/n]") == "y":
     extraComps = ["AGN", "AGN", "None", "None", "None", "AGN", "None", "AGN", "AGN"]
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-    loadRun(objects[objID], type=extraComps[objID], band=band, picklename=f"{objects_names[objID]}_{band}-band_DESI.pkl")
+    loadRun(objects[objID], type=extraComps[objID], band=band, picklename=f"{objects_names[objID]}_{band}-band_{extraComps[objID]}_DESI.pkl")
 
 if input("Load QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
