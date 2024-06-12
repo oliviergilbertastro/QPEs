@@ -42,7 +42,7 @@ objects_names = [
 ]
 
 objects_types = ["AGN", "AGN", "None", "None", "None", "AGN", "None", "AGN", "AGN"]
-
+QPE_bands_list = ["i", "i", "i", "i", "z", "i", "i", "r", "r"]
 
 TDE_names = [
     "ASASSN-14ae",

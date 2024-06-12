@@ -247,7 +247,7 @@ TDE_bands_list = ["r", "r", "g",]
 
 from download_data import objects, comparisons, objects_names, comparisons_names
 from stellarMassblackHoleMass import stellarMass_mBH, log10_stellarMass_mBH
-from stellarMassWISE import stellarMasses_WISE
+from stellarMassWISE import QPE_stellarMasses_WISE
 
 if __name__ == "__main__":
 
@@ -270,7 +270,7 @@ if __name__ == "__main__":
             #if QPE_stellar_masses_litterature[i] == None:      #This if statement is useful to compare the litterature stellar mass densities to the relation
             #    QPE_stellar_masses[i] = None
     elif sMass_option == 4:
-        QPE_stellar_masses = stellarMasses_WISE
+        QPE_stellar_masses = QPE_stellarMasses_WISE
         QPE_stellar_masses = list(QPE_stellar_masses)
         for i in range(len(QPE_stellar_masses)):
             QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
@@ -294,13 +294,13 @@ if __name__ == "__main__":
         if input("Compare fits for a specific TDE host galaxy? [y/n]") == "y":
             objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
             band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-            compareModels(comparisons[objID], band=band, verbose=True, stellar_mass=TDE_stellar_masses_litterature[objID], z=old_TDE_redshifts[objID])
+            compareModels(comparisons[objID], band=band, verbose=True, stellar_mass=old_TDE_stellar_masses_litterature[objID], z=old_TDE_redshifts[objID])
 
         if input("See best model for all TDE host galaxies? [y/n]") == "y":
             print("Best models:")
             print("-------------------------------------------------")
             for i in range(len(comparisons)):
-                print(f"{comparisons_names[i]}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=TDE_stellar_masses_litterature[i], z=old_TDE_redshifts[i], models=['None'], verbose=False)}")
+                print(f"{comparisons_names[i]}: {compareModels(comparisons[i], band=TDE_bands_list[i], stellar_mass=old_TDE_stellar_masses_litterature[i], z=old_TDE_redshifts[i], models=['None'], verbose=False)}")
             print("-------------------------------------------------")
 
     if input("Plot log(mBH)-Sérsic index for host galaxies comparison? [y/n]") == "y":

@@ -152,14 +152,22 @@ for i in range(len(objects_names)):
 
 
 #Calculate stellar masses:
-stellarMasses_WISE = []
+QPE_stellarMasses_WISE = []
 for i in range(len(objects_names)):
     sm = getStarMass_W1_W2(w1_abs_mags[i], w2_abs_mags[i], w1_mags_unc[i], w2_mags_unc[i])
-    stellarMasses_WISE.append((sm[0], sm[1], sm[1])) #Setting 0 uncertainty for the moment
-stellarMasses_WISE = np.array(stellarMasses_WISE)
+    QPE_stellarMasses_WISE.append((sm[0], sm[1], sm[1])) #Setting 0 uncertainty for the moment
+QPE_stellarMasses_WISE = np.array(QPE_stellarMasses_WISE)
+
+
+#Calculate stellar masses:
+TDE_stellarMasses_WISE = []
+for i in range(len(objects_names)):
+    sm = getStarMass_W1_W2(w1_abs_mags[i], w2_abs_mags[i], w1_mags_unc[i], w2_mags_unc[i])
+    TDE_stellarMasses_WISE.append((sm[0], sm[1], sm[1])) #Setting 0 uncertainty for the moment
+TDE_stellarMasses_WISE = np.array(TDE_stellarMasses_WISE)
 
 if __name__ == "__main__":
-    print_table(np.array([objects_names, np.around(distances, 2), np.around(w1_abs_mags, 2), w1_mags_unc, np.around(w2_abs_mags, 2), w2_mags_unc, np.around(np.log10(stellarMasses_WISE[:,0]), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="QPE hosts WISE properties", borders=2)
+    print_table(np.array([objects_names, np.around(distances, 2), np.around(w1_abs_mags, 2), w1_mags_unc, np.around(w2_abs_mags, 2), w2_mags_unc, np.around(np.log10(QPE_stellarMasses_WISE[:,0]), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="QPE hosts WISE properties", borders=2)
     if False:
         lw1s = 10**(np.linspace(7,12,100))
         mw1s = getMW1(lw1s)
