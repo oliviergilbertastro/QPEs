@@ -17,6 +17,9 @@ def getMW1(L_W1):
 def getLW1(M_W1, sigma_M_W1=None):
     """
     Get L_W1 luminosity (in solar luminosities) from the W1 filter absolute magnitude (in vega mags)
+
+    M_W1: W1 filter VEGA magnitude
+    sigma_M_W1: (optional) uncertainty on VEGA magnitude
     """
     M_SUN = 3.24
     L_W1 = 10**(-0.4*(M_W1-M_SUN))
