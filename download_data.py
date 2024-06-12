@@ -55,5 +55,13 @@ comparisons_names = [
 ]
 
 if __name__ == "__main__":
-    for i in tqdm(range(len(objects))):
-        get_file(objects[i], i, size=1024, pixscale=0.262, band=input("Which band do you want to download? ['griz']"))
+    if input("Download 1024x1024 of all objects? [y/n]") == "y":
+        band = input("Which band do you want to download? ['griz']")
+        for i in tqdm(range(len(objects))):
+            get_file(objects[i], i, size=512*2, pixscale=0.262, band=band)
+        print("\x1b[33mDownload finished\x1b[0m")
+    elif input("Download 2048x2048 of one object? [y/n]") == "y":
+        objID = int(input("Which object?"))
+        band = input("Which band do you want to download? ['griz']")
+        get_file(objects[objID], objID, size=512*4, pixscale=0.262, band=band)
+        print("\x1b[33mDownload finished\x1b[0m")

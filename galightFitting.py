@@ -17,7 +17,7 @@ from matplotlib.colors import LogNorm
 
 SUBTRACT_NOISE = False
 
-def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None):
+def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
         number_of_ps = 1
@@ -141,7 +141,7 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
     print('kwargs: ', data_process.arguments)
     print('---------------------------------------------------')
     if PSF_pos_list == None and survey == "COADDED_DESI":
-        data_process.find_PSF(radius = 30, user_option = True)  #Try this line out!
+        data_process.find_PSF(radius = 30, user_option = True, threshold=threshold)  #Try this line out!
     elif PSF_pos_list == None:
         data_process.find_PSF(radius = 30, user_option = True, threshold=20000)  #Try this line out!
     else:

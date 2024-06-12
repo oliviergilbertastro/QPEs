@@ -12,15 +12,27 @@ if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
     type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
     img_path = f"data/images/object{objID}_{band}.fits"
+    #Find stars manually, or leave None if you want galight to search for them itself
+    list_of_PSFs = [None,
+                    None,
+                    None,
+                    [[38.7643, -44.3211], [38.6746, -44.3405], [38.6773, -44.3321]],
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    ]
     #obj2 ra and dec should be 37.9466, -10.3362
     galight_fit(ra_dec=objects[objID],
                     img_path = img_path,
                     oow_path = None,
                     type = type,
-                    PSF_pos_list=None, #We find stars in the image online, click on them and copy their WCS coordinates here
+                    PSF_pos_list=list_of_PSFs[objID], #We find stars in the image online, click on them and copy their WCS coordinates here
                     band=band,
                     survey="COADDED_DESI",
-                    savename=f"{objects_names[objID]}_{band}-band_{type}_DESI"
+                    savename=f"{objects_names[objID]}_{band}-band_{type}_DESI",
+                    threshold=5,
                     )
 
 if input("Fit a QPE host galaxy? [y/n]\n") == "y":
