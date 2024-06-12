@@ -14,12 +14,15 @@ def getMW1(L_W1):
     M_W1 = M_SUN-2.5*np.log10(L_W1)
     return M_W1
 
-def getLW1(M_W1):
+def getLW1(M_W1, sigma_M_W1=None):
     """
     Get L_W1 luminosity (in solar luminosities) from the W1 filter absolute magnitude (in vega mags)
     """
     M_SUN = 3.24
     L_W1 = 10**(-0.4*(M_W1-M_SUN))
+    if sigma_M_W1 != None:
+        sigma_L_W1 = L_W1*np.abs(0.4*np.log(10)*sigma_M_W1)
+        return L_W1, sigma_M_W1
     return L_W1
 
 def getStarMass_W1(M_W1, returnLog=False):
@@ -33,15 +36,28 @@ def getStarMass_W1(M_W1, returnLog=False):
         return logStarMass
     return 10**(logStarMass)
 
-def getStarMass_W1_W2(M_W1, M_W2, returnLog=False):
+def getStarMass_W1_W2(M_W1, M_W2, sigma_M_W1=None, sigma_M_W2=None, returnLog=False):
     """
     Get Stellar Mass (in solar Masses) from the W1 and W2 filters absolute magnitudes (in vega mags)
     """
-    L_W1 = getLW1(M_W1)
+    L_W1 = getLW1(M_W1, sigma_M_W1=sigma_M_W1)
+    if sigma_M_W1 != None:
+        #Unpack the uncertainty
+        L_W1, sigma_L_W1 = L_W1
     C12 = M_W1-M_W2
     A = (-0.376, -1.053)
     logMassRatio = A[0]+A[1]*C12
     logStarMass = logMassRatio + np.log10(L_W1)
+    if sigma_M_W1 != None and sigma_M_W2 != None:
+        #Calculate uncertainties
+        sigma_C12 = np.sqrt(sigma_M_W1**2+sigma_M_W2**2)
+        sigma_logMassRatio = np.abs(A[1])*sigma_C12
+        sigma_log_L_W1 = np.abs(sigma_L_W1/(L_W1*np.log(10)))
+        sigma_logStarMass = np.sqrt(sigma_logMassRatio**2+sigma_log_L_W1**2)
+        if returnLog:
+            return logStarMass, sigma_logStarMass
+        return 10**(logStarMass), 10**(logStarMass)*np.log(10)*sigma_logStarMass
+
     if returnLog:
         return logStarMass
     return 10**(logStarMass)
@@ -109,8 +125,8 @@ for i in range(len(wise_mags)):
 #Calculate stellar masses:
 stellarMasses_WISE = []
 for i in range(len(wise_mags)):
-    sm = getStarMass_W1_W2(w1_abs_mags[i], w2_abs_mags[i])
-    stellarMasses_WISE.append((sm, 0, 0))
+    sm = getStarMass_W1_W2(w1_abs_mags[i], w2_abs_mags[i], w1_mags_unc[i], w2_mags_unc[i])
+    stellarMasses_WISE.append((sm[0], sm[1], sm[1])) #Setting 0 uncertainty for the moment
 stellarMasses_WISE = np.array(stellarMasses_WISE)
 if __name__ == "__main__":
     print_table(np.array([objects_names, np.around(distances, 2), np.around(w1_abs_mags, 2), w1_mags_unc, np.around(w2_abs_mags, 2), w2_mags_unc, np.around(np.log10(stellarMasses_WISE[:,0]), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="WISE magnitudes", borders=2)
