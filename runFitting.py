@@ -35,9 +35,10 @@ if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
                     band=band,
                     survey="COADDED_DESI",
                     savename=f"{objects_names[objID]}_{band}-band_{type}_DESI",
-                    threshold=2,
+                    threshold=5,
                     nsigma=10,
                     exp_sz_multiplier=1,
+                    fitting_level="giga_deep",
                     )
 
 elif input("Fit a QPE host galaxy? [y/n]\n") == "y":
