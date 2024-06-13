@@ -135,3 +135,18 @@ TDE_stellar_masses_litterature = [          #in solar masses
                 (10**10.37, 10**10.37-10**(10.37-0.07), 10**(10.37+0.06)-10**10.37),   #SDSS J0952
                 (10**10.61, 10**10.61-10**(10.61-0.16), 10**(10.61+0.08)-10**10.61),            #SDSS J1201
                 ]
+
+
+#Schlafy et al. extinction (https://irsa.ipac.caltech.edu/workspace/TMP_3ah3nH_9869/DUST/19.7861250_-34.1916944.v0001/extinction.html)
+QPE_extinction = {
+    # QPE hosts
+    "GSN 069":          {"g":0.089,"r":0.062,"i":0.046,"z":0.034},
+    "RX J1301.9+2747":  {"g":0.030,"r":0.021,"i":0.015,"z":0.011},
+    "eRO-QPE1":         {"g":0,"r":0,"i":0,"z":0},
+    "eRO-QPE2":         {"g":0,"r":0,"i":0,"z":0},
+    "AT 2019vcb":       {"g":0,"r":0,"i":0,"z":0},
+    "2MASX J0249":      {"g":0,"r":0,"i":0,"z":0},
+    "eRO-QPE3":         {"g":0,"r":0,"i":0,"z":0},
+    "eRO-QPE4":         {"g":0,"r":0,"i":0,"z":0},
+    "AT 2019qiz":       {"g":0,"r":0,"i":0,"z":0},
+    }

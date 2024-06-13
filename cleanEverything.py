@@ -15,10 +15,15 @@ from paper_data import *
 from download_data import *#objects, comparisons, objects_names, comparisons_names, objects_types, QPE_bands_list
 from stellarMassblackHoleMass import stellarMass_mBH, log10_stellarMass_mBH
 from stellarMassWISE import TDE_stellarMasses_WISE, QPE_stellarMasses_WISE
-from compareModels import plot_sersicIndex_mBH, plot_surfaceStellarMassDensity_mBH, plot_sersicIndex_surfaceStellarMassDensity
+from compareModels import plot_sersicIndex_mBH, plot_surfaceStellarMassDensity_mBH, plot_sersicIndex_surfaceStellarMassDensity, plot_surfaceStellarMassDensity_stellarMass, plot_sersic_stellarMass
+import sys
 
-def get_QPE_n_and_r50(ra_dec, model="None", band="i"):
-    picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{model}_{band}.pkl'
+def get_QPE_n_and_r50(ra_dec=(0,0), model="None", band="i", filename=None):
+    if filename != None:
+        picklename = filename
+    else:
+        picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{model}_{band}.pkl'
+    
     try:
         fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
     except:
@@ -142,6 +147,31 @@ if __name__ == "__main__":
         TDE_stellarDensities[i] = (np.log10(TDE_stellarDensities[i][0]), TDE_stellarDensities[i][1]/(TDE_stellarDensities[i][0]*np.log(10)), TDE_stellarDensities[i][2]/(TDE_stellarDensities[i][0]*np.log(10)))
     TDE_stellarDensities = np.array(TDE_stellarDensities)
 
+
+
+
+
+
+
+
+
+
+
+    if input("Compare TDE hosts WISE-calculated with their litterature? [y/n]") == "y":
+        myTDE_stellar_masses = list(TDE_stellarMasses_WISE[:,0])
+        myTDE_stellar_masses = [myTDE_stellar_masses[1], myTDE_stellar_masses[2], myTDE_stellar_masses[0]]
+        myTDE_redshifts = [TDE_redshifts[1], TDE_redshifts[2], TDE_redshifts[0]]
+        myTDE_sersicIndices = []
+        myTDE_r50s = []
+        for i in range(len(comparisons)):
+            sersic, r50 = get_QPE_n_and_r50(filename=f'ra{str(comparisons[i][0])}_dec{str(comparisons[i][1])}_{["None","None","None"][i]}_{"rrg"[i]}.pkl')
+            myTDE_sersicIndices.append(sersic)
+            myTDE_r50s.append(r50)
+        print(myTDE_sersicIndices)
+        print(myTDE_r50s)
+        sys.exit()
+
+
     
 
     # QPE hosts properties
@@ -162,9 +192,11 @@ if __name__ == "__main__":
     
 
     #Plots:
-    plot_sersicIndex_mBH(QPE_mBH, QPE_sersicIndices, TDE_mBH, TDE_sersicIndices)
-    plot_surfaceStellarMassDensity_mBH(QPE_mBH, QPE_stellarDensities, TDE_mBH, TDE_stellarDensities, uplims=TDE_uplims)
-    plot_surfaceStellarMassDensity_mBH(QPE_stellar_masses, QPE_stellarDensities, TDE_stellar_masses, TDE_stellarDensities, uplims=TDE_uplims)
-    plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellarDensities, TDE_sersicIndices, TDE_stellarDensities)
+    if ("PLOTS?") == "y":
+        plot_sersic_stellarMass(QPE_stellar_masses, QPE_sersicIndices, TDE_stellar_masses, TDE_sersicIndices)
+        plot_surfaceStellarMassDensity_stellarMass(QPE_stellar_masses, QPE_stellarDensities, TDE_stellar_masses, TDE_stellarDensities, uplims=TDE_uplims)
+        plot_sersicIndex_mBH(QPE_mBH, QPE_sersicIndices, TDE_mBH, TDE_sersicIndices)
+        plot_surfaceStellarMassDensity_mBH(QPE_mBH, QPE_stellarDensities, TDE_mBH, TDE_stellarDensities, uplims=TDE_uplims)
+        plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellarDensities, TDE_sersicIndices, TDE_stellarDensities)
 
     

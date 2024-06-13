@@ -217,6 +217,46 @@ def plot_surfaceStellarMassDensity_mBH(QPEmBH, QPEstellarDensities, TDEmBH, TDEs
     plt.show()
     return
 
+
+def plot_surfaceStellarMassDensity_stellarMass(QPE_SMs, QPEstellarDensities, TDE_SMs, TDEstellarDensities, uplims=None, verbose=False):
+    if uplims == None:
+        uplims = TDEstellarDensities[:,1] == "upper limit"
+        #TDE_stellarDensities[np.array(TDEstellarDensities)[:,1] == "upper limit"][:,1:] = (0, 0)
+    for i in range(len(uplims)):
+        if uplims[i]:
+            TDEstellarDensities[i,1:] = (0.1,0)
+    TDEstellarDensities = np.array(TDEstellarDensities, dtype=float)
+    #plt.errorbar(Edd_ratio, a_ox, [a_ox_err_lo, a_ox_err_hi], [Edd_ratio_err_lo, Edd_ratio_err_hi], fmt='o', markeredgecolor='black', markeredgewidth=2, uplims=uplims, label=r'$\alpha_\mathrm{OX}$')
+    ax1 = plt.subplot(111)
+    ax1.errorbar(QPE_SMs[:,0], QPEstellarDensities[:,0], yerr=[QPEstellarDensities[:,1],QPEstellarDensities[:,2]], xerr=[QPE_SMs[:,1],QPE_SMs[:,2]], fmt='D', color='green', label='QPE hosts')
+    ax1.errorbar(TDE_SMs[:,0], TDEstellarDensities[:,0], yerr=[TDEstellarDensities[:,1],TDEstellarDensities[:,2]], xerr=[TDE_SMs[:,1],TDE_SMs[:,2]], uplims=uplims, markeredgewidth=2, fmt='o', color='orange', label='TDE hosts')
+    ax1.set_xscale("log")
+    ax1.yaxis.set_tick_params(labelsize=15)
+    ax1.xaxis.set_tick_params(labelsize=15)
+    plt.xlabel(r'$M_\star$ [$M_\odot$]', size=17)
+    plt.ylabel(r'$\log(\Sigma_{M_\star})$', size=17)
+    plt.legend(fontsize=15)
+    plt.show()
+
+def plot_sersic_stellarMass(QPE_SMs, QPEsersicIndices, TDE_SMs, TDEsersicIndices, verbose=False):
+    '''
+    Plots the sersic indices as a function of the black hole masses
+    '''
+    ax1 = plt.subplot(111)
+    ax1.errorbar(QPE_SMs[:,0], QPEsersicIndices[:,0], yerr=[QPEsersicIndices[:,1],QPEsersicIndices[:,2]], xerr=[QPE_SMs[:,1],QPE_SMs[:,2]], fmt='D', color='green', label='QPE hosts')
+    ax1.errorbar(TDE_SMs[:,0], TDEsersicIndices, xerr=[TDE_SMs[:,1],TDE_SMs[:,2]], markeredgewidth=2, fmt='o', color='orange', label='TDE hosts')
+    ax1.set_xscale("log")
+    ax1.yaxis.set_tick_params(labelsize=15)
+    ax1.xaxis.set_tick_params(labelsize=15)
+    plt.xlabel(r'$M_\star$ [$M_\odot$]', size=17)
+    plt.ylabel("Sérsic index", size=17)
+    plt.legend(fontsize=15)
+    plt.show()
+    return
+
+
+
+
 def plot_sersicIndex_surfaceStellarMassDensity(QPEsersicIndices, QPEstellarDensities, TDEsersicIndices, TDEstellarDensities):
     uplims = TDEstellarDensities[:,1] == "upper limit"
     #TDE_stellarDensities[np.array(TDEstellarDensities)[:,1] == "upper limit"][:,1:] = (0, 0)
@@ -248,7 +288,7 @@ TDE_bands_list = ["r", "r", "g",]
 
 from download_data import objects, comparisons, objects_names, comparisons_names
 from stellarMassblackHoleMass import stellarMass_mBH, log10_stellarMass_mBH
-from stellarMassWISE import QPE_stellarMasses_WISE
+from stellarMassWISE import QPE_stellarMasses_WISE, TDE_stellarMasses_WISE
 
 if __name__ == "__main__":
 
