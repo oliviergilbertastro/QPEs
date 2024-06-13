@@ -1,7 +1,7 @@
 import numpy as np
 from math import floor, ceil
 
-def print_table(a, header=None, title=None, space_between_columns=2, space_between_rows=0, borders=1, header_color="yellow", border_color="grey"):
+def print_table(a, header=None, title=None, space_between_columns=2, space_between_rows=0, borders=1, header_color="yellow", border_color="grey", override_length=None):
     """
     Nicely print out a table
 
@@ -71,6 +71,8 @@ def print_table(a, header=None, title=None, space_between_columns=2, space_betwe
     a_lens = vfunc(a)
     for i in range(a.shape[1]):
         column_maxes.append(np.max(a_lens[:,i]))
+    if override_length != None:
+        column_maxes = override_length
     total_length = np.sum(column_maxes)+(len(column_maxes)-1)*space_between_columns #To include spaces between each column
 
     #Actually start printing table:
