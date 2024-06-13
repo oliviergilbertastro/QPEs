@@ -1,4 +1,7 @@
-#Load the saved fitting class, the fitting_run_result would be the loaded as fit_run() in previous fittings.
+"""
+Program to compare QPE hosts and TDE hosts simply, but this compares the QPE hosts properties measuredfrom uncalibrated files,
+a new version of this program will be made once the griz bands have all been fitted with galight
+"""
 import pickle
 import numpy as np
 from galight_modif.tools.plot_tools import total_compare
@@ -12,6 +15,7 @@ from paper_data import *
 from download_data import *#objects, comparisons, objects_names, comparisons_names, objects_types, QPE_bands_list
 from stellarMassblackHoleMass import stellarMass_mBH, log10_stellarMass_mBH
 from stellarMassWISE import TDE_stellarMasses_WISE, QPE_stellarMasses_WISE
+from compareModels import plot_sersicIndex_mBH, plot_surfaceStellarMassDensity_mBH, plot_sersicIndex_surfaceStellarMassDensity
 
 def get_QPE_n_and_r50(ra_dec, model="None", band="i"):
     types = []
@@ -31,6 +35,8 @@ def get_QPE_n_and_r50(ra_dec, model="None", band="i"):
     lo, mid, hi = np.percentile(chain[:, 0],16), np.percentile(chain[:, 0],50), np.percentile(chain[:, 0],84)
     plus, minus = (hi-mid), (mid-lo)
     r50_data = [mid, minus, plus]
+
+
 
     return sersic_index_data, r50_data
 
@@ -115,33 +121,50 @@ if __name__ == "__main__":
     QPE_stellar_masses, TDE_stellar_masses = chooseStellarMassMethod()
     #Transform lists into arrays
     QPE_sersicIndices, QPE_r50s, QPE_stellar_masses, QPE_mBH, TDE_stellar_masses, TDE_r50s, TDE_mBH = np.array(QPE_sersicIndices), np.array(QPE_r50s), np.array(QPE_stellar_masses), np.array(QPE_mBH), np.array(TDE_stellar_masses), np.array(TDE_r50s), np.array(TDE_mBH)
+    #Transfer the QPE r50s from arcseconds to kpc:
+    for i in range(len(objects)):
+        cosmology_params = calculate_cosmo(QPE_redshifts[i], H0=67, Omega_m=0.31, Omega_v=0.69)
+        kpc_per_arcsec = cosmology_params["kpc_DA"]
+        QPE_r50s[i] = QPE_r50s[i]*kpc_per_arcsec
+    #Add +/-0 uncertainties to TDE r50s
     TDE_r50s = add_0_uncertainties(TDE_r50s)
+    #Create upper-limit list for TDE stellar surface densities:
+    TDE_uplims = [False, False, False, False, False, False, False, False, True, False]
     #Calculate stellar mass surface densities
     QPE_stellarDensities = []
     for i in range(len(objects)):
         QPE_stellarDensities.append(stellarMassDensity(QPE_stellar_masses[i], QPE_r50s[i]))
+        QPE_stellarDensities[i] = (np.log10(QPE_stellarDensities[i][0]), QPE_stellarDensities[i][1]/(QPE_stellarDensities[i][0]*np.log(10)), QPE_stellarDensities[i][2]/(QPE_stellarDensities[i][0]*np.log(10)))
     QPE_stellarDensities = np.array(QPE_stellarDensities)
 
     TDE_stellarDensities = []
     for i in range(len(TDE_names)):
         TDE_stellarDensities.append(stellarMassDensity(TDE_stellar_masses[i], TDE_r50s[i]))
+        TDE_stellarDensities[i] = (np.log10(TDE_stellarDensities[i][0]), TDE_stellarDensities[i][1]/(TDE_stellarDensities[i][0]*np.log(10)), TDE_stellarDensities[i][2]/(TDE_stellarDensities[i][0]*np.log(10)))
     TDE_stellarDensities = np.array(TDE_stellarDensities)
 
+    
 
     # QPE hosts properties
-    print_table(np.array([objects_names, np.around(QPE_sersicIndices[:,0], 4), np.around(QPE_r50s[:,0], 4), np.around(np.log10(QPE_stellar_masses[:,0]), 4), np.around(np.log10(QPE_mBH[:,0]), 4)]).T,
-                    header=["Name", "Sérsic index", "r50", "log Stellar mass", "log M_BH"],
+    print_table(np.array([objects_names, np.around(QPE_sersicIndices[:,0], 4), np.around(QPE_r50s[:,0], 4), np.around(np.log10(QPE_stellar_masses[:,0]), 4), np.around(np.log10(QPE_mBH[:,0]), 4), np.around(QPE_stellarDensities[:,0], 4)]).T,
+                    header=["Name", "Sérsic index", "r50 (kpc)", "log Stellar mass", "log M_BH", "log Surface density"],
                     title="QPE hosts properties",
                     space_between_columns=4,
                     space_between_rows=0,
                     borders=2)
     
     # TDE hosts properties
-    print_table(np.array([TDE_names, np.around(TDE_sersicIndices, 4), np.around(TDE_r50s[:,0], 4), np.around(np.log10(TDE_stellar_masses[:,0]), 4), np.around(np.log10(TDE_mBH), 4)]).T,
-                    header=["Name", "Sérsic index", "r50", "log Stellar mass", "log M_BH"],
+    print_table(np.array([TDE_names, np.around(TDE_sersicIndices, 4), np.around(TDE_r50s[:,0], 4), np.around(np.log10(TDE_stellar_masses[:,0]), 4), np.around(np.log10(TDE_mBH), 4), np.around(TDE_stellarDensities[:,0], 4)]).T,
+                    header=["Name", "Sérsic index", "r50 (kpc)", "log Stellar mass", "log M_BH", "log Surface density"],
                     title="TDE hosts properties",
                     space_between_columns=4,
                     space_between_rows=0,
                     borders=2)
+    
+
+    #Plots:
+    plot_sersicIndex_mBH(QPE_mBH, QPE_sersicIndices, TDE_mBH, TDE_sersicIndices)
+    plot_surfaceStellarMassDensity_mBH(QPE_mBH, QPE_stellarDensities, TDE_mBH, TDE_stellarDensities, uplims=TDE_uplims)
+    plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellarDensities, TDE_sersicIndices, TDE_stellarDensities)
 
     

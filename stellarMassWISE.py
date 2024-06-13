@@ -5,6 +5,10 @@ These functions come from Jarrett, Cluver et al.: https://arxiv.org/pdf/2301.059
 """
 import numpy as np
 import matplotlib.pyplot as plt
+from ned_wright_cosmology import calculate_cosmo
+from paper_data import QPE_redshifts, TDE_redshifts
+from download_data import objects_names, TDE_names
+from utils import print_table
 
 def getMW1(L_W1):
     """
@@ -70,8 +74,7 @@ def getStarMass_W1_W2(M_W1, M_W2, sigma_M_W1=None, sigma_M_W2=None, returnLog=Fa
 
 
 #WISE DATA FOR EACH OBJECT:
-from download_data import objects_names
-from utils import print_table
+
 
 #Dictionnary of magnitudes (and their uncertainties)
 wise_mags = {
@@ -124,50 +127,84 @@ sigma_wise_mags = {
     "SDSS J1201":       {"W1":0.033,"W2":0.056},
     }
 
-    
+
+
+
+
+
+#---------------------------QPE-----------------------------
 
 #Get apparent magnitudes:
-w1_mags = []
-w2_mags = []
-w1_mags_unc = []
-w2_mags_unc = []
+QPE_w1_mags = []
+QPE_w2_mags = []
+QPE_w1_mags_unc = []
+QPE_w2_mags_unc = []
 for i in range(len(objects_names)):
-    w1_mags.append(wise_mags[objects_names[i]]["W1"])
-    w2_mags.append(wise_mags[objects_names[i]]["W2"])
-    w1_mags_unc.append(sigma_wise_mags[objects_names[i]]["W1"])
-    w2_mags_unc.append(sigma_wise_mags[objects_names[i]]["W2"])
+    QPE_w1_mags.append(wise_mags[objects_names[i]]["W1"])
+    QPE_w2_mags.append(wise_mags[objects_names[i]]["W2"])
+    QPE_w1_mags_unc.append(sigma_wise_mags[objects_names[i]]["W1"])
+    QPE_w2_mags_unc.append(sigma_wise_mags[objects_names[i]]["W2"])
 #w1_mags, w2_mags, w1_mags_unc, w2_mags_unc = np.array(w1_mags), np.array(w2_mags), np.array(w1_mags_unc), np.array(w2_mags_unc)
 
 #Get absolute magnitudes:
-from ned_wright_cosmology import calculate_cosmo
-from paper_data import QPE_redshifts
-distances = []
-w1_abs_mags = []
-w2_abs_mags = []
+QPE_distances = []
+QPE_w1_abs_mags = []
+QPE_w2_abs_mags = []
 
 for i in range(len(objects_names)):
-    distances.append(calculate_cosmo(QPE_redshifts[i])["DL_Mpc"])
-    w1_abs_mags.append(w1_mags[i]-2.5*np.log10((distances[i]*1E6/10)**2))
-    w2_abs_mags.append(w2_mags[i]-2.5*np.log10((distances[i]*1E6/10)**2))
+    QPE_distances.append(calculate_cosmo(QPE_redshifts[i])["DL_Mpc"])
+    QPE_w1_abs_mags.append(QPE_w1_mags[i]-2.5*np.log10((QPE_distances[i]*1E6/10)**2))
+    QPE_w2_abs_mags.append(QPE_w2_mags[i]-2.5*np.log10((QPE_distances[i]*1E6/10)**2))
 
 
 #Calculate stellar masses:
 QPE_stellarMasses_WISE = []
 for i in range(len(objects_names)):
-    sm = getStarMass_W1_W2(w1_abs_mags[i], w2_abs_mags[i], w1_mags_unc[i], w2_mags_unc[i])
+    sm = getStarMass_W1_W2(QPE_w1_abs_mags[i], QPE_w2_abs_mags[i], QPE_w1_mags_unc[i], QPE_w2_mags_unc[i])
     QPE_stellarMasses_WISE.append((sm[0], sm[1], sm[1])) #Setting 0 uncertainty for the moment
 QPE_stellarMasses_WISE = np.array(QPE_stellarMasses_WISE)
 
 
+
+
+
+
+
+#---------------------------TDE-----------------------------
+
+#Get apparent magnitudes:
+TDE_w1_mags = []
+TDE_w2_mags = []
+TDE_w1_mags_unc = []
+TDE_w2_mags_unc = []
+for i in range(len(TDE_names)):
+    TDE_w1_mags.append(wise_mags[TDE_names[i]]["W1"])
+    TDE_w2_mags.append(wise_mags[TDE_names[i]]["W2"])
+    TDE_w1_mags_unc.append(sigma_wise_mags[TDE_names[i]]["W1"])
+    TDE_w2_mags_unc.append(sigma_wise_mags[TDE_names[i]]["W2"])
+#w1_mags, w2_mags, w1_mags_unc, w2_mags_unc = np.array(w1_mags), np.array(w2_mags), np.array(w1_mags_unc), np.array(w2_mags_unc)
+
+
+TDE_distances = []
+TDE_w1_abs_mags = []
+TDE_w2_abs_mags = []
+
+for i in range(len(TDE_names)):
+    TDE_distances.append(calculate_cosmo(TDE_redshifts[i])["DL_Mpc"])
+    TDE_w1_abs_mags.append(TDE_w1_mags[i]-2.5*np.log10((TDE_distances[i]*1E6/10)**2))
+    TDE_w2_abs_mags.append(TDE_w2_mags[i]-2.5*np.log10((TDE_distances[i]*1E6/10)**2))
+
+
 #Calculate stellar masses:
 TDE_stellarMasses_WISE = []
-for i in range(len(objects_names)):
-    sm = getStarMass_W1_W2(w1_abs_mags[i], w2_abs_mags[i], w1_mags_unc[i], w2_mags_unc[i])
+for i in range(len(TDE_names)):
+    sm = getStarMass_W1_W2(TDE_w1_abs_mags[i], TDE_w2_abs_mags[i], TDE_w1_mags_unc[i], TDE_w2_mags_unc[i])
     TDE_stellarMasses_WISE.append((sm[0], sm[1], sm[1])) #Setting 0 uncertainty for the moment
 TDE_stellarMasses_WISE = np.array(TDE_stellarMasses_WISE)
 
 if __name__ == "__main__":
-    print_table(np.array([objects_names, np.around(distances, 2), np.around(w1_abs_mags, 2), w1_mags_unc, np.around(w2_abs_mags, 2), w2_mags_unc, np.around(np.log10(QPE_stellarMasses_WISE[:,0]), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="QPE hosts WISE properties", borders=2)
+    print_table(np.array([objects_names, np.around(QPE_distances, 2), np.around(QPE_w1_abs_mags, 2), QPE_w1_mags_unc, np.around(QPE_w2_abs_mags, 2), QPE_w2_mags_unc, np.around(np.log10(QPE_stellarMasses_WISE[:,0]), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="QPE hosts WISE properties", borders=2)
+    print_table(np.array([TDE_names, np.around(TDE_distances, 2), np.around(TDE_w1_abs_mags, 2), TDE_w1_mags_unc, np.around(TDE_w2_abs_mags, 2), TDE_w2_mags_unc, np.around(np.log10(TDE_stellarMasses_WISE[:,0]), 3)]).T, ["Name", "Distance (Mpc)", "W1", "+/-", "W2", "+/-", "log Stellar Mass (M_sun)"], title="TDE hosts WISE properties", borders=2)
     if False:
         lw1s = 10**(np.linspace(7,12,100))
         mw1s = getMW1(lw1s)
