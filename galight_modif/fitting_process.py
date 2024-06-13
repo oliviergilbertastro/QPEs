@@ -664,11 +664,15 @@ def fitting_setting_temp(algorithm, fitting_level = 'norm'):
     if algorithm == 'PSO':
         if fitting_level == 'deep':
             setting = {'sigma_scale': 0.8, 'n_particles': 100, 'n_iterations': 150}
+        elif fitting_level == "mega_deep":
+            setting = {'sigma_scale': 0.8, 'n_particles': 200, 'n_iterations': 300}
         else:
             setting = {'sigma_scale': 0.8, 'n_particles': 50, 'n_iterations': 50}
     elif algorithm == 'MCMC':     
         if fitting_level == 'deep':            
             setting = {'n_burn': 100, 'n_run': 200, 'walkerRatio': 10, 'sigma_scale': .1}
+        elif fitting_level == 'mega_deep':            
+            setting = {'n_burn': 100, 'n_run': 1000, 'walkerRatio': 10, 'sigma_scale': .1}
         else:
             setting = {'n_burn': 100, 'n_run': 30, 'walkerRatio': 10, 'sigma_scale': .1}
     return setting
