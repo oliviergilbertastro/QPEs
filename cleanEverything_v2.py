@@ -37,8 +37,9 @@ def get_QPE_n_and_r50(ra_dec, model="None", band="i"):
     plus, minus = (hi-mid), (mid-lo)
     r50_data = [mid, minus, plus]
 
+    magnitude = fitting_run_result.final_result_galaxy[0]['magnitude']
 
-    return sersic_index_data, r50_data
+    return sersic_index_data, r50_data, magnitude
 
 
 def chooseStellarMassMethod():
@@ -122,26 +123,27 @@ def checkWhichFiltersWork(list_of_dicts):
     return
 
 
+#Do this part so other programs can load it (especially the magnitudes from prospector)
 
+#First, load the TDE sersic indices and half-light radii into arrays or list, idc:
+QPE_sersicIndices = []
+QPE_r50s = []
+QPE_magnitudes = []
+for i in range(len(objects)):
+    QPE_sersicIndices.append({})
+    QPE_r50s.append({})
+    QPE_magnitudes.append({})
+    for band in "griz":
+        try:
+            n, r50, mag = get_QPE_n_and_r50(objects[i], objects_types[i], band=band)
+            QPE_sersicIndices[-1][band] = n
+            QPE_r50s[-1][band] = r50
+            QPE_magnitudes[-1][band] = mag
+        except:
+            pass
 
 if __name__ == "__main__":
-
-    #First, load the TDE sersic indices and half-light radii into arrays or list, idc:
-    QPE_sersicIndices = []
-    QPE_r50s = []
-    for i in range(len(objects)):
-        QPE_sersicIndices.append({})
-        QPE_r50s.append({})
-        for band in "griz":
-            try:
-                n, r50 = get_QPE_n_and_r50(objects[i], objects_types[i], band=band)
-                print(n, r50)
-                QPE_sersicIndices[-1][band] = n
-                QPE_r50s[-1][band] = r50
-            except:
-                pass
-                #print(objects[i], objects_types[i], band)
-    print(QPE_sersicIndices)
+    #print(objects[i], objects_types[i], band)
     checkWhichFiltersWork(QPE_sersicIndices)
 
     sys.exit()
