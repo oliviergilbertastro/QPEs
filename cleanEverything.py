@@ -164,6 +164,7 @@ if __name__ == "__main__":
     #Plots:
     plot_sersicIndex_mBH(QPE_mBH, QPE_sersicIndices, TDE_mBH, TDE_sersicIndices)
     plot_surfaceStellarMassDensity_mBH(QPE_mBH, QPE_stellarDensities, TDE_mBH, TDE_stellarDensities, uplims=TDE_uplims)
+    plot_surfaceStellarMassDensity_mBH(QPE_stellar_masses, QPE_stellarDensities, TDE_stellar_masses, TDE_stellarDensities, uplims=TDE_uplims)
     plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellarDensities, TDE_sersicIndices, TDE_stellarDensities)
 
     
