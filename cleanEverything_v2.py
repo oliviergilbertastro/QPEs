@@ -122,29 +122,53 @@ def checkWhichFiltersWork(list_of_dicts):
                 )
     return
 
+def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property", round_to_n_decimals=2):
+    properties = {"g":[], "r":[], "i":[], "z":[]}
+    for i in range(len(list_of_dicts)):
+        for band in "griz":
+            try:
+                properties[band].append(f"{list_of_dicts[i][band][0]:0.2f}")
+            except:
+                try:
+                    properties[band].append(f"{list_of_dicts[i][band]:0.2f}")
+                except:
+                    properties[band].append("-")
+    print_table(np.array([objects_names, properties["g"], properties["r"], properties["i"], properties["z"]]).T,
+                header=["Name", "g", "r", "i", "z"],
+                title=name_of_property,
+                borders=2,
+                )
+    return
+
 
 #Do this part so other programs can load it (especially the magnitudes from prospector)
-
 #First, load the TDE sersic indices and half-light radii into arrays or list, idc:
 QPE_sersicIndices = []
 QPE_r50s = []
 QPE_magnitudes = []
+QPE_unreddenedMagnitudes = []
 for i in range(len(objects)):
     QPE_sersicIndices.append({})
     QPE_r50s.append({})
     QPE_magnitudes.append({})
+    QPE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
             n, r50, mag = get_QPE_n_and_r50(objects[i], objects_types[i], band=band)
             QPE_sersicIndices[-1][band] = n
             QPE_r50s[-1][band] = r50
             QPE_magnitudes[-1][band] = mag
+            QPE_unreddenedMagnitudes[-1][band] = mag - QPE_extinction[objects_names[i]][band]
         except:
             pass
 
 if __name__ == "__main__":
     #print(objects[i], objects_types[i], band)
     checkWhichFiltersWork(QPE_sersicIndices)
+    printPropertyAcrossFilters(QPE_sersicIndices, "Sérsic Index")
+    printPropertyAcrossFilters(QPE_r50s, "Sérsic half-light radius")
+    printPropertyAcrossFilters(QPE_magnitudes, "Magnitude")
+    printPropertyAcrossFilters(QPE_unreddenedMagnitudes, "Dereddened magnitude")
 
     sys.exit()
     QPE_stellar_masses, TDE_stellar_masses = chooseStellarMassMethod()
