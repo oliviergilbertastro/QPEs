@@ -120,12 +120,23 @@ elif input("Fit a QPE host galaxy? [y/n]\n") == "y":
         if band == "z" or band == 'Z' or band == "3":
             img_path = f"image-decam-830049-N24-z.fits.gz"
             oow_path = f"iv-decam-830049-N24-z.fits.gz"
+            survey = None
+            exppath = None
+            stars = [[189.6886, 33.2096], [189.6298, 33.2235], [189.7368, 33.1792]]
+        if band == "r" or band == 'R' or band == "2":
+            img_path = f"cutout_rings.v3.skycell.2049.024.stk.r.unconv.fits"
+            oow_path = f"cutout_rings.v3.skycell.2049.024.stk.r.unconv.fits"
+            survey = "PANSTARRS"
+            exppath = f"data/science/obj4/cutout_rings.v3.skycell.2049.024.stk.r.unconv.exp.fits"
+            stars = None
         galight_fit(ra_dec=objects[objID],
                     img_path = data_repo+img_path,
                     oow_path = data_repo+oow_path,
                     type = type,
-                    PSF_pos_list = [[189.6886, 33.2096], [189.6298, 33.2235], [189.7368, 33.1792]],
+                    PSF_pos_list = stars,
                     band=band,
+                    exp_path=exppath,
+                    survey=survey
                     )
 
     #-------------------------------------------------------------------object5---------------------------------------------------------

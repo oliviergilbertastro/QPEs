@@ -23,37 +23,26 @@ import numpy as np
 import astroquery
 from sedpy.observate import load_filters
 from prospect.utils.obsutils import fix_obs
+from download_data import objects_names, objects
+from cleanEverything_v2 import QPE_magnitudes, QPE_unreddenedMagnitudes
+from paper_data import QPE_redshifts
 
-def fit_SED(pos, bands="ugriz", redshift=0, magnitudes_dict=None, data_release=18, survey="sdss"):
+def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
     """
-    pos = (ra,dec)
+    Fits SED using prospector
     """
-    ra, dec = pos
-    #print(ra, dec)
-    from astroquery.sdss import SDSS
-    from astropy.coordinates import SkyCoord
-    if magnitudes_dict == None:
-        mcol = [f"cModelMag_{b}" for b in bands]
-        ecol = [f"cModelMagErr_{b}" for b in bands]
-        #data_release = int(input("Which data release do you want to use? [1-18]"))
-        cat = SDSS.query_crossid(SkyCoord(ra=ra, dec=dec, unit="deg"),
-                                data_release=data_release,
-                                photoobj_fields=mcol + ecol + ["specObjID"],
-                                )
-        #This code is only if you don't have a redshift for the source and find the redshift in the spectra
-        #shdus = SDSS.get_spectra(plate=2101, mjd=53858, fiberID=220)[0]
-        #assert int(shdus[2].data["SpecObjID"][0]) == cat[0]["specObjID"]
-        #redshift = shdus[2].data[0]["z"]
-
-        filters = load_filters([f"sdss_{b}0" for b in bands])
-    else:
-        if survey == "sdss":
-            filters = load_filters([f"sdss_{b}0" for b in bands])
-        elif survey == "twomass":
-            filters = load_filters([f"twomass_{b}" for b in bands])
-        else:
-            raise ValueError(f"Survey {survey} is not implemented yet.")
-        cat = copy.copy(magnitudes_dict)
+    
+    filters = load_filters([f"sdss_{b}0" for b in bands])
+    working_bands = ""
+    for b in bands:
+        try:
+            idc = magnitudes_dict[0][f"cModelMag_{b}"]
+            working_bands += b
+        except:
+            pass
+    print(working_bands)
+    return
+    cat = copy.copy(magnitudes_dict)
     for b in bands:
         print(b, cat[0][f"cModelMag_{b}"])
     maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in bands])
@@ -183,8 +172,7 @@ def makeAstropyTableFromDictionnary(dict):
     dtypes = [type(val) for val in dict.values()]
     return astropy.table.table.Table(data=data, names=names, dtype=dtypes)
 
-from download_data import objects_names
-from cleanEverything_v2 import QPE_magnitudes
+
 if __name__ == "__main__":
 
     magnitudes_dicts = []
@@ -192,33 +180,17 @@ if __name__ == "__main__":
         magnitudes_dicts.append({"name":objects_names[i]})
         for band in "griz":
             try:
-                magnitudes_dicts[i][f"cModelMag_{band}"] = QPE_magnitudes[i][band]
-                magnitudes_dicts[i][f"cModelMagErr_{band}"] = 0#QPE_magnitudes[i][band]
+                magnitudes_dicts[i][f"cModelMag_{band}"] = QPE_unreddenedMagnitudes[i][band]
+                magnitudes_dicts[i][f"cModelMagErr_{band}"] = 0
             except:
                 pass
-         
-    for dic in magnitudes_dicts:
-        print(dic)
+
     for i in range(len(magnitudes_dicts)):
         magnitudes_dicts[i] = makeAstropyTableFromDictionnary(magnitudes_dicts[i])
 
-    #print(magnitudes_dicts[0]["name"])
     if input("Fit objects? [y/n]") == "y":
-        #fit_thingamabob((204.46376, 35.79883), redshift=0.07260209)
-        objID = input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n")
-        if objID == "":
-            print("Choose an object in this list:")
-            for i in range(len(objects)):
-                print(f"{i}: {download_data.objects_names[i]}")
-            objID = int(input(f"Input object ID you want to fit [0-{len(objects)-1}]:\n"))
-        else:
-            objID = int(objID)
-        if magnitudes_dicts[objID] != None:
-            data_release = "custom" #Not really a data release, just to make file name
-        else:
-            data_release = input("Which data release?")
-            data_release = 18 if data_release == "" else int(data_release)
-        fit_SED(objects[objID], bands=bands_for_each_obj[objID], redshift=QPE_redshifts[objID], data_release=data_release, magnitudes_dict=magnitudes_dicts[objID], survey=surveys[objID])
+        objID = int(input(f"Input object ID you want to fit [0-{len(objects_names)-1}]:\n"))
+        fit_SED(objects[objID], bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=magnitudes_dicts[objID])
 
     if input("Read object? [y/n]") == "y":
         #read_thingamabob((204.46376, 35.79883))

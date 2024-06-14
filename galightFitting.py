@@ -54,6 +54,7 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
     img = pyfits.open(img_path)
     if oow_path != None:
         wht_img = pyfits.open(oow_path)
+    zp = 22.5
     if survey == "DESI":
     #Showing the image in the selected band
         ax1 = plt.subplot(211)
@@ -95,6 +96,9 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
             exp_img = pyfits.open(exp_path)
             exp_map = exp_img[0].data
             #print(exp_img[0].header)
+        exp_map = 1
+        band_index = ["g","r","i","z"].index(band)
+        zp = [24.41,24.68,24.56,24.22][band_index]
 
     elif survey == "COADDED_DESI":
         
@@ -112,11 +116,11 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
         exp =  1  #Read the exposure time
         exp_map = exp
 
-
+    print(exp_map)
     #data_process = DataProcess(fov_image = fov_image, target_pos = [1432., 966.], pos_type = 'pixel', header = header,
     #                        rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)  #zp use 27.0 for convinence.
     data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
-                            rm_bkglight = True, exptime = exp_map, if_plot=(not SUBTRACT_NOISE), zp = 22.5)  #zp use 27.0 for convinence.
+                            rm_bkglight = True, exptime = exp_map, if_plot=(not SUBTRACT_NOISE), zp = zp)  #zp use 27.0 for convinence.
 
     data_process.generate_target_materials(radius=radius, create_mask = (not SUBTRACT_NOISE), nsigma=nsigma,
                                         exp_sz= exp_sz_multiplier, npixels = npixels, if_plot=(not SUBTRACT_NOISE))
