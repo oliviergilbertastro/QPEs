@@ -192,11 +192,12 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
 
     #Prepare the fitting sequence, keywords see notes above.
     fit_sepc.prepare_fitting_seq(point_source_num = number_of_ps,
+                                 fix_n_list=None, #To fix the Sérsic index at 2.09: [[0,2.09]]
                                 fix_center = False,
                                 fix_ellipticity = False,
                                 manual_bounds = None,#{'lower':{'e1': -0.5, 'e2': -0.5, 'R_sersic': 0.01, 'n_sersic': 0.3, 'center_x': 0, 'center_y': 0},
                                                 # 'upper':{'e1': 0.5, 'e2': 0.5, 'R_sersic': 5, 'n_sersic': 5., 'center_x': 0, 'center_y': 0}},
-                                fix_n_list= None, condition=condition_bulgedisk)
+                                condition=condition_bulgedisk)
 
     #Plot the initial settings for fittings.
     fit_sepc.plot_fitting_sets()
