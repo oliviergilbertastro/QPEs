@@ -41,6 +41,235 @@ if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
                     fitting_level="deep",
                     )
 
+
+
+
+#CHANGE ALL THAT TO FIT PANSTARRS IMAGES
+
+elif input("Fit a PANSTARRS QPE host galaxy? [y/n]\n") == "y":
+    objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
+    band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
+    type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
+
+    data_repo = f"data/science/obj{objID}/"
+
+    #-------------------------------------------------------------------object0---------------------------------------------------------
+    if objID == 0:
+        if band == "i" or band == 'I' or band == "2":
+            img_path = f"image-decam-498255-N24-i.fits.gz"
+            oow_path = f"iv-decam-498255-N24-i.fits.gz"
+        elif band == "z" or band == 'Z' or band == "3":
+            img_path = f"image-decam-498254-N24-z.fits.gz"
+            oow_path = f"iv-decam-498254-N24-z.fits.gz"
+        galight_fit(ra_dec=objects[objID],
+                img_path = data_repo+img_path,
+                oow_path = data_repo+oow_path,
+                type = type,
+                PSF_pos_list=[[19.7915, -34.2054], [19.7957, -34.1628], [19.7597, -34.1971]], #We find stars in the image online, click on them and copy their WCS coordinates here
+                band=band,
+                nsigma=3,
+                )
+
+    #-------------------------------------------------------------------object1---------------------------------------------------------
+    elif objID == 1:
+        if band == "i" or band == 'I' or band == "2":
+            img_path = f"image-decam-989756-N29-i.fits.gz"
+            oow_path = f"iv-decam-989756-N29-i.fits.gz"
+        galight_fit(ra_dec=objects[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list = [[195.5072, 27.7707], [195.4652, 27.7651], [195.5622, 27.7844], [195.5709, 27.7705], [195.4288, 27.7695]],
+                    band=band,
+                    )
+
+    #-------------------------------------------------------------------object2---------------------------------------------------------
+    elif objID == 2:
+        if  band == "r" or band == 'R' or band == "1":
+            img_path = f"image-decam-499464-N20-r.fits.gz"
+            oow_path = f"iv-decam-499464-N20-r.fits.gz"
+        elif band == "i" or band == 'I' or band == "2":
+            img_path = f"image-decam-499463-N20-i.fits.gz"
+            oow_path = f"iv-decam-499463-N20-i.fits.gz"
+        elif band == "z" or band == 'Z' or band == "3":
+            img_path = f"image-decam-495390-N20-z.fits.gz"
+            oow_path = f"iv-decam-495390-N20-z.fits.gz"
+        galight_fit(ra_dec=objects[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list = [[37.9556, -10.3576], [38.0116, -10.3474]],
+                    band=band,
+                    )
+        
+
+    #-------------------------------------------------------------------object3---------------------------------------------------------
+    elif objID == 3:
+        if band == "i" or band == 'I' or band == "2":
+            img_path = f"image-decam-667213-N27-i.fits.gz"
+            oow_path = f"iv-decam-667213-N27-i.fits.gz"
+        elif band == "z" or band == 'Z' or band == "3":
+            img_path = f"image-decam-513359-N22-z.fits.gz"
+            oow_path = f"iv-decam-513359-N22-z.fits.gz"
+        galight_fit(ra_dec=objects[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list = [[38.7643, -44.3211], [38.8033, -44.3424], [38.8122, -44.3468], [38.8552, -44.3693]],
+                    band=band,
+                    nsigma=3,
+                    )
+
+    #-------------------------------------------------------------------object4---------------------------------------------------------
+    elif objID == 4:
+        if band == "z" or band == 'Z' or band == "3":
+            img_path = f"image-decam-830049-N24-z.fits.gz"
+            oow_path = f"iv-decam-830049-N24-z.fits.gz"
+            survey = None
+            exppath = None
+            stars = [[189.6886, 33.2096], [189.6298, 33.2235], [189.7368, 33.1792]]
+        if band == "r" or band == 'R' or band == "2":
+            img_path = f"cutout_rings.v3.skycell.2049.024.stk.r.unconv.fits"
+            oow_path = f"cutout_rings.v3.skycell.2049.024.stk.r.unconv.fits"
+            survey = "PANSTARRS"
+            exppath = f"data/science/obj4/cutout_rings.v3.skycell.2049.024.stk.r.unconv.exp.fits"
+            stars = None
+        galight_fit(ra_dec=objects[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list = stars,
+                    band=band,
+                    exp_path=exppath,
+                    survey=survey
+                    )
+
+    #-------------------------------------------------------------------object5---------------------------------------------------------
+    elif objID == 5:
+        if band == "i" or band == 'I' or band == "2":
+            img_path = f"image-decam-791708-N5-i.fits.gz"
+            oow_path = f"iv-decam-791708-N5-i.fits.gz"
+        elif band == "z" or band == 'Z' or band == "3":
+            img_path = f"image-decam-611386-N13-z.fits.gz"
+            oow_path = f"iv-decam-611386-N13-z.fits.gz"
+        galight_fit(ra_dec=objects[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list = None, #[[42.3057, -4.1935], [42.3336, -4.1881], [42.2590, -4.1946]],
+                    band=band,
+                    nsigma=3,
+                    )
+
+    #-------------------------------------------------------------------object6---------------------------------------------------------
+    elif objID == 6:
+        if band == "i" or band == 'I' or band == "2":
+            img_path = f"image-decam-977812-N10-i.fits.gz"
+            oow_path = f"iv-decam-977812-N10-i.fits.gz"
+        galight_fit(ra_dec=objects[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list = [[210.2263, -28.7413], [210.2434, -28.7409]],
+                    band=band,
+                    nsigma=10,
+                    radius=35
+                    )
+
+        
+    #-------------------------------------------------------------------object7---------------------------------------------------------
+    elif objID == 7:
+        if band == "r" or band == 'R' or band == "1":
+            img_path = f"image-decam-384902-N2-r.fits.gz"
+            oow_path = f"iv-decam-384902-N2-r.fits.gz"
+        galight_fit(ra_dec=objects[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    type = type,
+                    PSF_pos_list = [[71.4243, -10.2004], [71.4131, -10.2141], [71.4304, -10.2135]],
+                    band=band,
+                    radius=45,
+                    )
+        
+    #-------------------------------------------------------------------object8---------------------------------------------------------
+    elif objID == 8:
+        survey = "DESI"
+        exp_path = None
+        if band == "r" or band == "R" or band == "1":
+            img_path = f"image-decam-781092-S28-r.fits.gz"
+            oow_path = f"iv-decam-781092-S28-r.fits.gz"
+        elif band == "z" or band == 'Z' or band == "3":
+            img_path = f"image-decam-780799-S28-z.fits.gz"
+            oow_path = f"iv-decam-780799-S28-z.fits.gz"
+        elif band == "g" or band == "G" or band == "0":
+            img_path = f"cutout_rings.v3.skycell.1072.047.stk.g.unconv.fits"
+            oow_path = f"cutout_rings.v3.skycell.1072.047.stk.g.unconv.wt.fits"
+            survey = "PANSTARRS"
+            exp_path = data_repo+f"cutout_rings.v3.skycell.1072.047.stk.g.unconv.exp.fits"
+        galight_fit(ra_dec=objects[objID],
+                    img_path = data_repo+img_path,
+                    oow_path = data_repo+oow_path,
+                    exp_path = exp_path,
+                    type = type,
+                    PSF_pos_list = [],
+                    band=band,
+                    radius=60,
+                    nsigma=15,
+                    exp_sz_multiplier=2,
+                    npixels=10,
+                    survey=survey,
+                    pixel_scale=0.250,
+                    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 elif input("Fit a QPE host galaxy? [y/n]\n") == "y":
     objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
