@@ -17,7 +17,7 @@ if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
                     None,
                     None,
                     [[38.7643, -44.3211], [38.6746, -44.3405], [38.6773, -44.3321]],
-                    None,
+                    None,   #[[189.6887, 33.2096], [189.7192, 33.1615], [189.7368, 33.1792]],
                     [[42.3057, -4.1936], [42.3714, -4.1891], [42.3621, -4.1921]],
                     None,
                     None,
@@ -38,7 +38,7 @@ if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
                     threshold=5,
                     nsigma=10,
                     exp_sz_multiplier=1,
-                    fitting_level="giga_deep",
+                    fitting_level="deep",
                     )
 
 elif input("Fit a QPE host galaxy? [y/n]\n") == "y":

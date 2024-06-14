@@ -191,7 +191,12 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
     fit_sepc = FittingSpecify(data_process)
 
     #Prepare the fitting sequence, keywords see notes above.
-    fit_sepc.prepare_fitting_seq(point_source_num = number_of_ps, fix_n_list= None, condition=condition_bulgedisk)
+    fit_sepc.prepare_fitting_seq(point_source_num = number_of_ps,
+                                fix_center = False,
+                                fix_ellipticity = False,
+                                manual_bounds = None,#{'lower':{'e1': -0.5, 'e2': -0.5, 'R_sersic': 0.01, 'n_sersic': 0.3, 'center_x': 0, 'center_y': 0},
+                                                # 'upper':{'e1': 0.5, 'e2': 0.5, 'R_sersic': 5, 'n_sersic': 5., 'center_x': 0, 'center_y': 0}},
+                                fix_n_list= None, condition=condition_bulgedisk)
 
     #Plot the initial settings for fittings.
     fit_sepc.plot_fitting_sets()
@@ -208,7 +213,7 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
     fit_run = FittingProcess(fit_sepc, savename = savename, fitting_level=fitting_level) 
 
     #Setting the fitting approach and Run:
-    fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = None)
+    fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = None, threadCount=2)
     #fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = [None, {'n_burn': 200, 'n_run': 1000, 'walkerRatio': 10, 'sigma_scale': .1}])
     fit_run.mcmc_result_range()
     # Plot all the fitting results:

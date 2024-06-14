@@ -137,7 +137,7 @@ class FittingSpecify(object):
         self.kwargs_likelihood = kwargs_likelihood
         
     def sepc_kwargs_params(self, source_params = None, fix_n_list = None, fix_Re_list = None, ps_params = None, ps_pix_center_list= None,
-                           neighborhood_size = 4, threshold = 5, apertures_center_focus = False):
+                           neighborhood_size = 4, threshold = 5, apertures_center_focus = False, fix_center = False, fix_ellipticity = False, manual_bounds = None):
         """
         Setting up the 'kwargs_params' (i.e., the parameters) for the fitting. If 'source_params' or 'ps_params'
         are given, rather then setting as None, then, the input settings will be used.
@@ -165,7 +165,11 @@ class FittingSpecify(object):
                                                         deltaPix = self.deltaPix,
                                                         fix_n_list = fix_n_list,
                                                         fix_Re_list = fix_Re_list,
-                                                        apertures_center_focus = apertures_center_focus)
+                                                        apertures_center_focus = apertures_center_focus,
+                                                        fix_center = fix_center,
+                                                        fix_ellipticity = fix_ellipticity,
+                                                        manual_bounds = manual_bounds
+                                                        )
             else:
                 source_params = source_params
             kwargs_params['lens_light_model'] = source_params
@@ -266,7 +270,8 @@ class FittingSpecify(object):
                           fix_center_list = None, source_params = None,
                           fix_n_list = None, fix_Re_list = None, ps_params = None, condition = None,
                           neighborhood_size = 4, threshold = 5, apertures_center_focus = False,
-                          psf_error_map = None, mpi = False):
+                          psf_error_map = None, mpi = False, fix_center=False, fix_ellipticity=False,
+                          manual_bounds = None):
         """
         Key function used to prepared for the fitting. Parameters will be passed to the corresponding functions.
         """
@@ -280,7 +285,8 @@ class FittingSpecify(object):
         self.sepc_kwargs_likelihood(condition)
         self.sepc_kwargs_params(source_params = source_params, fix_n_list = fix_n_list, fix_Re_list = fix_Re_list, 
                                 ps_params = ps_params, neighborhood_size = neighborhood_size, threshold = threshold,
-                                apertures_center_focus = apertures_center_focus, ps_pix_center_list = ps_pix_center_list)
+                                apertures_center_focus = apertures_center_focus, ps_pix_center_list = ps_pix_center_list, fix_center=fix_center,
+                                fix_ellipticity=fix_ellipticity, manual_bounds=manual_bounds)
         if point_source_num == 0 or point_source_num == None:
             del self.kwargs_params['point_source_model']
             del self.kwargs_constraints['num_point_source_list']
@@ -312,7 +318,7 @@ class FittingSpecify(object):
                 
     
 def source_params_generator(frame_size, apertures = [], deltaPix = 1, fix_n_list = None, fix_Re_list = None,
-                            apertures_center_focus = False):
+                            apertures_center_focus = False, fix_center = False, fix_ellipticity = False, manual_bounds = None):
     """
     Quickly generate a source parameters for the fitting.
     
@@ -387,14 +393,25 @@ def source_params_generator(frame_size, apertures = [], deltaPix = 1, fix_n_list
                     fix_Re_value = fix_Re_value[0] #extract the fix Re value from the list
                 fixed_source[-1]['R_sersic'] = fix_Re_value
                 kwargs_source_init[-1]['R_sersic'] = fix_Re_value
+        if fix_center:
+            fixed_source[-1]['center_x'] = 0
+            fixed_source[-1]['center_y'] = 0
+        if fix_ellipticity:
+            fixed_source[-1]['e1'] = 0
+            fixed_source[-1]['e2'] = 0
         
         kwargs_source_sigma.append({'n_sersic': 2, 'R_sersic': 0.2*Reff, 'e1': 0.1, 'e2': 0.1, 'center_x': 2*deltaPix, 'center_y': 2*deltaPix})
-        if apertures_center_focus == False:
-            kwargs_lower_source.append({'e1': -0.5, 'e2': -0.5, 'R_sersic': deltaPix*0.05, 'n_sersic': 0.3, 'center_x': c_x-10*deltaPix, 'center_y': c_y-10*deltaPix})
-            kwargs_upper_source.append({'e1': 0.5, 'e2': 0.5, 'R_sersic': Reff*30, 'n_sersic': 9., 'center_x': c_x+10*deltaPix, 'center_y': c_y+10*deltaPix})        
-        elif apertures_center_focus == True:
-            kwargs_lower_source.append({'e1': -0.5, 'e2': -0.5, 'R_sersic': deltaPix*0.05, 'n_sersic': 0.3, 'center_x': c_x-2*deltaPix, 'center_y': c_y-2*deltaPix})
-            kwargs_upper_source.append({'e1': 0.5, 'e2': 0.5, 'R_sersic': Reff*30, 'n_sersic': 9., 'center_x': c_x+2*deltaPix, 'center_y': c_y+2*deltaPix})        
+        if manual_bounds is not None:
+            kwargs_lower_source.append(manual_bounds['lower'])
+            kwargs_upper_source.append(manual_bounds['upper'])   
+        else:
+            if apertures_center_focus == False:
+                kwargs_lower_source.append({'e1': -0.5, 'e2': -0.5, 'R_sersic': deltaPix*0.05, 'n_sersic': 0.3, 'center_x': c_x-10*deltaPix, 'center_y': c_y-10*deltaPix})
+                kwargs_upper_source.append({'e1': 0.5, 'e2': 0.5, 'R_sersic': Reff*30, 'n_sersic': 9., 'center_x': c_x+10*deltaPix, 'center_y': c_y+10*deltaPix})        
+            elif apertures_center_focus == True:
+                kwargs_lower_source.append({'e1': -0.5, 'e2': -0.5, 'R_sersic': deltaPix*0.05, 'n_sersic': 0.3, 'center_x': c_x-2*deltaPix, 'center_y': c_y-2*deltaPix})
+                kwargs_upper_source.append({'e1': 0.5, 'e2': 0.5, 'R_sersic': Reff*30, 'n_sersic': 9., 'center_x': c_x+2*deltaPix, 'center_y': c_y+2*deltaPix})   
+
     source_params = [kwargs_source_init, kwargs_source_sigma, fixed_source, kwargs_lower_source, kwargs_upper_source]
     return source_params
 
