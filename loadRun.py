@@ -204,6 +204,11 @@ if input("Load CO-ADDED QPE host? [y/n]") == "y":
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
     loadRun(objects[objID], type=objects_types[objID], band=band, picklename=f"{objects_names[objID]}_{band}-band_{objects_types[objID]}_DESI.pkl")
 
+elif input("Load PANSTARRS QPE host? [y/n]") == "y":
+    objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
+    band = "r"
+    loadRun(objects[objID], type=objects_types[objID], band=band, picklename=f"{objects_names[objID]}_{band}-band_{objects_types[objID]}_PANSTARRS.pkl")
+
 elif input("Load QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")

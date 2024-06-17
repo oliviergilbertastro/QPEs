@@ -18,9 +18,9 @@ from stellarMassWISE import TDE_stellarMasses_WISE, QPE_stellarMasses_WISE
 from compareModels import plot_sersicIndex_mBH, plot_surfaceStellarMassDensity_mBH, plot_sersicIndex_surfaceStellarMassDensity
 import sys
 
-def get_QPE_n_and_r50(ra_dec, model="None", band="i"):
+def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI"):
     objID = objects.index(ra_dec)
-    picklename = f"{objects_names[objID]}_{band}-band_{model}_DESI.pkl"
+    picklename = f"{objects_names[objID]}_{band}-band_{model}_{survey}.pkl"
     try:
         fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
     except:
@@ -139,8 +139,10 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
                 borders=2,
                 )
     return
-
-
+survey = "DESI"
+if __name__ == "__main__":
+    survey = input("Which survey? [default=DESI]\n")
+    survey = "DESI" if survey == "" else survey
 #Do this part so other programs can load it (especially the magnitudes from prospector)
 #First, load the TDE sersic indices and half-light radii into arrays or list, idc:
 QPE_sersicIndices = []
@@ -154,7 +156,7 @@ for i in range(len(objects)):
     QPE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
-            n, r50, mag = get_QPE_n_and_r50(objects[i], objects_types[i], band=band)
+            n, r50, mag = get_QPE_n_and_r50(objects[i], objects_types[i], band=band, survey=survey)
             QPE_sersicIndices[-1][band] = n
             QPE_r50s[-1][band] = r50
             QPE_magnitudes[-1][band] = mag

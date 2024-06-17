@@ -54,7 +54,16 @@ elif input("Fit a PANSTARRS QPE host galaxy? [y/n]\n") == "y":
     survey = "PANSTARRS"
     savename = f"{objects_names[objID]}_{band}-band_{type}_{survey}"
     pixel_scale = 0.250
-    panstarrID = [None,"1893.099",None,None,"2049.024",None,None,None,None][objID]
+    panstarrID = [None,"1893.099","1063.041",None,"2049.024","1153.090","0681.083","1072.048","1072.047"][objID]
+    stars = [None,
+             None,
+             None,
+             None,
+             None,
+             [[42.3057, -4.1935]],
+             None,
+             None,
+             None][objID]
 
     if objID == 0:
         raise ValueError(f"No PANSTARRS image for {objects_names[objID]}")
@@ -63,7 +72,7 @@ elif input("Fit a PANSTARRS QPE host galaxy? [y/n]\n") == "y":
             img_path = data_repo+f"cutout_rings.v3.skycell.{panstarrID}.stk.r.unconv.fits",
             exp_path = data_repo+f"cutout_rings.v3.skycell.{panstarrID}.stk.r.unconv.exp.fits",
             type = type,
-            PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
+            PSF_pos_list=stars, #We find stars in the image online, click on them and copy their WCS coordinates here
             band=band,
             survey=survey,
             savename=savename,
