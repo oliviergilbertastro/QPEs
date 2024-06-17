@@ -1,3 +1,7 @@
+"""
+Needed to make a lot of tables in the terminal and there is no support for it, so I made this program.
+"""
+
 import numpy as np
 from math import floor, ceil
 

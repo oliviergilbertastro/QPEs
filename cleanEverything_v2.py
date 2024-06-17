@@ -17,6 +17,7 @@ from stellarMassblackHoleMass import stellarMass_mBH, log10_stellarMass_mBH
 from stellarMassWISE import TDE_stellarMasses_WISE, QPE_stellarMasses_WISE
 from compareModels import plot_sersicIndex_mBH, plot_surfaceStellarMassDensity_mBH, plot_sersicIndex_surfaceStellarMassDensity
 import sys
+#from prospector.prospector_myFits import QPE_stellar_masses_desiProspector
 
 def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI"):
     objID = objects.index(ra_dec)
@@ -48,7 +49,7 @@ def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI"):
 
 
 def chooseStellarMassMethod():
-    sMass_option = input("Which stellar mass method do you want to use?\n    1. Litterature\n    2. Litterature + SDSS prospector\n    3. BH mass relation\n    4. WISE mass relation\n")
+    sMass_option = input("Which stellar mass method do you want to use?\n    1. Litterature\n    2. Litterature + SDSS prospector\n    3. BH mass relation\n    4. WISE mass relation\n    5. DESI prospector\n")
     try:
         sMass_option = int(sMass_option)
     except:
@@ -80,6 +81,12 @@ def chooseStellarMassMethod():
         TDE_stellar_masses = list(TDE_stellar_masses)
         for i in range(len(TDE_stellar_masses)):
             TDE_stellar_masses[i] = tuple(TDE_stellar_masses[i])
+    elif sMass_option == 5:
+        QPE_stellar_masses = QPE_stellar_masses_desiProspector
+        QPE_stellar_masses = list(QPE_stellar_masses)
+        for i in range(len(QPE_stellar_masses)):
+            QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
+        TDE_stellar_masses = TDE_stellar_masses_litterature
     else:
         raise ValueError("This is not a valide option.")
     return QPE_stellar_masses, TDE_stellar_masses
@@ -144,6 +151,28 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
                 borders=2,
                 )
     return
+
+
+def makeFinalCornerPlot(QPE_mBH, QPE_sersicIndices, QPE_stellarSurfaceDensities, TDE_mBH, TDE_sersicIndices, TDE_stellarSurfaceDensities):
+    return
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 survey = "DESI"
 if __name__ == "__main__":
     survey = input("Which survey? [default=DESI]\n")
@@ -177,12 +206,13 @@ if __name__ == "__main__":
     printPropertyAcrossFilters(QPE_magnitudes, "Magnitude")
     printPropertyAcrossFilters(QPE_unreddenedMagnitudes, "Dereddened magnitude")
 
-    sys.exit()
+    
     QPE_stellar_masses, TDE_stellar_masses = chooseStellarMassMethod()
     #Transform lists into arrays
     
+    #Calculate stellar surface densities:
 
-    
+    sys.exit()
 
     # QPE hosts properties
     print_table(np.array([objects_names, np.around(QPE_sersicIndices[:,0], 4), np.around(QPE_r50s[:,0], 4), np.around(np.log10(QPE_stellar_masses[:,0]), 4), np.around(np.log10(QPE_mBH[:,0]), 4)]).T,

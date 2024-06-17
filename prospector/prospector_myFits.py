@@ -26,6 +26,11 @@ from prospect.utils.obsutils import fix_obs
 from download_data import objects_names, objects
 from cleanEverything_v2 import QPE_magnitudes, QPE_unreddenedMagnitudes
 from paper_data import QPE_redshifts
+from prospect.sources import CSPSpecBasis
+from prospect.io import read_results as reader
+import matplotlib.pyplot as plt
+from prospect.plotting import corner
+from prospect.plotting.utils import best_sample
 
 def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
     """
@@ -41,12 +46,12 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
         except:
             pass
     print(working_bands)
-    return
+
     cat = copy.copy(magnitudes_dict)
     for b in bands:
         print(b, cat[0][f"cModelMag_{b}"])
-    maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in bands])
-    magerr = np.array([cat[0][f"cModelMagErr_{b}"] for b in bands])
+    maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in working_bands])
+    magerr = np.array([cat[0][f"cModelMagErr_{b}"] for b in working_bands])
     magerr = np.hypot(magerr, 0.05)
 
     obs = dict(wavelength=None, spectrum=None, unc=None, redshift=redshift,
@@ -82,7 +87,7 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
 
     noise_model = (None, None)
 
-    from prospect.sources import CSPSpecBasis
+    
     sps = CSPSpecBasis(zcontinuous=1)
     #print(sps.ssp.libraries)
 
@@ -96,29 +101,23 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
     output = fit_model(obs, model, sps, optimize=False, dynesty=True, lnprobfn=lnprobfn, noise=noise_model, **fitting_kwargs)
     result, duration = output["sampling"]
     from prospect.io import write_results as writer
-    hfile = f"prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}_{data_release}.h5"
+    hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
     writer.write_hdf5(hfile, {}, model, obs,
                     output["sampling"][0], None,
                     sps=sps,
                     tsample=output["sampling"][1],
                     toptimize=0.0)
 
-def read_SED(pos, data_release=16):
-    ra, dec = pos
-    hfile = f"prospector/fits_data/quickstart_dynesty_mcmc_{ra}_{dec}_{data_release}.h5"
-    from prospect.io import read_results as reader
+def read_SED(objID):
+    hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
     out, out_obs, out_model = reader.results_from(hfile)
     for k in out.keys():
         print(k, ":", out[k])
 
-    import matplotlib.pyplot as plt
     #Plot the posterior's corner plot
-    from prospect.plotting import corner
     nsamples, ndim = out["chain"].shape
     cfig, axes = plt.subplots(ndim, ndim, figsize=(10,9))
     axes = corner.allcorner(out["chain"].T, out["theta_labels"], axes, weights=out["weights"], color="royalblue", show_titles=True)
-
-    from prospect.plotting.utils import best_sample
     pbest = best_sample(out)
     corner.scatter(pbest[:, None], axes, color="firebrick", marker="o")
     plt.show()
@@ -137,12 +136,11 @@ def read_SED(pos, data_release=16):
     corner.scatter(pbest[:, None], axes, color="firebrick", marker="o")
     plt.show()
 
-
-
     #Plot the observed SED of the spectrum and SED of the highest probability posterior sample
     sfig, saxes = plt.subplots(2, 1, gridspec_kw=dict(height_ratios=[1, 4]), sharex=True)
     ax = saxes[1]
     pwave = np.array([f.wave_effective for f in out_obs["filters"]])
+
     # plot the data
     ax.plot(pwave, out_obs["maggies"], linestyle="", marker="o", color="k")
     ax.errorbar(pwave,  out_obs["maggies"], out_obs["maggies_unc"], linestyle="", color="k", zorder=10)
@@ -151,6 +149,7 @@ def read_SED(pos, data_release=16):
     ax.set_xlim(3e3, 1e4)
     ax.set_ylim(out_obs["maggies"].min() * 0.1, out_obs["maggies"].max() * 5)
     ax.set_yscale("log")
+
     # get the best-fit SED
     bsed = out["bestfit"]
     ax.plot(bsed["restframe_wavelengths"] * (1+out_obs["redshift"]), bsed["spectrum"], color="firebrick", label="MAP sample")
@@ -164,6 +163,14 @@ def read_SED(pos, data_release=16):
     plt.show()
 
 
+def getStellarMass(objID):
+    hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
+    
+    out, out_obs, out_model = reader.results_from(hfile)
+    mass = out["chain"][:,0]
+    return (np.quantile(mass, 0.5), (np.quantile(mass, 0.5)-np.quantile(mass, 0.16)), (np.quantile(mass, 0.84)-np.quantile(mass, 0.5)))
+
+
 def makeAstropyTableFromDictionnary(dict):
     if dict == None:
         return None
@@ -171,6 +178,8 @@ def makeAstropyTableFromDictionnary(dict):
     data = np.array([val for val in dict.values()])
     dtypes = [type(val) for val in dict.values()]
     return astropy.table.table.Table(data=data, names=names, dtype=dtypes)
+
+
 
 
 if __name__ == "__main__":
@@ -190,11 +199,13 @@ if __name__ == "__main__":
 
     if input("Fit objects? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to fit [0-{len(objects_names)-1}]:\n"))
-        fit_SED(objects[objID], bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=magnitudes_dicts[objID])
+        fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=magnitudes_dicts[objID])
 
     if input("Read object? [y/n]") == "y":
-        #read_thingamabob((204.46376, 35.79883))
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
-        data_release = input("Which data release? If custom magnitudes, enter nothing.")
-        data_release = "custom" if data_release == "" else int(data_release)
-        read_SED(objects[objID], data_release=data_release)
+        read_SED(objID)
+
+else:
+    QPE_stellar_masses_desiProspector = []
+    for i in range(len(objects_names)):
+        QPE_stellar_masses_desiProspector.append(getStellarMass(i))
