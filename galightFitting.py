@@ -104,7 +104,7 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
         exp =  1  #Read the exposure time
         exp_map = exp
 
-    print(exp_map)
+
     #data_process = DataProcess(fov_image = fov_image, target_pos = [1432., 966.], pos_type = 'pixel', header = header,
     #                        rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)  #zp use 27.0 for convinence.
     data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
@@ -184,9 +184,10 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
 
     #Prepare the fitting sequence, keywords see notes above.
     fit_sepc.prepare_fitting_seq(point_source_num = number_of_ps,
-                                 fix_n_list=None, #To fix the Sérsic index at 2.09: [[0,2.09]]
-                                fix_center = False,
-                                fix_ellipticity = False,
+                                fix_Re_list=None,
+                                fix_n_list=None, #To fix the Sérsic index at 2.09: [[0,2.09]]
+                                fix_center = None,
+                                fix_ellipticity = None,
                                 manual_bounds = None,#{'lower':{'e1': -0.5, 'e2': -0.5, 'R_sersic': 0.01, 'n_sersic': 0.3, 'center_x': 0, 'center_y': 0},
                                                 # 'upper':{'e1': 0.5, 'e2': 0.5, 'R_sersic': 5, 'n_sersic': 5., 'center_x': 0, 'center_y': 0}},
                                 condition=condition_bulgedisk)

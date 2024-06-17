@@ -28,14 +28,19 @@ def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI"):
 
     #Calculate the Sersic index + uncertainties
     chain = fitting_run_result.samples_mcmc
-    lo, mid, hi = np.percentile(chain[:, 1],16), np.percentile(chain[:, 1],50), np.percentile(chain[:, 1],84)
-    plus, minus = (hi-mid), (mid-lo)
-    sersic_index_data = [mid, minus, plus]
+    params = fitting_run_result.param_mcmc
+    if "R_sersic" in params and "n_sersic" in params:
+        lo, mid, hi = np.percentile(chain[:, 1],16), np.percentile(chain[:, 1],50), np.percentile(chain[:, 1],84)
+        plus, minus = (hi-mid), (mid-lo)
+        sersic_index_data = [mid, minus, plus]
 
-    #Calculate the Sersic half-light radius + uncertainties:
-    lo, mid, hi = np.percentile(chain[:, 0],16), np.percentile(chain[:, 0],50), np.percentile(chain[:, 0],84)
-    plus, minus = (hi-mid), (mid-lo)
-    r50_data = [mid, minus, plus]
+        #Calculate the Sersic half-light radius + uncertainties:
+        lo, mid, hi = np.percentile(chain[:, 0],16), np.percentile(chain[:, 0],50), np.percentile(chain[:, 0],84)
+        plus, minus = (hi-mid), (mid-lo)
+        r50_data = [mid, minus, plus]
+    else:
+        sersic_index_data = [fitting_run_result.final_result_galaxy[0]["n_sersic"], 0, 0]
+        r50_data = [fitting_run_result.final_result_galaxy[0]["R_sersic"], 0, 0]
 
     magnitude = fitting_run_result.final_result_galaxy[0]['magnitude']
 

@@ -137,7 +137,7 @@ class FittingSpecify(object):
         self.kwargs_likelihood = kwargs_likelihood
         
     def sepc_kwargs_params(self, source_params = None, fix_n_list = None, fix_Re_list = None, ps_params = None, ps_pix_center_list= None,
-                           neighborhood_size = 4, threshold = 5, apertures_center_focus = False, fix_center = False, fix_ellipticity = False, manual_bounds = None):
+                           neighborhood_size = 4, threshold = 5, apertures_center_focus = False, fix_center = None, fix_ellipticity = None, manual_bounds = None):
         """
         Setting up the 'kwargs_params' (i.e., the parameters) for the fitting. If 'source_params' or 'ps_params'
         are given, rather then setting as None, then, the input settings will be used.
@@ -270,7 +270,7 @@ class FittingSpecify(object):
                           fix_center_list = None, source_params = None,
                           fix_n_list = None, fix_Re_list = None, ps_params = None, condition = None,
                           neighborhood_size = 4, threshold = 5, apertures_center_focus = False,
-                          psf_error_map = None, mpi = False, fix_center=False, fix_ellipticity=False,
+                          psf_error_map = None, mpi = False, fix_center=None, fix_ellipticity=None,
                           manual_bounds = None):
         """
         Key function used to prepared for the fitting. Parameters will be passed to the corresponding functions.
@@ -318,7 +318,7 @@ class FittingSpecify(object):
                 
     
 def source_params_generator(frame_size, apertures = [], deltaPix = 1, fix_n_list = None, fix_Re_list = None,
-                            apertures_center_focus = False, fix_center = False, fix_ellipticity = False, manual_bounds = None):
+                            apertures_center_focus = False, fix_center = None, fix_ellipticity = None, manual_bounds = None):
     """
     Quickly generate a source parameters for the fitting.
     
@@ -393,12 +393,12 @@ def source_params_generator(frame_size, apertures = [], deltaPix = 1, fix_n_list
                     fix_Re_value = fix_Re_value[0] #extract the fix Re value from the list
                 fixed_source[-1]['R_sersic'] = fix_Re_value
                 kwargs_source_init[-1]['R_sersic'] = fix_Re_value
-        if fix_center:
-            fixed_source[-1]['center_x'] = 0
-            fixed_source[-1]['center_y'] = 0
-        if fix_ellipticity:
-            fixed_source[-1]['e1'] = 0
-            fixed_source[-1]['e2'] = 0
+        if fix_center is not None:
+            fixed_source[-1]['center_x'] = fix_center[0]
+            fixed_source[-1]['center_y'] = fix_center[1]
+        if fix_ellipticity is not None:
+            fixed_source[-1]['e1'] = fix_ellipticity[0]
+            fixed_source[-1]['e2'] = fix_ellipticity[1]
         
         kwargs_source_sigma.append({'n_sersic': 2, 'R_sersic': 0.2*Reff, 'e1': 0.1, 'e2': 0.1, 'center_x': 2*deltaPix, 'center_y': 2*deltaPix})
         if manual_bounds is not None:
