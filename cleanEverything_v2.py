@@ -15,9 +15,9 @@ from paper_data import *
 from download_data import *#objects, comparisons, objects_names, comparisons_names, objects_types, QPE_bands_list
 from stellarMassblackHoleMass import stellarMass_mBH, log10_stellarMass_mBH
 from stellarMassWISE import TDE_stellarMasses_WISE, QPE_stellarMasses_WISE
-from compareModels import plot_sersicIndex_mBH, plot_surfaceStellarMassDensity_mBH, plot_sersicIndex_surfaceStellarMassDensity
+from compareModels import plot_sersicIndex_mBH, plot_surfaceStellarMassDensity_mBH, plot_sersicIndex_surfaceStellarMassDensity, plot_surfaceStellarMassDensity_stellarMass
 import sys
-#from prospector.prospector_myFits import QPE_stellar_masses_desiProspector
+from prospector.prospector_myFits import QPE_stellar_masses_desiProspector
 
 def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI", redshift=0):
     objID = objects.index(ra_dec)
@@ -162,6 +162,40 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
 
 
 def makeFinalCornerPlot(QPE_mBH, QPE_sersicIndices, QPE_stellarSurfaceDensities, TDE_mBH, TDE_sersicIndices, TDE_stellarSurfaceDensities):
+    import seaborn as sns
+    QPE_mBH = np.log10(QPE_mBH)
+    TDE_mBH = np.log10(TDE_mBH)
+
+    QPE_data = np.array([QPE_mBH, QPE_sersicIndices, QPE_stellarSurfaceDensities])
+    TDE_data = np.array([TDE_mBH, TDE_sersicIndices, TDE_stellarSurfaceDensities])
+
+    if False:
+        #Make gaussian distributions of all parameters:
+        mus, stds = [], []
+        QPE_xaxis, TDE_xaxis = [], []
+        QPE_pdfs, TDE_pdfs = [], []
+        for i in range(len(QPE_data)):
+
+            mu1, std1 = norm.fit(QPEsersicIndices[:,0])
+            mu2, std2 = norm.fit(TDEsersicIndices)
+            alldata = np.concatenate((QPEsersicIndices[:,0], TDEsersicIndices))
+            mini, maxi = np.min(alldata), np.max(alldata)
+            # Plot the histogram.
+            #plt.hist(QPEsersicIndices[:,0], bins=25, density=False, alpha=0.5, color='b', label='QPE')
+            #plt.hist(TDEsersicIndices, bins=25, density=False, alpha=0.5, color='r', label='TDE')
+            plt.hist(QPEsersicIndices[:,0], range=(mini, maxi), bins=50, density=False, alpha=0.4, color='b')
+            plt.hist(TDEsersicIndices, range=(mini, maxi), bins=50, density=False, alpha=0.4, color='r')
+            # Plot the PDF.
+            xmin, xmax = plt.xlim()
+            x = np.linspace(xmin, xmax, 100)
+            p1 = norm.pdf(x, mu1, std1)
+
+    QPE_data, TDE_data = QPE_data.T, TDE_data.T
+    fig = corner.corner(QPE_data, color="blue")
+    corner.corner(TDE_data, fig=fig, color="red")
+    plt.show()
+    
+    #sns.pairplot(pd.DataFrame([QPE_data, TDE_data]), hue="Hosts")
     return
 
 
@@ -183,7 +217,7 @@ def makeFinalCornerPlot(QPE_mBH, QPE_sersicIndices, QPE_stellarSurfaceDensities,
 
 survey = "DESI"
 if __name__ == "__main__":
-    survey = input("Which survey? [default=DESI]\n")
+    #survey = input("Which survey? [default=DESI]\n")
     survey = "DESI" if survey == "" else survey
 #Do this part so other programs can load it (especially the magnitudes from prospector)
 #First, load the TDE sersic indices and half-light radii into arrays or list, idc:
@@ -242,8 +276,16 @@ if __name__ == "__main__":
     TDE_sersicIndices = np.array(TDE_sersicIndices)
     TDE_stellar_surface_densities = np.array(TDE_stellar_surface_densities)
 
-    plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellar_surface_densities, TDE_sersicIndices, TDE_stellar_surface_densities)
-    plot_surfaceStellarMassDensity_mBH(QPE_mBH, QPE_stellar_surface_densities, TDE_mBH, TDE_stellar_surface_densities)
+    for i in range(len(QPE_stellar_masses)):
+        QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
+    for i in range(len(TDE_stellar_masses)):
+        TDE_stellar_masses[i] = tuple(TDE_stellar_masses[i])
+    QPE_stellar_masses = np.array(QPE_stellar_masses)
+    TDE_stellar_masses = np.array(TDE_stellar_masses)
+
+
+    plot_surfaceStellarMassDensity_stellarMass(QPE_stellar_masses, QPE_stellar_surface_densities, TDE_stellar_masses, TDE_stellar_surface_densities)
+    makeFinalCornerPlot(QPE_mBH[:,0], QPE_sersicIndices[:,0], QPE_stellar_surface_densities[:,0], TDE_mBH, TDE_sersicIndices, TDE_stellar_surface_densities[:,0])
     sys.exit()
 
     # QPE hosts properties

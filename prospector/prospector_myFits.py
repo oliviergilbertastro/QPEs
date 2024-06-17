@@ -24,7 +24,8 @@ import astroquery
 from sedpy.observate import load_filters
 from prospect.utils.obsutils import fix_obs
 from download_data import objects_names, objects
-from cleanEverything_v2 import QPE_magnitudes, QPE_unreddenedMagnitudes
+if __name__ != "prospector.prospector_myFits":
+    from cleanEverything_v2 import QPE_magnitudes, QPE_unreddenedMagnitudes
 from paper_data import QPE_redshifts
 from prospect.sources import CSPSpecBasis
 from prospect.io import read_results as reader
