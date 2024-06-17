@@ -19,7 +19,7 @@ from compareModels import plot_sersicIndex_mBH, plot_surfaceStellarMassDensity_m
 import sys
 #from prospector.prospector_myFits import QPE_stellar_masses_desiProspector
 
-def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI"):
+def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI", redshift=0):
     objID = objects.index(ra_dec)
     picklename = f"{objects_names[objID]}_{band}-band_{model}_{survey}.pkl"
     try:
@@ -42,6 +42,10 @@ def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI"):
     else:
         sersic_index_data = [fitting_run_result.final_result_galaxy[0]["n_sersic"], 0, 0]
         r50_data = [fitting_run_result.final_result_galaxy[0]["R_sersic"], 0, 0]
+    #Convert r50 from arcsec to kpc
+    cosmology_params = calculate_cosmo(redshift, H0=67, Omega_m=0.31, Omega_v=0.69)
+    kpc_per_arcsec = cosmology_params["kpc_DA"]
+    r50_data = np.array(r50_data)*kpc_per_arcsec
 
     magnitude = fitting_run_result.final_result_galaxy[0]['magnitude']
 
@@ -98,7 +102,7 @@ def add_0_uncertainties(a):
     a = placeholder
     return a
 
-def stellarMassDensity(M_star, r50):
+def stellarMassDensity(M_star, r50, returnLog=False):
     '''
     Calculate the stellar surface mass density \Sigma_{M_\ast} from the total stellar mass and the half-light radius
 
@@ -111,9 +115,13 @@ def stellarMassDensity(M_star, r50):
         res = M_star[0]/r50[0]**2
         errlo = res*np.sqrt((M_star[1]/M_star[0])**2+(2*r50[2]/r50[0])**2)
         errhi = res*np.sqrt((M_star[2]/M_star[0])**2+(2*r50[1]/r50[0])**2)
+        if returnLog:
+            return [np.log10(res), errlo/(res*np.log(10)), errhi/(res*np.log(10))]
         return [res, errlo, errhi]
     except:
         #In the exception where the user did not input uncertainties, the value will still be calculated.
+        if returnLog:
+            return np.log10(M_star/r50[0]**2)
         return M_star/r50[0]**2#/(2*np.pi) #is there a constant 2pi we need to divide by???
 
 
@@ -190,7 +198,7 @@ for i in range(len(objects)):
     QPE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
-            n, r50, mag = get_QPE_n_and_r50(objects[i], objects_types[i], band=band, survey=survey)
+            n, r50, mag = get_QPE_n_and_r50(objects[i], objects_types[i], redshift=QPE_redshifts[i], band=band, survey=survey)
             QPE_sersicIndices[-1][band] = n
             QPE_r50s[-1][band] = r50
             QPE_magnitudes[-1][band] = mag
@@ -202,16 +210,34 @@ if __name__ == "__main__":
     #print(objects[i], objects_types[i], band)
     checkWhichFiltersWork(QPE_sersicIndices)
     printPropertyAcrossFilters(QPE_sersicIndices, "Sérsic Index")
-    printPropertyAcrossFilters(QPE_r50s, "Sérsic half-light radius")
+    printPropertyAcrossFilters(QPE_r50s, "Sérsic half-light radius (kpc)")
     printPropertyAcrossFilters(QPE_magnitudes, "Magnitude")
     printPropertyAcrossFilters(QPE_unreddenedMagnitudes, "Dereddened magnitude")
 
+    #From now on, keep only the r-band properties:
+    QPE_placeholder_properties = {"n_sersic":[], "r_50":[]}
+    for i in range(len(objects)):
+        QPE_placeholder_properties["n_sersic"].append(QPE_sersicIndices[i]["r"])
+        QPE_placeholder_properties["r_50"].append(QPE_r50s[i]["r"])
+    QPE_sersicIndices = QPE_placeholder_properties["n_sersic"]
+    QPE_r50s = QPE_placeholder_properties["r_50"]
     
     QPE_stellar_masses, TDE_stellar_masses = chooseStellarMassMethod()
-    #Transform lists into arrays
     
     #Calculate stellar surface densities:
+    QPE_stellar_surface_densities = []
+    for i in range(len(objects)):
+        QPE_stellar_surface_densities.append(stellarMassDensity(QPE_stellar_masses[i], QPE_r50s[i], returnLog=True))
+    
+    TDE_stellar_surface_densities = []
+    TDE_r50s = add_0_uncertainties(TDE_r50s)
+    for i in range(len(TDE_stellar_masses)):
+        TDE_stellar_surface_densities.append(stellarMassDensity(TDE_stellar_masses[i], TDE_r50s[i], returnLog=True))
+    
+    #Transform lists into arrays
+    QPE_sersicIndices,QPE_stellar_surface_densities,TDE_sersicIndices,TDE_stellar_surface_densities = np.array(QPE_sersicIndices),np.array(QPE_stellar_surface_densities),np.array(TDE_sersicIndices),np.array(TDE_stellar_surface_densities)
 
+    plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellar_surface_densities, TDE_sersicIndices, TDE_stellar_surface_densities)
     sys.exit()
 
     # QPE hosts properties

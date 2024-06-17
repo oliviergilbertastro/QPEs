@@ -45,10 +45,11 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
             working_bands += b
         except:
             pass
+    filters = load_filters([f"sdss_{b}0" for b in working_bands])
     print(working_bands)
 
     cat = copy.copy(magnitudes_dict)
-    for b in bands:
+    for b in working_bands:
         print(b, cat[0][f"cModelMag_{b}"])
     maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in working_bands])
     magerr = np.array([cat[0][f"cModelMagErr_{b}"] for b in working_bands])
