@@ -235,9 +235,15 @@ if __name__ == "__main__":
         TDE_stellar_surface_densities.append(stellarMassDensity(TDE_stellar_masses[i], TDE_r50s[i], returnLog=True))
     
     #Transform lists into arrays
-    QPE_sersicIndices,QPE_stellar_surface_densities,TDE_sersicIndices,TDE_stellar_surface_densities = np.array(QPE_sersicIndices),np.array(QPE_stellar_surface_densities),np.array(TDE_sersicIndices),np.array(TDE_stellar_surface_densities)
+    QPE_mBH = np.array(QPE_mBH)
+    QPE_sersicIndices = np.array(QPE_sersicIndices)
+    QPE_stellar_surface_densities = np.array(QPE_stellar_surface_densities)
+    TDE_mBH = np.array(TDE_mBH)
+    TDE_sersicIndices = np.array(TDE_sersicIndices)
+    TDE_stellar_surface_densities = np.array(TDE_stellar_surface_densities)
 
     plot_sersicIndex_surfaceStellarMassDensity(QPE_sersicIndices, QPE_stellar_surface_densities, TDE_sersicIndices, TDE_stellar_surface_densities)
+    plot_surfaceStellarMassDensity_mBH(QPE_mBH, QPE_stellar_surface_densities, TDE_mBH, TDE_stellar_surface_densities)
     sys.exit()
 
     # QPE hosts properties
