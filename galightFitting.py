@@ -17,7 +17,7 @@ from matplotlib.colors import LogNorm
 
 SUBTRACT_NOISE = False
 
-def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5, fitting_level="deep"):
+def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5, fitting_level="deep"):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
         number_of_ps = 1
@@ -79,24 +79,12 @@ def galight_fit(ra_dec, img_path, oow_path, exp_path=None, type="AGN", pixel_sca
         plt.title("Exposure map")
         plt.show()
     elif survey == "PANSTARRS":
-        ax1 = plt.subplot(211)
-        ax2 = plt.subplot(212, sharex=ax1, sharey=ax1)
-        ax1.imshow(copy.copy(wht_img[0].data).T)
-        ax2.imshow(copy.copy(img[0].data).T)
-        ax1.invert_xaxis()
-        plt.show()
-
         fov_image = img[0].data
         header = img[0].header
         exp =  astro_tools.read_fits_exp(img[0].header)  #Read the exposure time 
-        wht = wht_img[0].data
-        mean_wht = exp * (pixel_scale)**2  #The drizzle information is used to derive the mean WHT value.
-        exp_map = exp * wht/mean_wht  #Derive the exposure time map for each pixel
         if exp_path != None:
             exp_img = pyfits.open(exp_path)
             exp_map = exp_img[0].data
-            #print(exp_img[0].header)
-        exp_map = 1
         band_index = ["g","r","i","z"].index(band)
         zp = [24.41,24.68,24.56,24.22][band_index]
 

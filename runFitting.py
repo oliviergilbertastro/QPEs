@@ -52,164 +52,23 @@ elif input("Fit a PANSTARRS QPE host galaxy? [y/n]\n") == "y":
     type = objects_types[objID]
     data_repo = f"data/science/obj{objID}/"
     survey = "PANSTARRS"
-    savename = f"{objects_names[objID]}_{band}_{survey}"
+    savename = f"{objects_names[objID]}_{band}-band_{type}_{survey}"
     pixel_scale = 0.250
-    #-------------------------------------------------------------------object0---------------------------------------------------------
+    panstarrID = [None,"1893.099",None,None,"2049.024",None,None,None,None][objID]
+
     if objID == 0:
-        if  band == "r" or band == 'R' or band == "1":
-            img_path = f"image-decam-499464-N20-r.fits.gz"
-            exp_path = f"iv-decam-499464-N20-r.fits.gz"
-        galight_fit(ra_dec=objects[objID],
-                img_path = data_repo+img_path,
-                exp_path = data_repo+exp_path,
-                type = type,
-                PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
-                band=band,
-                survey=survey,
-                savename=savename,
-                pixel_scale=pixel_scale,
-                )
+        raise ValueError(f"No PANSTARRS image for {objects_names[objID]}")
 
-    #-------------------------------------------------------------------object1---------------------------------------------------------
-    elif objID == 1:
-        if  band == "r" or band == 'R' or band == "1":
-            img_path = f"image-decam-499464-N20-r.fits.gz"
-            exp_path = f"iv-decam-499464-N20-r.fits.gz"
-        galight_fit(ra_dec=objects[objID],
-                img_path = data_repo+img_path,
-                exp_path = data_repo+exp_path,
-                type = type,
-                PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
-                band=band,
-                survey=survey,
-                savename=savename,
-                pixel_scale=pixel_scale,
-                )
-
-    #-------------------------------------------------------------------object2---------------------------------------------------------
-    elif objID == 2:
-        if  band == "r" or band == 'R' or band == "1":
-            img_path = f"image-decam-499464-N20-r.fits.gz"
-            exp_path = f"iv-decam-499464-N20-r.fits.gz"
-        galight_fit(ra_dec=objects[objID],
-                img_path = data_repo+img_path,
-                exp_path = data_repo+exp_path,
-                type = type,
-                PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
-                band=band,
-                survey=survey,
-                savename=savename,
-                pixel_scale=pixel_scale,
-                )
-        
-
-    #-------------------------------------------------------------------object3---------------------------------------------------------
-    elif objID == 3:
-        if  band == "r" or band == 'R' or band == "1":
-            img_path = f"image-decam-499464-N20-r.fits.gz"
-            exp_path = f"iv-decam-499464-N20-r.fits.gz"
-        galight_fit(ra_dec=objects[objID],
-                img_path = data_repo+img_path,
-                exp_path = data_repo+exp_path,
-                type = type,
-                PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
-                band=band,
-                survey=survey,
-                savename=savename,
-                pixel_scale=pixel_scale,
-                )
-
-    #-------------------------------------------------------------------object4---------------------------------------------------------
-    elif objID == 4:
-        if band == "r" or band == 'R' or band == "2":
-            img_path = f"cutout_rings.v3.skycell.2049.024.stk.r.unconv.fits"
-            exp_path = f"cutout_rings.v3.skycell.2049.024.stk.r.unconv.exp.fits"
-        galight_fit(ra_dec=objects[objID],
-                    img_path = data_repo+img_path,
-                    exp_path = data_repo+exp_path,
-                    type = type,
-                    PSF_pos_list = [],
-                    band = band,
-                    survey=survey,
-                    savename=savename,
-                    pixel_scale=pixel_scale,
-                    )
-
-    #-------------------------------------------------------------------object5---------------------------------------------------------
-    elif objID == 5:
-        if  band == "r" or band == 'R' or band == "1":
-            img_path = f"image-decam-499464-N20-r.fits.gz"
-            exp_path = f"iv-decam-499464-N20-r.fits.gz"
-        galight_fit(ra_dec=objects[objID],
-                img_path = data_repo+img_path,
-                exp_path = data_repo+exp_path,
-                type = type,
-                PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
-                band=band,
-                survey=survey,
-                savename=savename,
-                pixel_scale=pixel_scale,
-                )
-
-    #-------------------------------------------------------------------object6---------------------------------------------------------
-    elif objID == 6:
-        if  band == "r" or band == 'R' or band == "1":
-            img_path = f"image-decam-499464-N20-r.fits.gz"
-            exp_path = f"iv-decam-499464-N20-r.fits.gz"
-        galight_fit(ra_dec=objects[objID],
-                img_path = data_repo+img_path,
-                exp_path = data_repo+exp_path,
-                type = type,
-                PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
-                band=band,
-                survey=survey,
-                savename=savename,
-                pixel_scale=pixel_scale,
-                )
-
-        
-    #-------------------------------------------------------------------object7---------------------------------------------------------
-    elif objID == 7:
-        if  band == "r" or band == 'R' or band == "1":
-            img_path = f"image-decam-499464-N20-r.fits.gz"
-            exp_path = f"iv-decam-499464-N20-r.fits.gz"
-        galight_fit(ra_dec=objects[objID],
-                img_path = data_repo+img_path,
-                exp_path = data_repo+exp_path,
-                type = type,
-                PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
-                band=band,
-                survey=survey,
-                savename=savename,
-                pixel_scale=pixel_scale,
-                )
-        
-    #-------------------------------------------------------------------object8---------------------------------------------------------
-    elif objID == 8:
-        if  band == "r" or band == 'R' or band == "1":
-            img_path = f"image-decam-499464-N20-r.fits.gz"
-            exp_path = f"iv-decam-499464-N20-r.fits.gz"
-        galight_fit(ra_dec=objects[objID],
-                img_path = data_repo+img_path,
-                exp_path = data_repo+exp_path,
-                type = type,
-                PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
-                band=band,
-                survey=survey,
-                savename=savename,
-                pixel_scale=pixel_scale,
-                )
-
-
-
-
-
-
-
-
-
-
-
+    galight_fit(ra_dec=objects[objID],
+            img_path = data_repo+f"cutout_rings.v3.skycell.{panstarrID}.stk.r.unconv.fits",
+            exp_path = data_repo+f"cutout_rings.v3.skycell.{panstarrID}.stk.r.unconv.exp.fits",
+            type = type,
+            PSF_pos_list=[], #We find stars in the image online, click on them and copy their WCS coordinates here
+            band=band,
+            survey=survey,
+            savename=savename,
+            pixel_scale=pixel_scale,
+            )
 
 
 
