@@ -161,44 +161,44 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
     return
 
 
-def makeFinalCornerPlot(QPE_mBH, QPE_sersicIndices, QPE_stellarSurfaceDensities, TDE_mBH, TDE_sersicIndices, TDE_stellarSurfaceDensities):
-    import seaborn as sns
+def makeFinalCornerPlot(QPE_mBH, QPE_sersicIndices, QPE_stellarSurfaceDensities, TDE_mBH, TDE_sersicIndices, TDE_stellarSurfaceDensities,
+                        fitGaussian=False, smooth=None):
     QPE_mBH = np.log10(QPE_mBH)
     TDE_mBH = np.log10(TDE_mBH)
-
     QPE_data = np.array([QPE_mBH, QPE_sersicIndices, QPE_stellarSurfaceDensities])
     TDE_data = np.array([TDE_mBH, TDE_sersicIndices, TDE_stellarSurfaceDensities])
-
-    if False:
-        #Make gaussian distributions of all parameters:
-        mus, stds = [], []
-        QPE_xaxis, TDE_xaxis = [], []
-        QPE_pdfs, TDE_pdfs = [], []
-        for i in range(len(QPE_data)):
-
-            mu1, std1 = norm.fit(QPEsersicIndices[:,0])
-            mu2, std2 = norm.fit(TDEsersicIndices)
-            alldata = np.concatenate((QPEsersicIndices[:,0], TDEsersicIndices))
-            mini, maxi = np.min(alldata), np.max(alldata)
-            # Plot the histogram.
-            #plt.hist(QPEsersicIndices[:,0], bins=25, density=False, alpha=0.5, color='b', label='QPE')
-            #plt.hist(TDEsersicIndices, bins=25, density=False, alpha=0.5, color='r', label='TDE')
-            plt.hist(QPEsersicIndices[:,0], range=(mini, maxi), bins=50, density=False, alpha=0.4, color='b')
-            plt.hist(TDEsersicIndices, range=(mini, maxi), bins=50, density=False, alpha=0.4, color='r')
-            # Plot the PDF.
-            xmin, xmax = plt.xlim()
-            x = np.linspace(xmin, xmax, 100)
-            p1 = norm.pdf(x, mu1, std1)
-
     QPE_data, TDE_data = QPE_data.T, TDE_data.T
-    fig = corner.corner(QPE_data, color="blue")
-    corner.corner(TDE_data, fig=fig, color="red")
+    fig = corner.corner(QPE_data, color="blue", smooth=smooth, titles = ["$\log(M_\mathrm{BH})$", "Sérsic index", "$\log(\Sigma_{M_\star})$"], show_titles=True)
+    corner.corner(TDE_data, fig=fig, color="red",  smooth=smooth)
     plt.show()
-    
-    #sns.pairplot(pd.DataFrame([QPE_data, TDE_data]), hue="Hosts")
     return
 
+def myCornerPlot(QPE_data, TDE_data):
+    QPE_data, TDE_data = np.array(QPE_data), np.array(TDE_data)
+    assert len(QPE_data) == len(TDE_data)
+    
+    # Create the plot axes:
+    plot_size = len(QPE_data)
+    hist_axes = []
+    corner_axes = []
+    for i in range(plot_size):
+        hist_axes.append(plt.subplot(plot_size,plot_size,i*plot_size+i+1))
+        for k in range(plot_size-(i+1)):
+            if i == 0:
+                corner_axes.append(plt.subplot(plot_size,plot_size,(i+k+1)*plot_size+(i+1),sharex=hist_axes[i]))
+            else:
+                print(-(plot_size-(i+1)))
+                corner_axes.append(plt.subplot(plot_size,plot_size,(i+k+1)*plot_size+(i+1),sharex=hist_axes[i],sharey=corner_axes[-(plot_size-(i+1))]))
+    
+    # Make the data to show in each plot:
+    hist_data = []
+    corner_data = []
+    for i in range(len(corner_axes)):
+        print(i,";",(i+1)//plot_size,((i+1)%plot_size))
+        #corner_axes[i].plot(QPE_data[(i)//(plot_size)], QPE_data[(i+1)], "o", color="blue")
 
+    plt.show()
+    return
 
 
 
@@ -272,9 +272,11 @@ if __name__ == "__main__":
     QPE_mBH = np.array(QPE_mBH)
     QPE_sersicIndices = np.array(QPE_sersicIndices)
     QPE_stellar_surface_densities = np.array(QPE_stellar_surface_densities)
+    QPE_r50s = np.array(QPE_r50s)
     TDE_mBH = np.array(TDE_mBH)
     TDE_sersicIndices = np.array(TDE_sersicIndices)
     TDE_stellar_surface_densities = np.array(TDE_stellar_surface_densities)
+    TDE_r50s = np.array(TDE_r50s)
 
     for i in range(len(QPE_stellar_masses)):
         QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
@@ -282,10 +284,10 @@ if __name__ == "__main__":
         TDE_stellar_masses[i] = tuple(TDE_stellar_masses[i])
     QPE_stellar_masses = np.array(QPE_stellar_masses)
     TDE_stellar_masses = np.array(TDE_stellar_masses)
-
-
-    plot_surfaceStellarMassDensity_stellarMass(QPE_stellar_masses, QPE_stellar_surface_densities, TDE_stellar_masses, TDE_stellar_surface_densities)
-    makeFinalCornerPlot(QPE_mBH[:,0], QPE_sersicIndices[:,0], QPE_stellar_surface_densities[:,0], TDE_mBH, TDE_sersicIndices, TDE_stellar_surface_densities[:,0])
+    #plot_surfaceStellarMassDensity_stellarMass(QPE_stellar_masses, QPE_stellar_surface_densities, TDE_stellar_masses, TDE_stellar_surface_densities)
+    #Make a kind of corner plot, but with fitted gaussians to better illustrate the distributions:
+    myCornerPlot(np.array([np.log10(QPE_mBH[:,0]), QPE_stellar_masses[:,0], QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_stellar_surface_densities[:,0]]),
+                 np.array([np.log10(TDE_mBH), TDE_stellar_masses[:,0], TDE_r50s[:,0], TDE_sersicIndices, TDE_stellar_surface_densities[:,0]]))
     sys.exit()
 
     # QPE hosts properties

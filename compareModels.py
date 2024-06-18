@@ -228,8 +228,13 @@ def plot_surfaceStellarMassDensity_stellarMass(QPE_SMs, QPEstellarDensities, TDE
     TDEstellarDensities = np.array(TDEstellarDensities, dtype=float)
     #plt.errorbar(Edd_ratio, a_ox, [a_ox_err_lo, a_ox_err_hi], [Edd_ratio_err_lo, Edd_ratio_err_hi], fmt='o', markeredgecolor='black', markeredgewidth=2, uplims=uplims, label=r'$\alpha_\mathrm{OX}$')
     ax1 = plt.subplot(111)
-    ax1.errorbar(QPE_SMs[:,0], QPEstellarDensities[:,0], yerr=[QPEstellarDensities[:,1],QPEstellarDensities[:,2]], xerr=[QPE_SMs[:,1],QPE_SMs[:,2]], fmt='D', color='green', label='QPE hosts')
+    # Plot the rest
+    ax1.errorbar(QPE_SMs[:,0], QPEstellarDensities[:,0], yerr=[QPEstellarDensities[:,1],QPEstellarDensities[:,2]], xerr=[QPE_SMs[:,1],QPE_SMs[:,2]], fmt='d', color='green', label='QPE hosts')
     ax1.errorbar(TDE_SMs[:,0], TDEstellarDensities[:,0], yerr=[TDEstellarDensities[:,1],TDEstellarDensities[:,2]], xerr=[TDE_SMs[:,1],TDE_SMs[:,2]], uplims=uplims, markeredgewidth=2, fmt='o', color='orange', label='TDE hosts')
+    # Plot the two TDE-QPE hosts:
+    ax1.errorbar(QPE_SMs[4,0], QPEstellarDensities[4,0], yerr=[[QPEstellarDensities[4,1]],[QPEstellarDensities[4,2]]], xerr=[[QPE_SMs[4,1]],[QPE_SMs[4,2]]], markeredgewidth=2, fmt='o', color='purple', label='QPE & TDE hosts')
+    ax1.errorbar(QPE_SMs[8,0], QPEstellarDensities[8,0], yerr=[[QPEstellarDensities[8,1]],[QPEstellarDensities[8,2]]], xerr=[[QPE_SMs[8,1]],[QPE_SMs[8,2]]], markeredgewidth=2, fmt='o', color='purple')
+    
     ax1.set_xscale("log")
     ax1.yaxis.set_tick_params(labelsize=15)
     ax1.xaxis.set_tick_params(labelsize=15)
