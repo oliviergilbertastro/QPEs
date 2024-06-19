@@ -104,6 +104,22 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
         exp =  1  #Read the exposure time
         exp_map = exp
 
+    elif survey == "PS":
+        print(img[0].data)
+        fov_image = (img[1].data)#[:,:,band_index]
+        plt.imshow(fov_image)
+        plt.show()
+        header = img[0].header
+        for i in range(len(img)):
+            try:
+                print(img[i].header)
+            except:
+                print("No header info")
+        exp =  1  #Read the exposure time
+        exp_map = exp
+        band_index = ["g","r","i","z"].index(band)
+        zp = [24.41,24.68,24.56,24.22][band_index]
+
 
     #data_process = DataProcess(fov_image = fov_image, target_pos = [1432., 966.], pos_type = 'pixel', header = header,
     #                        rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)  #zp use 27.0 for convinence.
