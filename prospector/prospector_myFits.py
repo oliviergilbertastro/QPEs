@@ -117,6 +117,9 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
                     sps=sps,
                     tsample=output["sampling"][1],
                     toptimize=0.0)
+    #uncomment the rest to run the python file only once to make all files
+    #objID = objID + 1
+    #fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=magnitudes_dicts[objID])
 
 def read_SED(objID):
     try:
@@ -179,19 +182,19 @@ def read_SED(objID):
 
 
 def getStellarMass(objID):
-    try:
+    if False:
         # Directly fitting the surviving mass
         hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
         out, out_obs, out_model = reader.results_from(hfile)
         mass = out["chain"][:,0]
-    except:
+    else:
         # Taking the fitted total formed mass and then multiplying it by the surviving fraction approximation
         hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
         out, out_obs, out_model = reader.results_from(hfile)
         mass = out["chain"][:,0]
         mfrac = np.float64(open(f"prospector/data/{objects_names[objID]}_LEGACY_mfrac.txt","r").read())
         mass = mass*mfrac
-        
+
 
     return (np.quantile(mass, 0.5), (np.quantile(mass, 0.5)-np.quantile(mass, 0.16)), (np.quantile(mass, 0.84)-np.quantile(mass, 0.5)))
 

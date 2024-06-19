@@ -6,12 +6,12 @@ DOWNLOADS THE NECESSARY FITS FILES (IMAGES) IN THE GRIZ BANDS
 import requests
 from tqdm import tqdm
 
-def get_file(pos, filenumber, size=512, pixscale=0.262, band="i"):
+def get_file(pos, filenumber, size=512, pixscale=0.262, band="i", name="object"):
     ra, dec = pos
     url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&size={size}&layer=ls-dr10&pixscale={pixscale}&bands={band}'
     #url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&layer=ls-dr10'
     r = requests.get(url)
-    open(r'data/images/object'+str(filenumber)+f"_{band}"+r'.fits' , 'wb').write(r.content)
+    open(r'data/images/'+f'{name}'+str(filenumber)+f"_{band}"+r'.fits' , 'wb').write(r.content)
 
 #List of objects' RA and DEC to download
 #The ones that are commented out are replaced by a more accurate WCS position to their left
@@ -58,16 +58,16 @@ TDE_names = [
 ]
 
 TDE_coords = [
-                (167.1671500, 34.0978417),         #ASASSN-14ae
-                (192.0634583, 17.7740139),        #ASASSN-14li
-                (224.2632500, 49.6113806),          #PTF-09ge
-                (176.8616667, 49.7163889),        #RBS 1032
-                (200.9248875, 48.4503500),         #SDSS J1323
-                (117.0861125, 47.2039528),         #SDSS J0748
-                (205.6850667, 5.5155944),         #SDSS J1342
-                (207.5062792, 29.2693639),         #SDSS J1350
-                (148.0398125, 21.7203444),         #SDSS J0952
-                (180.4001167, 30.0515333),          #SDSS J1201
+                (167.1671500, 34.0978417),                              #ASASSN-14ae
+                (192.0634583, 17.7740139),                              #ASASSN-14li
+                (224.2632500, 49.6113806),                              #PTF-09ge
+                (176.8612, 49.7160),#(176.8616667, 49.7163889),         #RBS 1032
+                (200.9248875, 48.4503500),                              #SDSS J1323
+                (117.0861125, 47.2039528),                              #SDSS J0748
+                (205.6850667, 5.5155944),                               #SDSS J1342
+                (207.5062792, 29.2693639),                              #SDSS J1350
+                (148.0398125, 21.7203444),                              #SDSS J0952
+                (180.4001167, 30.0515333),                              #SDSS J1201
 ]
 
 #TDE hosts
@@ -84,12 +84,23 @@ comparisons_names = [
 ]
 
 if __name__ == "__main__":
-    if input("Download 1024x1024 of all objects? [y/n]") == "y":
+    if input("Download 1024x1024 of all TDEs? [y/n]") == "y":
+        band = input("Which band do you want to download? ['griz']")
+        for i in tqdm(range(len(TDE_names))):
+            for b in band:
+                get_file(TDE_coords[i], i, size=512*2, pixscale=0.262, band=b, name="tde")
+        print("\x1b[33mDownload finished\x1b[0m")
+    if input("Download 2048x2048 of one TDE? [y/n]") == "y":
+        objID = int(input("Which object?"))
+        for b in "griz":
+            get_file(TDE_coords[objID], objID, size=412*4, pixscale=0.262, band=b, name="tde")
+        print("\x1b[33mDownload finished\x1b[0m")
+    if input("Download 1024x1024 of all QPEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
         for i in tqdm(range(len(objects))):
             get_file(objects[i], i, size=512*2, pixscale=0.262, band=band)
         print("\x1b[33mDownload finished\x1b[0m")
-    elif input("Download 2048x2048 of one object? [y/n]") == "y":
+    elif input("Download 2048x2048 of one QPE? [y/n]") == "y":
         objID = int(input("Which object?"))
         band = input("Which band do you want to download? ['griz']")
         get_file(objects[objID], objID, size=512*4, pixscale=0.262, band=band)

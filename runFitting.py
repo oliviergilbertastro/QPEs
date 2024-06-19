@@ -1,11 +1,46 @@
 from galightFitting import galight_fit
-from download_data import objects, comparisons, objects_names, objects_types
+from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords
 
 # If the necessary files are not in the "data/science/" folder, download them from the folowing link (replacing RA and DEC by the ra and dec of the object):
 # https://www.legacysurvey.org/viewer?ra=RA&dec=DEC&layer=ls-dr10&zoom=15
 # You should go to the section "CCDs overlapping RA,Dec:" and download the filter band you want. You need the image (ooi) and the weight map (oow)
 
 #The QPE host galaxies are named "obj" while the TDE host galaxies are named "comp"
+
+
+if input("Fit a  CO-ADDED image TDE host galaxy? [y/n]\n") == "y":
+    for i, name in enumerate(TDE_names):
+        print(f"{i}: {name}")
+    objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
+    band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
+    type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
+    img_path = f"data/images/tde{objID}_{band}.fits"
+    #Find stars manually, or leave None if you want galight to search for them itself
+    list_of_PSFs = [[[167.1107, 34.1297], [167.1150, 34.1387]],
+                    None,
+                    None,
+                    [[176.8422, 49.6955],[176.8693, 49.7345]],
+                    None,
+                    None,
+                    None,
+                    None,
+                    None,
+                    ]
+    galight_fit(ra_dec=TDE_coords[objID],
+                    img_path = img_path,
+                    oow_path = None,
+                    type = type,
+                    PSF_pos_list=list_of_PSFs[objID], #We find stars in the image online, click on them and copy their WCS coordinates here
+                    band=band,
+                    survey="COADDED_DESI",
+                    savename=f"{TDE_names[objID]}_{band}-band_{type}_DESI",
+                    threshold=5,
+                    nsigma=10,
+                    exp_sz_multiplier=1,
+                    fitting_level="deep",
+                    )
+
+
 
 if input("Fit a  CO-ADDED image QPE host galaxy? [y/n]\n") == "y":
     objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
