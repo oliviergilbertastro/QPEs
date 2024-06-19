@@ -75,7 +75,7 @@ def stellarMassDensity(M_star, r50, returnLog=False):
             return np.log10(M_star/r50[0]**2)
         return M_star/r50[0]**2#/(2*np.pi) #is there a constant 2pi we need to divide by???
 
-def checkWhichFiltersWork(list_of_dicts):
+def checkWhichFiltersWork(list_of_dicts, qpe_oder_tde="QPE"):
     working = {"g":[], "r":[], "i":[], "z":[]}
     for i in range(len(list_of_dicts)):
         for band in "griz":
@@ -84,7 +84,8 @@ def checkWhichFiltersWork(list_of_dicts):
                 working[band].append("\x1b[32mY\x1b[0m")
             except:
                 working[band].append("\x1b[31mN\x1b[0m")
-    print_table(np.array([objects_names, working["g"], working["r"], working["i"], working["z"]]).T,
+    names = objects_names if qpe_oder_tde=="QPE" else TDE_names
+    print_table(np.array([names, working["g"], working["r"], working["i"], working["z"]]).T,
                 header=["Name", "g", "r", "i", "z"],
                 title="Working filters",
                 borders=2,
@@ -92,7 +93,7 @@ def checkWhichFiltersWork(list_of_dicts):
                 )
     return
 
-def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property", round_to_n_decimals=2):
+def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property", round_to_n_decimals=2, qpe_oder_tde="QPE"):
     properties = {"g":[], "r":[], "i":[], "z":[]}
     for i in range(len(list_of_dicts)):
         for band in "griz":
@@ -103,7 +104,8 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
                     properties[band].append(f"{list_of_dicts[i][band]:0.2f}")
                 except:
                     properties[band].append("-")
-    print_table(np.array([objects_names, properties["g"], properties["r"], properties["i"], properties["z"]]).T,
+    names = objects_names if qpe_oder_tde=="QPE" else TDE_names
+    print_table(np.array([names, properties["g"], properties["r"], properties["i"], properties["z"]]).T,
                 header=["Name", "g", "r", "i", "z"],
                 title=name_of_property,
                 borders=2,
@@ -203,11 +205,30 @@ for i in range(len(objects)):
     QPE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
-            n, r50, mag = get_QPE_n_and_r50(objects[i], objects_types[i], redshift=QPE_redshifts[i], band=band, survey=survey)
+            n, r50, mag = get_n_and_r50(i, objects_types[i], redshift=QPE_redshifts[i], band=band, survey=survey)
             QPE_sersicIndices[-1][band] = n
             QPE_r50s[-1][band] = r50
             QPE_magnitudes[-1][band] = mag
             QPE_unreddenedMagnitudes[-1][band] = mag - QPE_extinction[objects_names[i]][band]
+        except:
+            pass
+
+TDE_sersicIndices = []
+TDE_r50s = []
+TDE_magnitudes = []
+TDE_unreddenedMagnitudes = []
+for i in range(len(TDE_coords)):
+    TDE_sersicIndices.append({})
+    TDE_r50s.append({})
+    TDE_magnitudes.append({})
+    TDE_unreddenedMagnitudes.append({})
+    for band in "griz":
+        try:
+            n, r50, mag = get_n_and_r50(i, "None", redshift=TDE_redshifts[i], band=band, survey=survey, qpe_oder_tde="TDE")
+            TDE_sersicIndices[-1][band] = n
+            TDE_r50s[-1][band] = r50
+            TDE_magnitudes[-1][band] = mag
+            TDE_unreddenedMagnitudes[-1][band] = mag - QPE_extinction[objects_names[i]][band] #Change this
         except:
             pass
 
@@ -219,6 +240,8 @@ if __name__ == "__main__":
     printPropertyAcrossFilters(QPE_magnitudes, "Magnitude")
     printPropertyAcrossFilters(QPE_unreddenedMagnitudes, "Dereddened magnitude")
 
+    checkWhichFiltersWork(TDE_sersicIndices, qpe_oder_tde="TDE")
+    printPropertyAcrossFilters(TDE_sersicIndices, "Sérsic Index", qpe_oder_tde="TDE")
     sys.exit()
 
     #From now on, keep only the r-band properties:
