@@ -73,6 +73,9 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
     #model_params["tage"]["isfree"] = False
     #model_params["tau"]["isfree"] = False
 
+    #Fit directly in SURVIVING stellar masses
+    model_params["mass_units"]=dict(init="mstar", isfree=False, N=1)
+
 
     print("-------------------------------------")
     for k in model_params.keys():
@@ -96,14 +99,19 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
     current_parameters = ",".join([f"{p}={v}" for p, v in zip(model.free_params, model.theta)])
     print(current_parameters)
     spec, phot, mfrac = model.predict(model.theta, obs=obs, sps=sps)
+    print("mfrac:",mfrac)
+    surviving_mass = np.sum(model.params["mass"]) * mfrac
+    print("surviving_mass:", surviving_mass)
     #print(phot / obs["maggies"])
+    #with open(f"prospector/data/{objects_names[objID]}_LEGACY_mfrac.txt", "w") as text_file:
+    #    text_file.write(str(mfrac))
 
     from prospect.fitting import lnprobfn, fit_model
     fitting_kwargs = dict(nlive_init=400, nested_method="rwalk", nested_target_n_effective=1000, nested_dlogz_init=0.05)
     output = fit_model(obs, model, sps, optimize=False, dynesty=True, lnprobfn=lnprobfn, noise=noise_model, **fitting_kwargs)
     result, duration = output["sampling"]
     from prospect.io import write_results as writer
-    hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
+    hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
     writer.write_hdf5(hfile, {}, model, obs,
                     output["sampling"][0], None,
                     sps=sps,
@@ -111,11 +119,16 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
                     toptimize=0.0)
 
 def read_SED(objID):
-    hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
-    out, out_obs, out_model = reader.results_from(hfile)
+    try:
+        # Directly fitting the surviving mass
+        hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
+        out, out_obs, out_model = reader.results_from(hfile)
+    except:
+        # Taking the fitted total formed mass and then multiplying it by the surviving fraction approximation
+        hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
+        out, out_obs, out_model = reader.results_from(hfile)
     for k in out.keys():
         print(k, ":", out[k])
-
     #Plot the posterior's corner plot
     nsamples, ndim = out["chain"].shape
     cfig, axes = plt.subplots(ndim, ndim, figsize=(10,9))
@@ -166,10 +179,20 @@ def read_SED(objID):
 
 
 def getStellarMass(objID):
-    hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
-    
-    out, out_obs, out_model = reader.results_from(hfile)
-    mass = out["chain"][:,0]
+    try:
+        # Directly fitting the surviving mass
+        hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
+        out, out_obs, out_model = reader.results_from(hfile)
+        mass = out["chain"][:,0]
+    except:
+        # Taking the fitted total formed mass and then multiplying it by the surviving fraction approximation
+        hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
+        out, out_obs, out_model = reader.results_from(hfile)
+        mass = out["chain"][:,0]
+        mfrac = np.float64(open(f"prospector/data/{objects_names[objID]}_LEGACY_mfrac.txt","r").read())
+        mass = mass*mfrac
+        
+
     return (np.quantile(mass, 0.5), (np.quantile(mass, 0.5)-np.quantile(mass, 0.16)), (np.quantile(mass, 0.84)-np.quantile(mass, 0.5)))
 
 
