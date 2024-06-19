@@ -242,6 +242,35 @@ if __name__ == "__main__":
 
     checkWhichFiltersWork(TDE_sersicIndices, qpe_oder_tde="TDE")
     printPropertyAcrossFilters(TDE_sersicIndices, "Sérsic Index", qpe_oder_tde="TDE")
+
+    #From now on, keep only the r-band properties:
+    QPE_placeholder_properties = {"n_sersic":[], "r_50":[]}
+    TDE_placeholder_properties = {"n_sersic":[], "r_50":[]}
+    for i in range(len(objects)):
+        QPE_placeholder_properties["n_sersic"].append(QPE_sersicIndices[i]["r"])
+        QPE_placeholder_properties["r_50"].append(QPE_r50s[i]["r"])
+        TDE_placeholder_properties["n_sersic"].append(TDE_sersicIndices[i]["r"])
+        TDE_placeholder_properties["r_50"].append(TDE_r50s[i]["r"])
+    QPE_sersicIndices = QPE_placeholder_properties["n_sersic"]
+    QPE_r50s = QPE_placeholder_properties["r_50"]
+    TDE_sersicIndices = TDE_placeholder_properties["n_sersic"]
+    TDE_r50s = TDE_placeholder_properties["r_50"]
+
+    #Transform lists into arrays
+    QPE_sersicIndices = np.array(QPE_sersicIndices)
+    QPE_r50s = np.array(QPE_r50s)
+    TDE_sersicIndices = np.array(TDE_sersicIndices)
+    TDE_r50s = np.array(TDE_r50s)
+
+    QPE_data  = np.array([QPE_r50s[:,0], QPE_sersicIndices[:,0]])
+    TDE_data = np.array([TDE_r50s[:,0], TDE_sersicIndices[:,0]])
+    double_hosts_data = QPE_data[:,[4,8]]
+    TDE_data = np.vstack((TDE_data.T, double_hosts_data.T)).T
+    myCornerPlot([
+        QPE_data,TDE_data,double_hosts_data
+        ],
+                 labels=["$r_{50}$","$n_\mathrm{Sérsic}$"])
+
     sys.exit()
 
     #From now on, keep only the r-band properties:

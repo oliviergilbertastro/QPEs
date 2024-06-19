@@ -70,6 +70,8 @@ TDE_coords = [
                 (180.4001167, 30.0515333),                              #SDSS J1201
 ]
 
+TDE_types = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None"]
+
 #TDE hosts
 comparisons = [
     (192.0634, 17.7739),                                                        #ASASSN-14li
