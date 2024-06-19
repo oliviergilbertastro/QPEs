@@ -20,6 +20,7 @@ if input("Fit a  CO-ADDED image TDE host galaxy? [y/n]\n") == "y":
                     None,
                     None,
                     [[176.8422, 49.6955],[176.8693, 49.7345]],
+                    [[200.9640, 48.4047], [200.9628, 48.3902], [201.0256, 48.4088]],
                     None,
                     None,
                     None,

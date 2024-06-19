@@ -93,7 +93,7 @@ if __name__ == "__main__":
     if input("Download 2048x2048 of one TDE? [y/n]") == "y":
         objID = int(input("Which object?"))
         for b in "griz":
-            get_file(TDE_coords[objID], objID, size=412*4, pixscale=0.262, band=b, name="tde")
+            get_file(TDE_coords[objID], objID, size=512*6, pixscale=0.262, band=b, name="tde")
         print("\x1b[33mDownload finished\x1b[0m")
     if input("Download 1024x1024 of all QPEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
