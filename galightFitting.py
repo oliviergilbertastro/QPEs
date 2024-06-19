@@ -176,7 +176,13 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
     else:
         condition_bulgedisk = None
 
-
+    if False:
+        def condition_bulgedisk(kwargs_lens, kwargs_source, kwargs_lens_light, kwargs_ps, kwargs_special, kwargs_extinction, kwargs_tracer_source):
+                logL = 0
+                cond_0 = (kwargs_lens_light[0]['n_sersic'] < 2)
+                if cond_0:
+                    logL -= 10**15
+                return logL
 
 
     #PREPARE THE FITTING

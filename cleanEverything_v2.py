@@ -315,11 +315,21 @@ if __name__ == "__main__":
         TDE_stellar_masses[i] = tuple(TDE_stellar_masses[i])
     QPE_stellar_masses = np.array(QPE_stellar_masses)
     TDE_stellar_masses = np.array(TDE_stellar_masses)
+
+
+    print_table(np.array([TDE_names, np.around(TDE_sersicIndices, 4)]).T,
+                    header=["Name", "Sérsic index"],
+                    title="QPE hosts properties",
+                    space_between_columns=4,
+                    space_between_rows=0,
+                    borders=2)
+
     #plot_surfaceStellarMassDensity_stellarMass(QPE_stellar_masses, QPE_stellar_surface_densities, TDE_stellar_masses, TDE_stellar_surface_densities)
     #Make a kind of corner plot, but with fitted gaussians to better illustrate the distributions:
     QPE_data  = np.array([np.log10(QPE_mBH[:,0]), np.log10(QPE_stellar_masses[:,0]), QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_stellar_surface_densities[:,0]])
     TDE_data = np.array([np.log10(TDE_mBH), np.log10(TDE_stellar_masses[:,0]), TDE_r50s[:,0], TDE_sersicIndices, TDE_stellar_surface_densities[:,0]])
     double_hosts_data = QPE_data[:,[4,8]]
+
     myCornerPlot([
         QPE_data,TDE_data,double_hosts_data
         ],

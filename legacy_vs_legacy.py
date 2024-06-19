@@ -24,7 +24,7 @@ def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_
     #Calculate the Sersic index + uncertainties
     chain = fitting_run_result.samples_mcmc
     params = fitting_run_result.param_mcmc
-    if "R_sersic" in params and "n_sersic" in params:
+    if "R_sersic_lens_light0" in params and "n_sersic_lens_light0" in params:
         lo, mid, hi = np.percentile(chain[:, 1],16), np.percentile(chain[:, 1],50), np.percentile(chain[:, 1],84)
         plus, minus = (hi-mid), (mid-lo)
         sersic_index_data = [mid, minus, plus]
@@ -34,6 +34,7 @@ def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_
         plus, minus = (hi-mid), (mid-lo)
         r50_data = [mid, minus, plus]
     else:
+        #print(qpe_oder_tde)
         sersic_index_data = [fitting_run_result.final_result_galaxy[0]["n_sersic"], 0, 0]
         r50_data = [fitting_run_result.final_result_galaxy[0]["R_sersic"], 0, 0]
     #Convert r50 from arcsec to kpc
@@ -249,6 +250,7 @@ if __name__ == "__main__":
     for i in range(len(objects)):
         QPE_placeholder_properties["n_sersic"].append(QPE_sersicIndices[i]["r"])
         QPE_placeholder_properties["r_50"].append(QPE_r50s[i]["r"])
+    for i in range(len(TDE_coords)):
         TDE_placeholder_properties["n_sersic"].append(TDE_sersicIndices[i]["r"])
         TDE_placeholder_properties["r_50"].append(TDE_r50s[i]["r"])
     QPE_sersicIndices = QPE_placeholder_properties["n_sersic"]
