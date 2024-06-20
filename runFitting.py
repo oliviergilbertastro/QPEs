@@ -383,7 +383,7 @@ elif input("Fit a TDE host raw? [y/n]\n") == "y":
     #-------------------------------------------------------------------object0---------------------------------------------------------
     if objID == 0:
         if band == "r" or band == 'R' or band == "1":
-            observation = input("Which observation?\n    1. 2018-02-18 08:48:35\n    2. 2017-03-27 05:12:26\n    3. 2015-04-12 04:14:11\n")
+            observation = input("Which observation?\n    1. 2018-02-18 08:48:35\n    2. 2017-03-27 05:12:26\n    3. 2015-04-12 04:14:11\n    4. 2018-03-16 06:48:37\n")
             if observation == "1":
                 #2018-02-18 08:48:35	 Current images:
                 img_path = f"image-decam-722768-S14-r.fits.gz"
@@ -401,7 +401,12 @@ elif input("Fit a TDE host raw? [y/n]\n") == "y":
                 img_path = f"image-decam-432059-N31-r.fits.gz"
                 oow_path = f"iv-decam-432059-N31-r.fits.gz"
                 star = [[192.21190281,17.77426765]]
-
+            
+            elif observation == "4":
+                #2018-03-16 06:48:37
+                img_path = f"image-decam-730868-S14-r.fits.gz"
+                oow_path = f"iv-decam-730868-S14-r.fits.gz"
+                star = None
 
         galight_fit(ra_dec=comparisons[objID],
                     img_path = data_repo+img_path,

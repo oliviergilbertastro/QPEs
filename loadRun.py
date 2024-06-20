@@ -178,7 +178,8 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     fitting_run_result.flux_1d_out = flux_dict_1d
     plt.show()
 
-
+    import sys
+    sys.exit()
     fitting_run_result.fitting_specify_class.plot_fitting_sets()
     obj_id = int(input('Which component to measure using statmorph?\n'))
     morph = fitting_run_result.cal_statmorph(obj_id=obj_id, segm=fitting_run_result.fitting_specify_class.segm_deblend , if_plot = True)
