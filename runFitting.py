@@ -368,12 +368,46 @@ elif input("Fit a QPE host galaxy? [y/n]\n") == "y":
 
 
 
+elif input("Fit a TDE host r-band raw? [y/n]\n") == "y":
+    for i in range(len(TDE_names)):
+        print(f"{i}: {TDE_names[i]}")
+    objID = int(input(f"Enter the object ID you want to fit [0-{len(comparisons)-1}]:\n"))
+    band = "r"
+    type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
+    data_repo = f"data/science/tde{objID}/"
+    survey = "DESI"
+    savename = f"{TDE_names[objID]}_{band}-band_{type}_{survey}"
+
+    desi_id = [
+        f"90prime-74210166-CCD3",
+        f"decam-722768-S14",
+        f"90prime-75500054-CCD3",
+        f"90prime-78650135-CCD4",
+        f"90prime-75210068-CCD3",
+        f"90prime-78630035-CCD3",
+        f"decam-635311-S30",
+        f"decam-720906-N8",
+        f"decam-433134-N12",
+        f"decam-535150-N14",
+    ]
+
+    img_path = f"image-{desi_id[objID]}-{band}.fits.gz"
+    oow_path = f"iv-decam-{desi_id[objID]}-{band}.fits.gz"
+
+    galight_fit(ra_dec=TDE_coords[objID],
+                img_path = data_repo+img_path,
+                oow_path = data_repo+oow_path,
+                type = type,
+                PSF_pos_list=None,#[[192.0682, 17.7950]], #We find stars in the image online, click on them and copy their WCS coordinates here
+                band=band,
+                survey=survey,
+                savename=savename
+                )
 
 
 
 
-
-elif input("Fit a TDE host raw? [y/n]\n") == "y":
+elif input("Fit a TDE host raw (outdated)? [y/n]\n") == "y":
     objID = int(input(f"Enter the object ID you want to fit [0-{len(comparisons)-1}]:\n"))
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
     type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
