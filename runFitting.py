@@ -55,8 +55,8 @@ elif input("Fit a  CO-ADDED image TDE host galaxy? [y/n]\n") == "y":
                     None,#176.99564392  49.75402138
                     None,#201.02569809  48.40885903
                     None,#117.01561576  47.25207367
-                    None,
-                    None,
+                    None,#205.73562533   5.50056366
+                    None,#207.42361071  29.20576714
                     None,
                     None,
                     ]
@@ -68,7 +68,7 @@ elif input("Fit a  CO-ADDED image TDE host galaxy? [y/n]\n") == "y":
                     band=band,
                     survey="COADDED_DESI",
                     savename=f"{TDE_names[objID]}_{band}-band_{type}_DESI",
-                    threshold=2,
+                    threshold=5,
                     nsigma=15,
                     exp_sz_multiplier=1,
                     fitting_level="deep",
