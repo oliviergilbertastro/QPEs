@@ -92,7 +92,13 @@ if __name__ == "__main__":
             for b in band:
                 get_file(TDE_coords[i], i, size=512*2, pixscale=0.262, band=b, name="tde")
         print("\x1b[33mDownload finished\x1b[0m")
-    if input("Download custom image of one TDE? [y/n]") == "y":
+    elif input("Download 3000x3000 of all TDEs? [y/n]") == "y":
+        band = input("Which band do you want to download? ['griz']")
+        for i in tqdm(range(len(TDE_names))):
+            for b in band:
+                get_file(TDE_coords[i], i, size=3000, pixscale=0.262, band=b, name="tde")
+        print("\x1b[33mDownload finished\x1b[0m")
+    elif input("Download custom image of one TDE? [y/n]") == "y":
         objID = int(input("Which object?"))
         size = int(input("Which pixel size do you want? (i.e. 2048, 4096, 8192, etc.)"))
         custom_pos = input("Custom wcs position?\n")
@@ -100,7 +106,7 @@ if __name__ == "__main__":
         b = input("Which band?")
         get_file(custom_pos, objID, size=size, pixscale=0.262, band=b, name="tde")
         print("\x1b[33mDownload finished\x1b[0m")
-    if input("Download 1024x1024 of all QPEs? [y/n]") == "y":
+    elif input("Download 1024x1024 of all QPEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
         for i in tqdm(range(len(objects))):
             get_file(objects[i], i, size=512*2, pixscale=0.262, band=band)

@@ -49,12 +49,12 @@ elif input("Fit a  CO-ADDED image TDE host galaxy? [y/n]\n") == "y":
     type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
     img_path = f"data/images/tde{objID}_{band}.fits"
     #Find stars manually, or leave None if you want galight to search for them itself
-    list_of_PSFs = [[[167.1107, 34.1297], [167.1150, 34.1387]],
-                    [[191.83713361, 17.78680452]],
-                    None,
-                    [[176.8422, 49.6955],[176.8693, 49.7345]],
-                    [[200.9640, 48.4047], [200.9628, 48.3902], [201.0256, 48.4088]],
-                    [[117.1183, 47.1922],[117.0543, 47.1920]],
+    list_of_PSFs = [None,#167.20061582  34.16038963 with 20px radius
+                    None,#192.16658903  17.76412554
+                    None,#224.33033068  49.59058316
+                    None,#176.99564392  49.75402138
+                    None,#201.02569809  48.40885903
+                    None,#117.01561576  47.25207367
                     None,
                     None,
                     None,
@@ -69,7 +69,7 @@ elif input("Fit a  CO-ADDED image TDE host galaxy? [y/n]\n") == "y":
                     survey="COADDED_DESI",
                     savename=f"{TDE_names[objID]}_{band}-band_{type}_DESI",
                     threshold=2,
-                    nsigma=10,
+                    nsigma=15,
                     exp_sz_multiplier=1,
                     fitting_level="deep",
                     )

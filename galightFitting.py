@@ -150,7 +150,7 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
     print('kwargs: ', data_process.arguments)
     print('---------------------------------------------------')
     if PSF_pos_list == None and survey == "COADDED_DESI":
-        data_process.find_PSF(radius = 30, user_option = True, threshold=threshold)  #Try this line out!
+        data_process.find_PSF(radius = 20, user_option = True, threshold=threshold)  #Try this line out!
     elif PSF_pos_list == None:
         data_process.find_PSF(radius = 30, user_option = True, threshold=20000)  #Try this line out!
     else:
