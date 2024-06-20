@@ -92,10 +92,13 @@ if __name__ == "__main__":
             for b in band:
                 get_file(TDE_coords[i], i, size=512*2, pixscale=0.262, band=b, name="tde")
         print("\x1b[33mDownload finished\x1b[0m")
-    if input("Download 2048x2048 of one TDE? [y/n]") == "y":
+    if input("Download custom image of one TDE? [y/n]") == "y":
         objID = int(input("Which object?"))
-        for b in "griz":
-            get_file(TDE_coords[objID], objID, size=512*6, pixscale=0.262, band=b, name="tde")
+        size = int(input("Which pixel size do you want? (i.e. 2048, 4096, 8192, etc.)"))
+        custom_pos = input("Custom wcs position?\n")
+        custom_pos = TDE_coords[objID] if custom_pos == "" else (float(custom_pos.split()[0]),float(custom_pos.split()[1]))
+        b = input("Which band?")
+        get_file(custom_pos, objID, size=size, pixscale=0.262, band=b, name="tde")
         print("\x1b[33mDownload finished\x1b[0m")
     if input("Download 1024x1024 of all QPEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")

@@ -93,6 +93,7 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
         band_index = ["g","r","i","z"].index(band)
         print(band_index)
         fov_image = (img[0].data)#[:,:,band_index]
+        print(np.shape(fov_image))
         plt.imshow(fov_image)
         plt.show()
         header = img[0].header

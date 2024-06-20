@@ -17,7 +17,7 @@ if input("Fit a PANSTARRS TDE host galaxy? [y/n]\n") == "y":
     pixel_scale = 0.250
     panstarrID = ["2044.052",None,None,None,None,None,None,None,None,None][objID]
     stars = [[[167.1107, 34.1297], [167.1150, 34.1387]],
-                    [[192.0682, 17.7950]],
+                    [],
                     None,
                     [[176.8422, 49.6955],[176.8693, 49.7345]],
                     [[200.9640, 48.4047], [200.9628, 48.3902], [201.0256, 48.4088]],
@@ -50,7 +50,7 @@ elif input("Fit a  CO-ADDED image TDE host galaxy? [y/n]\n") == "y":
     img_path = f"data/images/tde{objID}_{band}.fits"
     #Find stars manually, or leave None if you want galight to search for them itself
     list_of_PSFs = [[[167.1107, 34.1297], [167.1150, 34.1387]],
-                    [[192.0682, 17.7950]],
+                    [[191.83713361, 17.78680452]],
                     None,
                     [[176.8422, 49.6955],[176.8693, 49.7345]],
                     [[200.9640, 48.4047], [200.9628, 48.3902], [201.0256, 48.4088]],
@@ -373,7 +373,7 @@ elif input("Fit a QPE host galaxy? [y/n]\n") == "y":
 
 
 
-elif input("Fit a TDE host? [y/n]\n") == "y":
+elif input("Fit a TDE host raw? [y/n]\n") == "y":
     objID = int(input(f"Enter the object ID you want to fit [0-{len(comparisons)-1}]:\n"))
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
     type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
@@ -383,13 +383,31 @@ elif input("Fit a TDE host? [y/n]\n") == "y":
     #-------------------------------------------------------------------object0---------------------------------------------------------
     if objID == 0:
         if band == "r" or band == 'R' or band == "1":
-            img_path = f"image-decam-722768-S14-r.fits.gz"
-            oow_path = f"iv-decam-722768-S14-r.fits.gz"
+            observation = input("Which observation?\n    1. 2018-02-18 08:48:35\n    2. 2017-03-27 05:12:26\n    3. 2015-04-12 04:14:11\n")
+            if observation == "1":
+                #2018-02-18 08:48:35	 Current images:
+                img_path = f"image-decam-722768-S14-r.fits.gz"
+                oow_path = f"iv-decam-722768-S14-r.fits.gz"
+                star = [[191.83713361,17.78680452]]
+
+            elif observation == "2":
+                #2017-03-27 05:12:26
+                img_path = f"image-decam-634095-S15-r.fits.gz"
+                oow_path = f"iv-decam-634095-S15-r.fits.gz"
+                star = [[191.83713361,17.78680452]]
+
+            elif observation == "3":
+                #2015-04-12 04:14:11
+                img_path = f"image-decam-432059-N31-r.fits.gz"
+                oow_path = f"iv-decam-432059-N31-r.fits.gz"
+                star = [[192.21190281,17.77426765]]
+
+
         galight_fit(ra_dec=comparisons[objID],
                     img_path = data_repo+img_path,
                     oow_path = data_repo+oow_path,
                     type = type,
-                    PSF_pos_list=None, #We find stars in the image online, click on them and copy their WCS coordinates here
+                    PSF_pos_list=star,#[[192.0682, 17.7950]], #We find stars in the image online, click on them and copy their WCS coordinates here
                     band=band,
                     )
         

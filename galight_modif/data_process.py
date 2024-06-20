@@ -74,6 +74,7 @@ class DataProcess(object):
                 self.target_pos = target_pos
             elif pos_type == 'wcs':
                 wcs = WCS(header)
+                self.wcs = wcs
                 if isinstance(target_pos[0], str) or isinstance(target_pos[1], str):
                     from astropy.coordinates import SkyCoord
                     from astropy import units as u
@@ -407,6 +408,11 @@ class DataProcess(object):
             if user_option == False:
                 select_idx = [np.where(FWHMs == FWHMs.min())[0][0]]
             else:
+
+                #MY CODE TO SHOW THE PSFs WCS COORDS
+                for i in range(len(PSF_locs)):
+                    pix_x, pix_y = PSF_locs[i]
+                    print(f"{i}: {self.wcs.all_pix2world([[pix_x, pix_y]], 1)[0]}")
                 plt_many_fits(PSF_cutouts, FWHMs, 'FWHM', norm = norm)
                 if select_all is not True:
                     if sys.version_info[0] == 2:

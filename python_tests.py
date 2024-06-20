@@ -23,14 +23,4 @@ print("\x1b[33mYELLOW\x1b[0m")
 
 
 import matplotlib.pyplot as plt
-x = 10
-y = 4
-
-# Define the uncertainties in x and y directions
-xerr = [2, 4]  # This means x error ranges from x-2 to x+4
-yerr = [0.5, 0.3]  # This means y error ranges from y-0.5 to y+0.3
-
-# Plot the point with error bars
-plt.errorbar(x, y, xerr=[[xerr[0]], [xerr[1]]], yerr=[[yerr[0]], [yerr[1]]], fmt='o', capsize=5)
-
-plt.show()
+import astropy.io.fits as pyfits
