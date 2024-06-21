@@ -80,13 +80,14 @@ class DataProcess(object):
                     from astropy import units as u
                     pos = SkyCoord('{0} {1}'.format(target_pos[0], target_pos[1]), unit=(u.hourangle, u.deg))
                     target_pos = pos.ra.degree, pos.dec.degree
-                print("target_pos", target_pos)
+                print("target_pos (wcs)", target_pos)
                 self.target_pos = wcs.all_world2pix([[target_pos[0], target_pos[1]]], 1)[0]
                 print("target pos:", self.target_pos)
                 myInput = input("Manually change target pos?")
                 if myInput != "":
                     myInput = myInput.split()
                     self.target_pos = [int(myInput[0]), int(myInput[1])]
+                    print("target pos (wcs):", wcs.all_pix2world([int(myInput[0]), int(myInput[1])], 1)[0])
             else:
                 raise ValueError("'pos_type' should be either 'pixel' or 'wcs'.")
             self.target_pos = np.int0(self.target_pos)

@@ -29,7 +29,7 @@ if input("Fit a PANSTARRS TDE host galaxy? [y/n]\n") == "y":
                     ][objID]
 
 
-    galight_fit(ra_dec=objects[objID],
+    galight_fit(ra_dec=TDE_coords[objID],
             img_path = data_repo+f"rings.v3.skycell.{panstarrID}.stk.{band}.unconv.fits",
             exp_path = data_repo+f"rings.v3.skycell.{panstarrID}.stk.{band}.unconv.exp.fits",
             type = type,
@@ -38,6 +38,8 @@ if input("Fit a PANSTARRS TDE host galaxy? [y/n]\n") == "y":
             survey=survey,
             savename=savename,
             pixel_scale=pixel_scale,
+            nsigma=3,
+            threshold=3,
             )
 
 
