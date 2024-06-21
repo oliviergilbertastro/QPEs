@@ -106,10 +106,11 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
         exp_map = exp
 
     elif survey == "PS":
+        header = img[1].header
+        #header.set('RADESYS','FK5') #Correction so target actually shows up in the image
         fov_image = (img[1].data)
         plt.imshow(fov_image)
         plt.show()
-        header = img[1].header
         for i in range(len(img)):
             try:
                 print(img[i].header)

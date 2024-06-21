@@ -15,7 +15,7 @@ if input("Fit a PANSTARRS TDE host galaxy? [y/n]\n") == "y":
     survey = "PS"
     savename = f"{TDE_names[objID]}_{band}-band_{type}_{survey}"
     pixel_scale = 0.250
-    panstarrID = ["2044.052",None,None,None,None,None,None,None,None,None][objID]
+    panstarrID = ["2044.052","1724.046","2326.041","2318.040","2322.010","2246.076","1463.036","1976.039","1799.049","1970.059"][objID]
     stars = [       None,
                     None,
                     None,
