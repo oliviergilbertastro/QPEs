@@ -117,7 +117,7 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
             except:
                 print("No header info")
         exp =  1  #Read the exposure time
-        exp_map = exp
+        exp_map = pyfits.open(exp_path)[1].data
         band_index = ["g","r","i","z"].index(band)
         zp = [24.41,24.68,24.56,24.22][band_index]
 

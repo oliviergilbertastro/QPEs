@@ -39,7 +39,7 @@ if input("Fit a PANSTARRS TDE host galaxy? [y/n]\n") == "y":
             savename=savename,
             pixel_scale=pixel_scale,
             nsigma=3,
-            threshold=3,
+            threshold=3.5,
             )
 
 
