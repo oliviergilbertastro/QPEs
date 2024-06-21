@@ -106,11 +106,10 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
         exp_map = exp
 
     elif survey == "PS":
-        print(img[0].data)
-        fov_image = (img[1].data)#[:,:,band_index]
+        fov_image = (img[1].data)
         plt.imshow(fov_image)
         plt.show()
-        header = img[0].header
+        header = img[1].header
         for i in range(len(img)):
             try:
                 print(img[i].header)
@@ -151,10 +150,8 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
     print('---------------------------------------------------')
     if PSF_pos_list == None and survey == "COADDED_DESI":
         data_process.find_PSF(radius = 30, user_option = True, threshold=threshold)  #Try this line out!
-    elif PSF_pos_list == None:
-        data_process.find_PSF(radius = 30, user_option = True, threshold=20000)  #Try this line out!
     else:
-        data_process.find_PSF(radius = 30, PSF_pos_list = PSF_pos_list, pos_type="wcs", user_option=True)
+        data_process.find_PSF(radius = 30, PSF_pos_list = PSF_pos_list, pos_type="wcs", user_option=True, threshold=threshold)
 
     #Plot the FOV image and label the position of the target and the PSF
     data_process.plot_overview(label = 'Example', target_label = None)

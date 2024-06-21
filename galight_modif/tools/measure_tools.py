@@ -48,6 +48,7 @@ def find_loc_max(image, neighborhood_size = 8, threshold = 5):
     --------
         A list of x and y of the searched local maximazations.
     """    
+    print("Threshold:", threshold)
     data_max = filters.maximum_filter(image, neighborhood_size) 
     maxima = (image == data_max)
     data_min = filters.minimum_filter(image, neighborhood_size)

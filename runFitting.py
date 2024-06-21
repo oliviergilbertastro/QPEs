@@ -16,12 +16,12 @@ if input("Fit a PANSTARRS TDE host galaxy? [y/n]\n") == "y":
     savename = f"{TDE_names[objID]}_{band}-band_{type}_{survey}"
     pixel_scale = 0.250
     panstarrID = ["2044.052",None,None,None,None,None,None,None,None,None][objID]
-    stars = [[[167.1107, 34.1297], [167.1150, 34.1387]],
-                    [],
+    stars = [       None,
                     None,
-                    [[176.8422, 49.6955],[176.8693, 49.7345]],
-                    [[200.9640, 48.4047], [200.9628, 48.3902], [201.0256, 48.4088]],
-                    [[117.1183, 47.1922],[117.0543, 47.1920]],
+                    None,
+                    None,
+                    None,
+                    None,
                     None,
                     None,
                     None,
@@ -404,7 +404,7 @@ elif input("Fit a TDE host r-band raw? [y/n]\n") == "y":
                 survey=survey,
                 savename=savename,
                 pixel_scale=pixel_scale,
-                threshold=2,
+                threshold=100,
                 )
 
 

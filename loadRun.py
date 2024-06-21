@@ -221,7 +221,15 @@ elif input("Load QPE host? [y/n]") == "y":
     type = input("Enter the type of extra-component fitting you want to load [None, AGN, Bulge, Bulge+AGN]:\n")
     loadRun(objects[objID], type=type, band=band)
 
-elif input("Load TDE host? [y/n]") == "y":
+elif input("Load TDE host r-band raw? [y/n]") == "y":
+    objID = int(input(f"Enter the object ID you want to load [0-{len(TDE_coords)-1}]:\n"))
+    band = "r"
+    type = "None"
+    survey = "DESI"
+    picklename = f"{TDE_names[objID]}_{band}-band_{type}_{survey}_raw.pkl"
+    loadRun(TDE_coords[objID], type=type, band=band, picklename=picklename)
+
+elif input("Load TDE host (outdated)? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(comparisons)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
     type = input("Enter the type of extra-component fitting you want to load [None, AGN, Bulge, Bulge+AGN]:\n")
@@ -229,6 +237,4 @@ elif input("Load TDE host? [y/n]") == "y":
     add = input("Additional suffix?\n")
     if add != "":
         picklename = f'ra{str(comparisons[objID][0])}_dec{str(comparisons[objID][1])}_{type}_{band}_{add}.pkl'
-    
-    
     loadRun(comparisons[objID], type=type, band=band, picklename=picklename)
