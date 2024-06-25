@@ -4,7 +4,7 @@ Program to compare QPE hosts and TDE hosts "apples to apples" with the LEGACY DE
 import pickle
 import numpy as np
 from ned_wright_cosmology import calculate_cosmo
-from utils import print_table
+from utils import print_table, myCornerPlot
 import matplotlib.pyplot as plt
 from paper_data import *
 from download_data import *
@@ -116,73 +116,6 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
 
 
 
-def myCornerPlot(data, labels=None, fontsize=15):
-    """
-    data should be [data_set1, data_set2, ...] each containing multiple parameters
-    """
-    for i in range(len(data)-1):
-        assert len(data[i]) == len(data[i+1])
-    # Create the plot axes:
-    fig = plt.figure(figsize=(10,8))
-    plot_size = len(data[0])
-    hist_axes = []
-    corner_axes = []
-    for i in range(plot_size):
-        hist_axes.append(plt.subplot(plot_size,plot_size,i*plot_size+i+1))
-        corner_axes.append([])
-        for k in range(plot_size-(i+1)):
-            if i == 0:
-                corner_axes[i].append(plt.subplot(plot_size,plot_size,(i+k+1)*plot_size+(i+1),sharex=hist_axes[i]))
-            else:
-                corner_axes[i].append(plt.subplot(plot_size,plot_size,(i+k+1)*plot_size+(i+1),sharex=hist_axes[i],sharey=corner_axes[i-1][k+1]))
-            if k != plot_size-(i+1)-1:
-                corner_axes[i][k].get_xaxis().set_visible(False)
-            if i != 0:
-                corner_axes[i][k].get_yaxis().set_visible(False)
-            corner_axes[i][k].xaxis.set_tick_params(labelsize=fontsize-2)
-            corner_axes[i][k].yaxis.set_tick_params(labelsize=fontsize-2)
-        if i == plot_size-1:
-            hist_axes[i].get_yaxis().set_visible(False)
-            hist_axes[i].xaxis.set_tick_params(labelsize=fontsize-2)
-        else:
-            hist_axes[i].get_xaxis().set_visible(False)
-            hist_axes[i].get_yaxis().set_visible(False)
-
-    # Show data in each plot:
-
-    from sklearn.neighbors import KernelDensity
-    #Plot kernel histograms:
-    for i in range(plot_size):
-        if labels is not None:
-            hist_axes[i].set_title(labels[i], fontsize=fontsize)
-        x_min, x_max = np.min(data[0][i]), np.max(data[0][i])
-        for j in range(len(data)):
-            x_min = np.min(data[j][i]) if x_min > np.min(data[j][i]) else x_min
-            x_max = np.max(data[j][i]) if x_max < np.max(data[j][i]) else x_max
-        for j in range(len(data)-1):
-            X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
-            kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(data[j][i][:,np.newaxis])
-            log_dens = kde.score_samples(X_plot)
-            hist_axes[i].fill_between(X_plot[:, 0], np.exp(log_dens), fc=["blue","red","orange"][j%3], alpha=[0.4,0.4][j])
-
- 
-    for i in range(plot_size):
-        for k in range(len(corner_axes[i])):
-            for j in range(len(data)):
-                corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","d","*"][j%3], color=["blue","red","orange"][j%3])
-    plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.94, wspace=0, hspace=0)
-    plt.show()
-    return
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -245,15 +178,16 @@ if __name__ == "__main__":
     printPropertyAcrossFilters(TDE_sersicIndices, "Sérsic Index", qpe_oder_tde="TDE")
 
     #From now on, keep only the r-band properties:
+    band_to_keep = "r"
     QPE_placeholder_properties = {"n_sersic":[], "r_50":[]}
     TDE_placeholder_properties = {"n_sersic":[], "r_50":[]}
     for i in range(len(objects)):
-        QPE_placeholder_properties["n_sersic"].append(QPE_sersicIndices[i]["r"])
-        QPE_placeholder_properties["r_50"].append(QPE_r50s[i]["r"])
+        QPE_placeholder_properties["n_sersic"].append(QPE_sersicIndices[i][band_to_keep])
+        QPE_placeholder_properties["r_50"].append(QPE_r50s[i][band_to_keep])
     for i in range(len(TDE_coords)):
         try:
-            TDE_placeholder_properties["n_sersic"].append(TDE_sersicIndices[i]["r"])
-            TDE_placeholder_properties["r_50"].append(TDE_r50s[i]["r"])
+            TDE_placeholder_properties["n_sersic"].append(TDE_sersicIndices[i][band_to_keep])
+            TDE_placeholder_properties["r_50"].append(TDE_r50s[i][band_to_keep])
         except:
             pass
     QPE_sersicIndices = QPE_placeholder_properties["n_sersic"]

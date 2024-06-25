@@ -4,6 +4,8 @@ Needed to make a lot of tables in the terminal and there is no support for it, s
 
 import numpy as np
 from math import floor, ceil
+import matplotlib.pyplot as plt
+import matplotlib as mpl
 
 def print_table(a, header=None, title=None, space_between_columns=2, space_between_rows=0, borders=1, header_color="yellow", border_color="grey", override_length=None):
     """
@@ -105,6 +107,73 @@ def print_table(a, header=None, title=None, space_between_columns=2, space_betwe
     print(top_and_bottom_bounds[1])
     print()
 
+
+
+
+
+
+
+
+def myCornerPlot(data, labels=None, fontsize=15):
+    """
+    data should be [data_set1, data_set2, ...] each containing multiple parameters
+    """
+    for i in range(len(data)-1):
+        assert len(data[i]) == len(data[i+1])
+    # Create the plot axes:
+    fig = plt.figure(figsize=(10,8))
+    plot_size = len(data[0])
+    hist_axes = []
+    corner_axes = []
+    for i in range(plot_size):
+        hist_axes.append(plt.subplot(plot_size,plot_size,i*plot_size+i+1))
+        corner_axes.append([])
+        for k in range(plot_size-(i+1)):
+            if i == 0:
+                corner_axes[i].append(plt.subplot(plot_size,plot_size,(i+k+1)*plot_size+(i+1),sharex=hist_axes[i]))
+            else:
+                corner_axes[i].append(plt.subplot(plot_size,plot_size,(i+k+1)*plot_size+(i+1),sharex=hist_axes[i],sharey=corner_axes[i-1][k+1]))
+            if k != plot_size-(i+1)-1:
+                corner_axes[i][k].get_xaxis().set_visible(False)
+            if i != 0:
+                corner_axes[i][k].get_yaxis().set_visible(False)
+            corner_axes[i][k].xaxis.set_tick_params(labelsize=fontsize-2)
+            corner_axes[i][k].yaxis.set_tick_params(labelsize=fontsize-2)
+        if i == plot_size-1:
+            hist_axes[i].get_yaxis().set_visible(False)
+            hist_axes[i].xaxis.set_tick_params(labelsize=fontsize-2)
+        else:
+            hist_axes[i].get_xaxis().set_visible(False)
+            hist_axes[i].get_yaxis().set_visible(False)
+
+    # Show data in each plot:
+
+    from sklearn.neighbors import KernelDensity
+    #Plot kernel histograms:
+    for i in range(plot_size):
+        if labels is not None:
+            hist_axes[i].set_title(labels[i], fontsize=fontsize)
+        x_min, x_max = np.min(data[0][i]), np.max(data[0][i])
+        for j in range(len(data)):
+            x_min = np.min(data[j][i]) if x_min > np.min(data[j][i]) else x_min
+            x_max = np.max(data[j][i]) if x_max < np.max(data[j][i]) else x_max
+        for j in range(len(data)-1):
+            X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
+            kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(data[j][i][:,np.newaxis])
+            log_dens = kde.score_samples(X_plot)
+            hist_axes[i].fill_between(X_plot[:, 0], np.exp(log_dens), fc=["blue","red","orange"][j%3], alpha=[0.4,0.4][j])
+
+ 
+    for i in range(plot_size):
+        for k in range(len(corner_axes[i])):
+            for j in range(len(data)):
+                corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","d","*"][j%3], color=["blue","red","orange"][j%3])
+    plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.94, wspace=0, hspace=0)
+    plt.show()
+    return
+
+
+
 if __name__ == "__main__":
     data = np.array([["potato", 5178, 13095, 3151],
             ["123", None, 1023, 51515],
@@ -123,3 +192,30 @@ if __name__ == "__main__":
                 header_color="yellow",
                 border_color="blue",
                 )
+    
+
+def myFinalPlot(data, fontsize=15):
+    fig = plt.figure()
+    gs = mpl.gridspec.GridSpec(10, 10, wspace=0.0, hspace=0.0)    
+    fig.add_subplot(gs[2:8, 2:8])
+    fig.add_subplot(gs[0, :])
+    for i in range(5):
+        fig.add_subplot(gs[1, (i*2):(i*2+2)])
+    fig.add_subplot(gs[2:, :2])
+    fig.add_subplot(gs[8:, 2:4])
+    fig.add_subplot(gs[8:, 4:9])
+    fig.add_subplot(gs[2:8, 8])
+    fig.add_subplot(gs[2:, 9])
+    fig.add_subplot(gs[3:6, 3:6])
+
+    # fancy colors
+    cmap = mpl.colormaps.get_cmap("viridis")
+    naxes = len(fig.axes)
+    for i, ax in enumerate(fig.axes):
+        ax.set_xticks([])
+        ax.set_yticks([])
+        ax.set_facecolor(cmap(float(i)/(naxes-1)))
+    plt.show()
+
+if __name__ == "__main__":
+    myFinalPlot(1)

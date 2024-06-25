@@ -11,11 +11,27 @@ import os
 home = os.getcwd()
 if home != "/Users/oliviergilbert":
     data = np.array(pd.read_csv("data/TDEsersic_mBH.csv"))
+    #These are from the Law-Smith paper (https://arxiv.org/pdf/1707.01559) black hole mass vs Sérsic index plot
     TDE_mBH = 10**data[:,0]
     TDE_sersicIndices = data[:,1]
+    
+if False:
+    #TDE sersic indices from Review Paper (https://arxiv.org/pdf/2003.02863)
+    TDE_sersicIndices = [
+                    2.61,         #ASASSN-14ae
+                    4.91,        #ASASSN-14li
+                    4.03,          #PTF-09ge
+                    2.24,        #RBS 1032
+                    5.03,         #SDSS J1323
+                    1.53,         #SDSS J0748
+                    2.56,         #SDSS J1342
+                    4.57,         #SDSS J1350
+                    7.98,         #SDSS J0952
+                    5.61,          #SDSS J1201
+    ]
 
 # log(Surface stellar densities) for the 10 TDE hosts used in Law-Smith paper, as found in the Graur paper. My own calculations of the stellar mass surface densities approximately
-# give me the same thing as the Graur paper result, which is a good sanity check.
+# give me the same thing as the Graur paper result, which is a good sanity check. https://iopscience.iop.org/article/10.3847/1538-4357/aaa3fd/pdf
 TDE_stellarDensities = [
                 (9.5, 0.2, 0.2), #ASASSN-14ae
                 (10.1, 0.2, 0.2), #ASASSN-14li
@@ -61,7 +77,7 @@ TDE_redshifts = [
                 0.146,          #SDSS J1201
                 ]
 
-TDE_r50s = [          #in kpc          
+TDE_r50s = [          #in kpc       (https://iopscience.iop.org/article/10.3847/1538-4357/aaa3fd/pdf)    
                 1.3,            #ASASSN-14ae
                 0.4,            #ASASSN-14li
                 2.3,            #PTF-09ge

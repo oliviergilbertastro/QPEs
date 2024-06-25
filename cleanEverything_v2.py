@@ -7,7 +7,7 @@ import numpy as np
 from galight_modif.tools.plot_tools import total_compare
 from download_data import objects
 from ned_wright_cosmology import calculate_cosmo
-from utils import print_table
+from utils import print_table, myCornerPlot
 import matplotlib.pyplot as plt
 import corner
 from scipy.stats import norm
@@ -173,67 +173,6 @@ def makeFinalCornerPlot(QPE_mBH, QPE_sersicIndices, QPE_stellarSurfaceDensities,
     plt.show()
     return
 
-def myCornerPlot(data, labels=None, fontsize=15):
-    """
-    data should be [data_set1, data_set2, ...] each containing multiple parameters
-    """
-    for i in range(len(data)-1):
-        assert len(data[i]) == len(data[i+1])
-    # Create the plot axes:
-    fig = plt.figure(figsize=(10,8))
-    plot_size = len(data[0])
-    hist_axes = []
-    corner_axes = []
-    for i in range(plot_size):
-        hist_axes.append(plt.subplot(plot_size,plot_size,i*plot_size+i+1))
-        corner_axes.append([])
-        for k in range(plot_size-(i+1)):
-            if i == 0:
-                corner_axes[i].append(plt.subplot(plot_size,plot_size,(i+k+1)*plot_size+(i+1),sharex=hist_axes[i]))
-            else:
-                corner_axes[i].append(plt.subplot(plot_size,plot_size,(i+k+1)*plot_size+(i+1),sharex=hist_axes[i],sharey=corner_axes[i-1][k+1]))
-            if k != plot_size-(i+1)-1:
-                corner_axes[i][k].get_xaxis().set_visible(False)
-            if i != 0:
-                corner_axes[i][k].get_yaxis().set_visible(False)
-            corner_axes[i][k].xaxis.set_tick_params(labelsize=fontsize-2)
-            corner_axes[i][k].yaxis.set_tick_params(labelsize=fontsize-2)
-        if i == plot_size-1:
-            hist_axes[i].get_yaxis().set_visible(False)
-            hist_axes[i].xaxis.set_tick_params(labelsize=fontsize-2)
-        else:
-            hist_axes[i].get_xaxis().set_visible(False)
-            hist_axes[i].get_yaxis().set_visible(False)
-
-    # Show data in each plot:
-
-    from sklearn.neighbors import KernelDensity
-    #Plot kernel histograms:
-    for i in range(plot_size):
-        if labels is not None:
-            hist_axes[i].set_title(labels[i], fontsize=fontsize)
-        x_min, x_max = np.min(data[0][i]), np.max(data[0][i])
-        for j in range(len(data)):
-            x_min = np.min(data[j][i]) if x_min > np.min(data[j][i]) else x_min
-            x_max = np.max(data[j][i]) if x_max < np.max(data[j][i]) else x_max
-        for j in range(len(data)-1):
-            X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
-            kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(data[j][i][:,np.newaxis])
-            log_dens = kde.score_samples(X_plot)
-            hist_axes[i].fill_between(X_plot[:, 0], np.exp(log_dens), fc=["blue","red","orange"][j%3], alpha=[0.4,0.4][j])
-
- 
-    for i in range(plot_size):
-        for k in range(len(corner_axes[i])):
-            for j in range(len(data)):
-                corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","d","*"][j%3], color=["blue","red","orange"][j%3])
-    plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.94, wspace=0, hspace=0)
-    plt.show()
-    return
-
-
-
-
 
 
 
@@ -304,10 +243,12 @@ if __name__ == "__main__":
     QPE_sersicIndices = np.array(QPE_sersicIndices)
     QPE_stellar_surface_densities = np.array(QPE_stellar_surface_densities)
     QPE_r50s = np.array(QPE_r50s)
+    QPE_redshifts = np.array(QPE_redshifts)
     TDE_mBH = np.array(TDE_mBH)
     TDE_sersicIndices = np.array(TDE_sersicIndices)
     TDE_stellar_surface_densities = np.array(TDE_stellar_surface_densities)
     TDE_r50s = np.array(TDE_r50s)
+    TDE_redshifts = np.array(TDE_redshifts)
 
     for i in range(len(QPE_stellar_masses)):
         QPE_stellar_masses[i] = tuple(QPE_stellar_masses[i])
@@ -326,14 +267,14 @@ if __name__ == "__main__":
 
     #plot_surfaceStellarMassDensity_stellarMass(QPE_stellar_masses, QPE_stellar_surface_densities, TDE_stellar_masses, TDE_stellar_surface_densities)
     #Make a kind of corner plot, but with fitted gaussians to better illustrate the distributions:
-    QPE_data  = np.array([np.log10(QPE_mBH[:,0]), np.log10(QPE_stellar_masses[:,0]), QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_stellar_surface_densities[:,0]])
-    TDE_data = np.array([np.log10(TDE_mBH), np.log10(TDE_stellar_masses[:,0]), TDE_r50s[:,0], TDE_sersicIndices, TDE_stellar_surface_densities[:,0]])
+    QPE_data  = np.array([np.log10(QPE_mBH[:,0]), np.log10(QPE_stellar_masses[:,0]), QPE_redshifts, QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_stellar_surface_densities[:,0]])
+    TDE_data = np.array([np.log10(TDE_mBH), np.log10(TDE_stellar_masses[:,0]), TDE_redshifts, TDE_r50s[:,0], TDE_sersicIndices, TDE_stellar_surface_densities[:,0]])
     double_hosts_data = QPE_data[:,[4,8]]
 
     myCornerPlot([
         QPE_data,TDE_data,double_hosts_data
         ],
-                 labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"])
+                 labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$z$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"])
     sys.exit()
 
     # QPE hosts properties
