@@ -263,7 +263,7 @@ if __name__ == "__main__":
                 #procs.append(proc)
                 #proc.start()
     else:
-        infos = input("Input objID, band and type. (i.e. '0 r None')\n")
+        infos = input("Input objID, band and type. (e.g. '0 r None')\n")
         objID, band, current_type = infos.split()
         objID = int(objID)
         img_path = f"data/images/tde{objID}_{band}.fits"
