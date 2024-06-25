@@ -179,7 +179,7 @@ class FittingProcess(object):
             else:
                 labels_flux = ["Galaxy_{0} flux".format(i) for i in range(len(fitting_specify_class.light_model_list))]
             if len(self.samples_mcmc) > 10000:  #Only save maximum 10000 chain results.
-                if input(f"To save time, do you want to cut from {len(self.samples_mcmc)} chain results to 10000? [y/n]") == "y":
+                if True:#input(f"To save time, do you want to cut from {len(self.samples_mcmc)} chain results to 10000? [y/n]") == "y":
                     trans_steps = [len(self.samples_mcmc)-10000, len(self.samples_mcmc)]
                 else:
                     trans_steps = [0, len(self.samples_mcmc)]

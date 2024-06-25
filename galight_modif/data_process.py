@@ -118,7 +118,7 @@ class DataProcess(object):
     def generate_target_materials(self, cut_kernel = None,  radius=None, radius_list = None,
                                   bkg_std = None, if_select_obj = False, create_mask = False, 
                                   if_plot=None, use_moments = True, show_materials=None,
-                                  skip = False, **kwargs):
+                                  skip = False, mp=False, **kwargs):
         """
         Prepare the fitting materials to used for the fitting, including the image cutout, noise map and masks (optional).
         More important, the apertures that used to define the fitting settings are also generated.
@@ -247,8 +247,12 @@ class DataProcess(object):
                     _apertures_select = [i for i in range(len(apertures))]  
             _restof_i = []
             if create_mask == True:
-                select_idx = str(input('Input directly the a obj that used to create MASK, use space between each id:\n'))
-                select_idx_list = [int(s) for s in select_idx.split() if s.isdigit()]
+                if mp:
+                    select_idx = ""
+                    select_idx_list = range(1,len(mask_apertures))
+                else:
+                    select_idx = str(input('Input directly the a obj that used to create MASK, use space between each id:\n'))
+                    select_idx_list = [int(s) for s in select_idx.split() if s.isdigit()]
                 
                 if '!' not in select_idx:
                     apertures_ = [mask_apertures[i] for i in select_idx_list]
@@ -517,14 +521,15 @@ class DataProcess(object):
         plot_overview(self.fov_image, center_target= self.target_pos,
                       c_psf_list=PSF_pos_list, **kargs)
     
-    def use_custom_psf(self, psf_image, **kargs):
+    def use_custom_psf(self, psf_image, if_plot=True, **kargs):
         self.PSF_list = []
         self.PSF_list.append(psf_image)
-        plt.imshow(psf_image)
-        plt.title("PSF image")
-        plt.show()
-        self.profiles_compare(norm_pix = 5, if_annuli=False, y_log = False,
-                        prf_name_list = (['target'] + ['PSF{0}'.format(i) for i in range(len(self.PSF_list))]) )
+        if if_plot:
+            plt.imshow(psf_image)
+            plt.title("PSF image")
+            plt.show()
+            self.profiles_compare(norm_pix = 5, if_annuli=False, y_log = False,
+                            prf_name_list = (['target'] + ['PSF{0}'.format(i) for i in range(len(self.PSF_list))]) )
 
     def checkout(self):
         """

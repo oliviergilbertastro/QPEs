@@ -15,7 +15,7 @@ def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_
     if qpe_oder_tde == "QPE":
         picklename = f"{objects_names[objID]}_{band}-band_{model}_{survey}.pkl"
     else:
-        picklename = f"{TDE_names[objID]}_{band}-band_{model}_{survey}.pkl"
+        picklename = f"{TDE_names[objID]}_{band}-band_{model}_{survey}_PSF.pkl"
     try:
         fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
     except:
@@ -251,8 +251,11 @@ if __name__ == "__main__":
         QPE_placeholder_properties["n_sersic"].append(QPE_sersicIndices[i]["r"])
         QPE_placeholder_properties["r_50"].append(QPE_r50s[i]["r"])
     for i in range(len(TDE_coords)):
-        TDE_placeholder_properties["n_sersic"].append(TDE_sersicIndices[i]["r"])
-        TDE_placeholder_properties["r_50"].append(TDE_r50s[i]["r"])
+        try:
+            TDE_placeholder_properties["n_sersic"].append(TDE_sersicIndices[i]["r"])
+            TDE_placeholder_properties["r_50"].append(TDE_r50s[i]["r"])
+        except:
+            pass
     QPE_sersicIndices = QPE_placeholder_properties["n_sersic"]
     QPE_r50s = QPE_placeholder_properties["r_50"]
     TDE_sersicIndices = TDE_placeholder_properties["n_sersic"]
