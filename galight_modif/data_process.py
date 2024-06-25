@@ -68,7 +68,8 @@ class DataProcess(object):
     """
     def __init__(self, fov_image=None, target_pos = None, pos_type = 'pixel', header=None, 
                  exptime = None, fov_noise_map = None,rm_bkglight = False, if_plot = False, 
-                 zp = None, **kwargs):
+                 zp = None, mp=False, **kwargs):
+        self.mp = mp #multiprocessing bool
         if target_pos is not None:
             if pos_type == 'pixel':
                 self.target_pos = target_pos
@@ -83,11 +84,12 @@ class DataProcess(object):
                 print("target_pos (wcs)", target_pos)
                 self.target_pos = wcs.all_world2pix([[target_pos[0], target_pos[1]]], 1)[0]
                 print("target pos:", self.target_pos)
-                myInput = input("Manually change target pos?")
-                if myInput != "":
-                    myInput = myInput.split()
-                    self.target_pos = [int(myInput[0]), int(myInput[1])]
-                    print("target pos (wcs):", wcs.all_pix2world([int(myInput[0]), int(myInput[1])], 1)[0])
+                if not self.mp:
+                    myInput = input("Manually change target pos?")
+                    if myInput != "":
+                        myInput = myInput.split()
+                        self.target_pos = [int(myInput[0]), int(myInput[1])]
+                        print("target pos (wcs):", wcs.all_pix2world([int(myInput[0]), int(myInput[1])], 1)[0])
             else:
                 raise ValueError("'pos_type' should be either 'pixel' or 'wcs'.")
             self.target_pos = np.int0(self.target_pos)
@@ -118,7 +120,7 @@ class DataProcess(object):
     def generate_target_materials(self, cut_kernel = None,  radius=None, radius_list = None,
                                   bkg_std = None, if_select_obj = False, create_mask = False, 
                                   if_plot=None, use_moments = True, show_materials=None,
-                                  skip = False, mp=False, **kwargs):
+                                  skip = False, **kwargs):
         """
         Prepare the fitting materials to used for the fitting, including the image cutout, noise map and masks (optional).
         More important, the apertures that used to define the fitting settings are also generated.
@@ -230,7 +232,7 @@ class DataProcess(object):
         
         if skip == False:
             target_mask = np.ones_like(target_stamp)
-            apertures, segm_deblend, mask_apertures, tbl = detect_obj(target_stamp, if_plot= create_mask or if_select_obj or if_plot, 
+            apertures, segm_deblend, mask_apertures, tbl = detect_obj(target_stamp, if_plot= (create_mask != self.mp) or if_select_obj or if_plot, 
                                                       err=self.noise_map, use_moments=use_moments, **kwargs)
             self.segm_deblend = segm_deblend
             self.tbl  = tbl
@@ -247,7 +249,7 @@ class DataProcess(object):
                     _apertures_select = [i for i in range(len(apertures))]  
             _restof_i = []
             if create_mask == True:
-                if mp:
+                if self.mp:
                     select_idx = ""
                     select_idx_list = range(1,len(mask_apertures))
                 else:

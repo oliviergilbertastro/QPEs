@@ -84,8 +84,6 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
         print(band_index)
         fov_image = (img[0].data)#[:,:,band_index]
         print(np.shape(fov_image))
-        plt.imshow(fov_image)
-        plt.show()
         header = img[0].header
         for i in range(len(img)):
             try:
@@ -118,10 +116,10 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
     #data_process = DataProcess(fov_image = fov_image, target_pos = [1432., 966.], pos_type = 'pixel', header = header,
     #                        rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)  #zp use 27.0 for convinence.
     data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
-                            rm_bkglight = True, exptime = exp_map, if_plot=False, zp = zp, fov_noise_map=fov_noise_map)  #zp use 27.0 for convinence.
+                            rm_bkglight = True, exptime = exp_map, if_plot=False, zp = zp, fov_noise_map=fov_noise_map, mp=True)  #zp use 27.0 for convinence.
 
     data_process.generate_target_materials(radius=radius, create_mask = True, nsigma=nsigma,
-                                        exp_sz= exp_sz_multiplier, npixels = npixels, if_plot=False, mp=True)
+                                        exp_sz= exp_sz_multiplier, npixels = npixels, if_plot=False, show_materials=False)
 
     #Create a dictionnary of all informations that could be useful for us
     coolinfos = data_process.arguments.copy()
@@ -211,7 +209,10 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
     #fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = [None, {'n_burn': 200, 'n_run': 1000, 'walkerRatio': 10, 'sigma_scale': .1}])
     fit_run.mcmc_result_range()
     # Plot all the fitting results:
-    fit_run.plot_final_qso_fit(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
+    if type == "None" or type == "Bulge":
+        fit_run.plot_final_galaxy_fit(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
+    else:
+        fit_run.plot_final_qso_fit(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
     fit_run.coolinfos = coolinfos
     #Save the fitting class as pickle format:
     fit_run.dump_result()
@@ -226,38 +227,71 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
 
 
 if __name__ == "__main__":
-    objIDs = range(len(TDE_coords))
-    bands = "g" #r is already ran
-    types = ["None", "AGN"]
-    current_type = types[0]
-    procs = []
-    for band in bands:
-        for objID in objIDs:
-            img_path = f"data/images/tde{objID}_{band}.fits"
-            oow_path = f"data/images/tde{objID}_{band}.fits"
-            #Use the co-add PSF model from the survey
-            psf_path = f"data/images/tde{objID}_{band}_PSF.fits"
-            args = (TDE_coords[objID],
-                    img_path,
-                    oow_path,
-                    None,
-                    psf_path,
-                    "AGN",
-                    0.262,
-                    None,
-                    band,
-                    15,
-                    60,
-                    1,
-                    5,
-                    "COADDED_DESI",
-                    f"{TDE_names[objID]}_{band}-band_{current_type}_DESI_PSF_mp",
-                    5,
-                    "deep",
-                    )
-            proc = Process(target=galight_fit_short, args=args)
-            procs.append(proc)
-            proc.start()
-
-    for proc in procs:
-        proc.join()
+    fitAllAtOnce = False
+    if fitAllAtOnce:
+        objIDs = range(len(TDE_coords))
+        bands = "g" #r is already ran
+        types = ["None", "AGN"]
+        current_type = types[0]
+        procs = []
+        for band in bands:
+            for objID in objIDs:
+                img_path = f"data/images/tde{objID}_{band}.fits"
+                oow_path = f"data/images/tde{objID}_{band}.fits"
+                #Use the co-add PSF model from the survey
+                psf_path = f"data/images/tde{objID}_{band}_PSF.fits"
+                args = (TDE_coords[objID],
+                        img_path,
+                        oow_path,
+                        None,
+                        psf_path,
+                        current_type,
+                        0.262,
+                        None,
+                        band,
+                        15,
+                        60,
+                        1,
+                        5,
+                        "COADDED_DESI",
+                        f"{TDE_names[objID]}_{band}-band_{current_type}_DESI_PSF_mp",
+                        5,
+                        "deep",
+                        )
+                galight_fit_short(*args)
+                #proc = Process(target=galight_fit_short, args=args)
+                #procs.append(proc)
+                #proc.start()
+    else:
+        infos = input("Input objID, band and type. (i.e. '0 r None')\n")
+        objID, band, current_type = infos.split()
+        objID = int(objID)
+        img_path = f"data/images/tde{objID}_{band}.fits"
+        oow_path = f"data/images/tde{objID}_{band}.fits"
+        #Use the co-add PSF model from the survey
+        psf_path = f"data/images/tde{objID}_{band}_PSF.fits"
+        args = (TDE_coords[objID],
+                img_path,
+                oow_path,
+                None,
+                psf_path,
+                current_type,
+                0.262,
+                None,
+                band,
+                15,
+                60,
+                1,
+                5,
+                "COADDED_DESI",
+                f"{TDE_names[objID]}_{band}-band_{current_type}_DESI_PSF",
+                5,
+                "deep",
+                )
+        try:
+            galight_fit_short(*args)
+        except:
+            print("This one doesn't work")
+            pass
+    #for proc in procs:
+    #    proc.join()
