@@ -7,6 +7,30 @@ from download_data import objects, comparisons, objects_names, objects_types, TD
 
 #The QPE host galaxies are named "obj" while the TDE host galaxies are named "comp"
 
+if input("Fit a legacy image with their PSF? [y/n]") == "y":
+    for i, name in enumerate(TDE_names):
+        print(f"{i}: {name}")
+    objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
+    band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
+    type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")
+    img_path = f"data/images/tde{objID}_{band}.fits"
+    oow_path = f"data/images/tde{objID}_{band}.fits"
+    #Use the co-add PSF model from the survey
+    psf_path = f"data/images/tde{objID}_{band}_PSF.fits"
+    galight_fit(ra_dec=TDE_coords[objID],
+                    img_path = img_path,
+                    oow_path = oow_path,
+                    type = type,
+                    psf_path = psf_path,
+                    band=band,
+                    survey="COADDED_DESI",
+                    savename=f"{TDE_names[objID]}_{band}-band_{type}_DESI_PSF",
+                    threshold=5,
+                    nsigma=15,
+                    exp_sz_multiplier=1,
+                    fitting_level="deep",
+                    )
+
 if input("Fit a PANSTARRS TDE host galaxy? [y/n]\n") == "y":
     objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")

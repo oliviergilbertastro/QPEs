@@ -8,10 +8,14 @@ from tqdm import tqdm
 
 def get_file(pos, filenumber, size=512, pixscale=0.262, band="i", name="object"):
     ra, dec = pos
-    url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&size={size}&layer=ls-dr10&pixscale={pixscale}&bands={band}'
+    url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&size={size}&layer=ls-dr10&pixscale={pixscale}&bands={band}&invvar'
     #url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&layer=ls-dr10'
     r = requests.get(url)
     open(r'data/images/'+f'{name}'+str(filenumber)+f"_{band}"+r'.fits' , 'wb').write(r.content)
+    url = f'https://www.legacysurvey.org/viewer/coadd-psf/?ra={str(ra)}&dec={str(dec)}&layer=ls-dr10&bands={band}'
+    #url = f'https://www.legacysurvey.org/viewer/fits-cutout?ra={str(ra)}&dec={str(dec)}&layer=ls-dr10'
+    r = requests.get(url)
+    open(r'data/images/'+f'{name}'+str(filenumber)+f"_{band}"+r'_PSF.fits' , 'wb').write(r.content)
 
 #List of objects' RA and DEC to download
 #The ones that are commented out are replaced by a more accurate WCS position to their left
