@@ -17,7 +17,7 @@ from matplotlib.colors import LogNorm
 
 SUBTRACT_NOISE = False
 
-def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5, fitting_level="deep"):
+def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5, fitting_level="deep"):
     if type in ["AGN", "agn", "Agn"]:
         type = "AGN"
         number_of_ps = 1
@@ -54,6 +54,7 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
     img = pyfits.open(img_path)
     if oow_path != None:
         wht_img = pyfits.open(oow_path)
+    fov_noise_map = None
     zp = 22.5
     if survey == "DESI":
     #Showing the image in the selected band
@@ -104,6 +105,25 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
                 print("No header info")
         exp =  1  #Read the exposure time
         exp_map = exp
+        if input("Use INVVAR as weight map?") == "y":
+            wht = wht_img[1].data
+            mean_wht = exp * (pixel_scale)**2  #The drizzle information is used to derive the mean WHT value.
+            exp_map = exp * wht/mean_wht  #Derive the exposure time map for each pixel
+            fov_noise_map = 1/np.sqrt(wht)
+
+            ax1 = plt.subplot(221)
+            ax2 = plt.subplot(222, sharex=ax1, sharey=ax1)
+            ax3 = plt.subplot(223, sharex=ax1, sharey=ax1)
+            ax4 = plt.subplot(224, sharex=ax1, sharey=ax1)
+            ax1.imshow(fov_image)
+            ax1.set_title("Image")
+            ax2.imshow(wht)
+            ax2.set_title("Inverse variance (weight)")
+            ax3.imshow(exp_map)
+            ax3.set_title("Exposure map")
+            ax4.imshow(fov_noise_map)
+            ax4.set_title("Noise map")
+            plt.show()
 
     elif survey == "PS":
         header = img[1].header
@@ -125,7 +145,7 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
     #data_process = DataProcess(fov_image = fov_image, target_pos = [1432., 966.], pos_type = 'pixel', header = header,
     #                        rm_bkglight = False, exptime = exp_map, if_plot=True, zp = 22.5)  #zp use 27.0 for convinence.
     data_process = DataProcess(fov_image = fov_image, target_pos = [ra_dec[0], ra_dec[1]], pos_type = 'wcs', header = header,
-                            rm_bkglight = True, exptime = exp_map, if_plot=(not SUBTRACT_NOISE), zp = zp)  #zp use 27.0 for convinence.
+                            rm_bkglight = True, exptime = exp_map, if_plot=(not SUBTRACT_NOISE), zp = zp, fov_noise_map=fov_noise_map)  #zp use 27.0 for convinence.
 
     data_process.generate_target_materials(radius=radius, create_mask = (not SUBTRACT_NOISE), nsigma=nsigma,
                                         exp_sz= exp_sz_multiplier, npixels = npixels, if_plot=(not SUBTRACT_NOISE))
@@ -149,20 +169,25 @@ def galight_fit(ra_dec, img_path, oow_path=None, exp_path=None, type="AGN", pixe
     print('zero point:', data_process.zp) #zp is in the AB system and should be 22.5: https://www.legacysurvey.org/svtips/
     print('kwargs: ', data_process.arguments)
     print('---------------------------------------------------')
-    if PSF_pos_list == None and survey == "COADDED_DESI":
-        data_process.find_PSF(radius = 30, user_option = True, threshold=threshold)  #Try this line out!
+
+    if psf_path == None:
+        if PSF_pos_list == None and survey == "COADDED_DESI":
+            data_process.find_PSF(radius = 30, user_option = True, threshold=threshold)  #Try this line out!
+        else:
+            data_process.find_PSF(radius = 30, PSF_pos_list = PSF_pos_list, pos_type="wcs", user_option=True, threshold=threshold)
+
+        #Plot the FOV image and label the position of the target and the PSF
+        data_process.plot_overview(label = 'Example', target_label = None)
+
+        # Compare the 1D profile of all the components.
+        data_process.profiles_compare(norm_pix = 5, if_annuli=False, y_log = False,
+                        prf_name_list = (['target'] + ['PSF{0}'.format(i) for i in range(len(data_process.PSF_list))]) )
+
+        #Select which PSF id you want to use to make the fitting.
+        data_process.psf_id_for_fitting = int(input('Use which PSF? Input a number.\n'))
     else:
-        data_process.find_PSF(radius = 30, PSF_pos_list = PSF_pos_list, pos_type="wcs", user_option=True, threshold=threshold)
-
-    #Plot the FOV image and label the position of the target and the PSF
-    data_process.plot_overview(label = 'Example', target_label = None)
-
-    # Compare the 1D profile of all the components.
-    data_process.profiles_compare(norm_pix = 5, if_annuli=False, y_log = False,
-                    prf_name_list = (['target'] + ['PSF{0}'.format(i) for i in range(len(data_process.PSF_list))]) )
-
-    #Select which PSF id you want to use to make the fitting.
-    data_process.psf_id_for_fitting = int(input('Use which PSF? Input a number.\n'))
+        psf_img = pyfits.open(psf_path)[0].data
+        data_process.use_custom_psf(psf_img)
 
     #Check if all the materials is given, if so to pass to the next step.
     data_process.checkout()

@@ -200,7 +200,12 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
 
 from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types
 
-if input("Load CO-ADDED TDE host? [y/n]") == "y":
+if input("Load CO-ADDED SURVEY_PSF TDE host? [y/n]") == "y":
+    objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
+    band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+    loadRun(TDE_coords[objID], type="None", band=band, picklename=f"{TDE_names[objID]}_{band}-band_{TDE_types[objID]}_DESI_PSF.pkl")
+
+elif input("Load CO-ADDED TDE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
     loadRun(TDE_coords[objID], type="None", band=band, picklename=f"{TDE_names[objID]}_{band}-band_{TDE_types[objID]}_DESI.pkl")

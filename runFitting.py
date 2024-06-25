@@ -31,7 +31,7 @@ if input("Fit a legacy image with their PSF? [y/n]") == "y":
                     fitting_level="deep",
                     )
 
-if input("Fit a PANSTARRS TDE host galaxy? [y/n]\n") == "y":
+elif input("Fit a PANSTARRS TDE host galaxy? [y/n]\n") == "y":
     objID = int(input(f"Enter the object ID you want to fit [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to fit [g,r,i,z]:\n")
     type = input("What extra-component fitting model do you want to use [None, AGN, Bulge, Bulge+AGN]?\n")

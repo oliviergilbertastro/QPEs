@@ -204,7 +204,12 @@ class DataProcess(object):
             if radius == 'nocut':
                 self.noise_map = self.fov_noise_map
             else:
+                from galight.tools.measure_tools import esti_bgkstd
+                cut_rad = np.min([self.radius*2, len(self.fov_image)/2])
+                target_2xlarger_stamp = cutout(image=self.fov_image, center= self.target_pos, radius=cut_rad)
+                self.bkg_std, self.bkg_mid = esti_bgkstd(target_2xlarger_stamp, if_plot=if_plot, npixels = 20)
                 self.noise_map = cutout(image = self.fov_noise_map, center = self.target_pos, radius=radius)
+                self.noise_map = np.sqrt(self.noise_map**2 + self.bkg_std**2)
         else:
             if bkg_std == None:
                 from galight.tools.measure_tools import esti_bgkstd
@@ -512,6 +517,15 @@ class DataProcess(object):
         plot_overview(self.fov_image, center_target= self.target_pos,
                       c_psf_list=PSF_pos_list, **kargs)
     
+    def use_custom_psf(self, psf_image, **kargs):
+        self.PSF_list = []
+        self.PSF_list.append(psf_image)
+        plt.imshow(psf_image)
+        plt.title("PSF image")
+        plt.show()
+        self.profiles_compare(norm_pix = 5, if_annuli=False, y_log = False,
+                        prf_name_list = (['target'] + ['PSF{0}'.format(i) for i in range(len(self.PSF_list))]) )
+
     def checkout(self):
         """
         Check out if everything is prepared to pass to galight.fitting_process().
