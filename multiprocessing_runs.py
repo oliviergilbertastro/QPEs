@@ -231,8 +231,8 @@ if __name__ == "__main__":
     if fitAllAtOnce:
         objIDs = range(len(TDE_coords))
         bands = "r" #r is already ran
-        types = ["None", "AGN"]
-        current_type = types[1]
+        types = ["None", "AGN", "Bulge"]
+        current_type = types[2]
         procs = []
         for band in bands:
             for objID in objIDs:

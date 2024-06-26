@@ -203,7 +203,8 @@ from download_data import objects, comparisons, objects_names, objects_types, TD
 if input("Load CO-ADDED SURVEY_PSF TDE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
-    loadRun(TDE_coords[objID], type="None", band=band, picklename=f"{TDE_names[objID]}_{band}-band_{TDE_types[objID]}_DESI_PSF.pkl")
+    model = input("Which model do you want to load?\n")
+    loadRun(TDE_coords[objID], type="None", band=band, picklename=f"{TDE_names[objID]}_{band}-band_{model}_DESI_PSF.pkl")
 
 elif input("Load CO-ADDED TDE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
