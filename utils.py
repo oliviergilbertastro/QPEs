@@ -6,6 +6,7 @@ import numpy as np
 from math import floor, ceil
 import matplotlib.pyplot as plt
 import matplotlib as mpl
+from sklearn.neighbors import KernelDensity
 
 def print_table(a, header=None, title=None, space_between_columns=2, space_between_rows=0, borders=1, header_color="yellow", border_color="grey", override_length=None):
     """
@@ -148,7 +149,7 @@ def myCornerPlot(data, labels=None, fontsize=15):
 
     # Show data in each plot:
 
-    from sklearn.neighbors import KernelDensity
+    
     #Plot kernel histograms:
     for i in range(plot_size):
         if labels is not None:
@@ -195,27 +196,90 @@ if __name__ == "__main__":
     
 
 def myFinalPlot(data, fontsize=15):
-    fig = plt.figure()
+    for i in range(len(data)-1):
+        assert len(data[i]) == len(data[i+1])
+    # data should be in the shape of [QPE data, TDE data]
+    QPE_data, TDE_data = data
+    QPE_data, TDE_data = np.array(QPE_data), np.array(TDE_data)
+    # QPE and TDE data should be in the shape of np.array([n_sersic, m_star, m_BH]), with each one containing their uncertainties
+
+    # Create the plot axes:
+    fig = plt.figure(figsize=(6,6))
     gs = mpl.gridspec.GridSpec(10, 10, wspace=0.0, hspace=0.0)    
-    fig.add_subplot(gs[2:8, 2:8])
-    fig.add_subplot(gs[0, :])
-    for i in range(5):
-        fig.add_subplot(gs[1, (i*2):(i*2+2)])
-    fig.add_subplot(gs[2:, :2])
-    fig.add_subplot(gs[8:, 2:4])
-    fig.add_subplot(gs[8:, 4:9])
-    fig.add_subplot(gs[2:8, 8])
-    fig.add_subplot(gs[2:, 9])
-    fig.add_subplot(gs[3:6, 3:6])
+    n_hist_ax = fig.add_subplot(gs[0:2, 0:8]) # Sérsic index histogram
+    mS_hist_ax =fig.add_subplot(gs[2:6, 8:10]) # Stellar mass histogram
+    mBH_hist_ax = fig.add_subplot(gs[6:10, 8:10]) # Black hole mass histogram
+    mS_ax = fig.add_subplot(gs[2:6, 0:8], sharex=n_hist_ax, sharey=mS_hist_ax) #  n vs log(M_star)
+    mBH_ax = fig.add_subplot(gs[6:10, 0:8], sharex=n_hist_ax, sharey=mBH_hist_ax) # n vs log(M_BH)
+    # Hide some of the axes ticks
+    plt.setp(n_hist_ax.get_xticklabels(), visible=False)
+    plt.setp(mS_hist_ax.get_xticklabels(), visible=False)
+    plt.setp(mBH_hist_ax.get_xticklabels(), visible=False)
+    plt.setp(mS_ax.get_xticklabels(), visible=False)
+    plt.setp(n_hist_ax.get_yticklabels(), visible=False)
+    plt.setp(mS_hist_ax.get_yticklabels(), visible=False)
+    plt.setp(mBH_hist_ax.get_yticklabels(), visible=False)
 
     # fancy colors
     cmap = mpl.colormaps.get_cmap("viridis")
     naxes = len(fig.axes)
-    for i, ax in enumerate(fig.axes):
-        ax.set_xticks([])
-        ax.set_yticks([])
-        ax.set_facecolor(cmap(float(i)/(naxes-1)))
+
+    #----------Make the histograms---------
+
+    # n_sersic
+    x_min = np.min(QPE_data[0,:,0]) if np.min(TDE_data[0,:,0]) > np.min(QPE_data[0,:,0]) else np.min(TDE_data[0,:,0])
+    x_max = np.max(QPE_data[0,:,0]) if np.max(TDE_data[0,:,0]) < np.max(QPE_data[0,:,0]) else np.max(TDE_data[0,:,0])
+    X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
+    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(QPE_data[0,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(X_plot)
+    n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
+    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(TDE_data[0,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(X_plot)
+    n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
+
+    # m_star
+    y_min = np.min(QPE_data[1,:,0]) if np.min(TDE_data[1,:,0]) > np.min(QPE_data[1,:,0]) else np.min(TDE_data[1,:,0])
+    y_max = np.max(QPE_data[1,:,0]) if np.max(TDE_data[1,:,0]) < np.max(QPE_data[1,:,0]) else np.max(TDE_data[1,:,0])
+    Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
+    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(QPE_data[1,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(Y_plot)
+    mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
+    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(TDE_data[1,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(Y_plot)
+    mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
+
+    # m_bh
+    y_min = np.min(QPE_data[2,:,0]) if np.min(TDE_data[2,:,0]) > np.min(QPE_data[2,:,0]) else np.min(TDE_data[2,:,0])
+    y_max = np.max(QPE_data[2,:,0]) if np.max(TDE_data[2,:,0]) < np.max(QPE_data[2,:,0]) else np.max(TDE_data[2,:,0])
+    Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
+    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(QPE_data[2,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(Y_plot)
+    mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
+    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(TDE_data[2,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(Y_plot)
+    mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
+
+    #----------Make the plots---------
+
+    # n_sersic vs m_star
+    mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue")
+    mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red")
+
+    # n_sersic vs m_bh
+    mBH_ax.errorbar(QPE_data[0,:,0], QPE_data[2,:,0], yerr=[QPE_data[2,:,1],QPE_data[2,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue")
+    mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[2,:,0], yerr=[TDE_data[2,:,1],TDE_data[2,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red")
+
+    #----------Make the labels---------
+    mBH_ax.set_xlabel(r"Sérsic index", fontsize=fontsize)
+    mS_ax.set_ylabel(r"$\log(M_\star)$", fontsize=fontsize)
+    mBH_ax.set_ylabel(r"$\log(M_\mathrm{BH})$", fontsize=fontsize)
+
+    #plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.94, wspace=0, hspace=0)
     plt.show()
 
 if __name__ == "__main__":
-    myFinalPlot(1)
+    from paper_data import TDE_sersicIndices, TDE_stellar_masses_litterature, TDE_mBH
+    from legacy_vs_legacy import add_0_uncertainties
+    TDE_data = np.array([add_0_uncertainties(TDE_sersicIndices), np.log10(TDE_stellar_masses_litterature), add_0_uncertainties(np.log10(TDE_mBH))])
+    data = np.array([TDE_data/2, TDE_data])
+    myFinalPlot(data)
