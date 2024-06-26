@@ -1,6 +1,6 @@
 from multiprocessing import Process
 
-from download_data import TDE_coords, TDE_names
+from download_data import TDE_coords, TDE_names, objects, objects_names
 
 
 #ignore warnings:
@@ -227,20 +227,29 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
 
 
 if __name__ == "__main__":
+    if input("Fit TDE?") == "y":
+        coords = TDE_coords
+        path_section = "tde"
+        names = TDE_names
+    else:
+        coords = objects
+        path_section = "obj"
+        names = objects_names
+
     fitAllAtOnce = True
     if fitAllAtOnce:
-        objIDs = range(len(TDE_coords))
+        objIDs = range(len(coords))
         bands = "r" #r is already ran
         types = ["None", "AGN", "Bulge"]
         current_type = types[2]
         procs = []
         for band in bands:
             for objID in objIDs:
-                img_path = f"data/images/tde{objID}_{band}.fits"
-                oow_path = f"data/images/tde{objID}_{band}.fits"
+                img_path = f"data/images/{path_section}{objID}_{band}.fits"
+                oow_path = f"data/images/{path_section}{objID}_{band}.fits"
                 #Use the co-add PSF model from the survey
-                psf_path = f"data/images/tde{objID}_{band}_PSF.fits"
-                args = (TDE_coords[objID],
+                psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
+                args = (coords[objID],
                         img_path,
                         oow_path,
                         None,
@@ -254,7 +263,7 @@ if __name__ == "__main__":
                         1,
                         5,
                         "COADDED_DESI",
-                        f"{TDE_names[objID]}_{band}-band_{current_type}_DESI_PSF",
+                        f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
                         5,
                         "deep",
                         )
