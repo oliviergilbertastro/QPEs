@@ -15,7 +15,7 @@ def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_
     try:
         fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
     except:
-        raise NameError("There is no picklerun with this name.")
+        fitting_run_result = pickle.load(open("galight_fitruns/big_fits/"+picklename,'rb'))
 
     # Get the BIC
     bic = fitting_run_result.fitting_seq.bic
