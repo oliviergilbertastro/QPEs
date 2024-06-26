@@ -227,12 +227,12 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
 
 
 if __name__ == "__main__":
-    fitAllAtOnce = False
+    fitAllAtOnce = True
     if fitAllAtOnce:
         objIDs = range(len(TDE_coords))
-        bands = "g" #r is already ran
+        bands = "r" #r is already ran
         types = ["None", "AGN"]
-        current_type = types[0]
+        current_type = types[1]
         procs = []
         for band in bands:
             for objID in objIDs:
@@ -254,7 +254,7 @@ if __name__ == "__main__":
                         1,
                         5,
                         "COADDED_DESI",
-                        f"{TDE_names[objID]}_{band}-band_{current_type}_DESI_PSF_mp",
+                        f"{TDE_names[objID]}_{band}-band_{current_type}_DESI_PSF",
                         5,
                         "deep",
                         )
