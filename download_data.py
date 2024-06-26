@@ -90,7 +90,13 @@ comparisons_names = [
 ]
 
 if __name__ == "__main__":
-    if input("Download 1024x1024 of all TDEs? [y/n]") == "y":
+    if input("Download 1024x1024 of all QPEs? [y/n]") == "y":
+        band = input("Which band do you want to download? ['griz']")
+        for i in tqdm(range(len(objects_names))):
+            for b in band:
+                get_file(objects[i], i, size=512*2, pixscale=0.262, band=b, name="qpe")
+        print("\x1b[33mDownload finished\x1b[0m")
+    elif input("Download 1024x1024 of all TDEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
         for i in tqdm(range(len(TDE_names))):
             for b in band:

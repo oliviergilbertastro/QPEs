@@ -233,7 +233,7 @@ if __name__ == "__main__":
         names = TDE_names
     else:
         coords = objects
-        path_section = "obj"
+        path_section = "qpe"
         names = objects_names
 
     fitAllAtOnce = True
