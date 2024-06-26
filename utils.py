@@ -277,9 +277,23 @@ def myFinalPlot(data, fontsize=15):
     #plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.94, wspace=0, hspace=0)
     plt.show()
 
+
+
+
+def toLog(a):
+    """Convert array of data and uncertainties in log base"""
+    a = np.array(a)
+    data, lo, hi = a[:,0], a[:,1], a[:,2]
+    lo = np.abs(lo/(data*np.log(10)))
+    hi = np.abs(hi/(data*np.log(10)))
+    data = np.log10(data)
+    return np.array([data, hi, lo]).T
+
+
+
 if __name__ == "__main__":
     from paper_data import TDE_sersicIndices, TDE_stellar_masses_litterature, TDE_mBH
     from legacy_vs_legacy import add_0_uncertainties
-    TDE_data = np.array([add_0_uncertainties(TDE_sersicIndices), np.log10(TDE_stellar_masses_litterature), add_0_uncertainties(np.log10(TDE_mBH))])
+    TDE_data = np.array([add_0_uncertainties(TDE_sersicIndices), toLog(TDE_stellar_masses_litterature), toLog(add_0_uncertainties(TDE_mBH))])
     data = np.array([TDE_data/2, TDE_data])
     myFinalPlot(data)

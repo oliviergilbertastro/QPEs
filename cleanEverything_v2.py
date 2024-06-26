@@ -7,7 +7,7 @@ import numpy as np
 from galight_modif.tools.plot_tools import total_compare
 from download_data import objects
 from ned_wright_cosmology import calculate_cosmo
-from utils import print_table, myCornerPlot
+from utils import print_table, myCornerPlot, myFinalPlot, toLog
 import matplotlib.pyplot as plt
 import corner
 from scipy.stats import norm
@@ -30,7 +30,7 @@ def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI", redshift=0)
     #Calculate the Sersic index + uncertainties
     chain = fitting_run_result.samples_mcmc
     params = fitting_run_result.param_mcmc
-    if "R_sersic" in params and "n_sersic" in params:
+    if "R_sersic_lens_light0" in params and "n_sersic_lens_light0" in params:
         lo, mid, hi = np.percentile(chain[:, 1],16), np.percentile(chain[:, 1],50), np.percentile(chain[:, 1],84)
         plus, minus = (hi-mid), (mid-lo)
         sersic_index_data = [mid, minus, plus]
@@ -40,6 +40,7 @@ def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI", redshift=0)
         plus, minus = (hi-mid), (mid-lo)
         r50_data = [mid, minus, plus]
     else:
+        print(params)
         sersic_index_data = [fitting_run_result.final_result_galaxy[0]["n_sersic"], 0, 0]
         r50_data = [fitting_run_result.final_result_galaxy[0]["R_sersic"], 0, 0]
     #Convert r50 from arcsec to kpc
@@ -275,6 +276,12 @@ if __name__ == "__main__":
         QPE_data,TDE_data,double_hosts_data
         ],
                  labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$z$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"])
+    
+    QPE_data = np.array([QPE_sersicIndices, toLog(QPE_stellar_masses), toLog(QPE_mBH)])
+    double_hosts_data = QPE_data[:,[4,8]]
+    TDE_data = np.array([np.concatenate((add_0_uncertainties(TDE_sersicIndices), QPE_sersicIndices[[4,8]])), toLog(np.concatenate((TDE_stellar_masses,QPE_stellar_masses[[4,8]]))), toLog(np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[[4,8]])))])
+    myFinalPlot([QPE_data, TDE_data])
+
     sys.exit()
 
     # QPE hosts properties
