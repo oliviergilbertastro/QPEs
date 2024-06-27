@@ -1,6 +1,6 @@
 from multiprocessing import Process
 
-from download_data import TDE_coords, TDE_names, objects, objects_names
+from download_data import TDE_coords, TDE_names, objects, objects_names, TDE_types
 
 
 #ignore warnings:
@@ -237,11 +237,11 @@ if __name__ == "__main__":
         path_section = "qpe"
         names = objects_names
 
-    fitAllAtOnce = False
+    fitAllAtOnce = True
     if fitAllAtOnce:
         objIDs = range(len(coords))
-        bands = "r" #r is already ran
-        types = ["None", "AGN", "Bulge"]
+        bands = "giz" #r is already ran
+        types = "N"#["None", "AGN", "Bulge"]
         procs = []
         for current_type in types:
             for band in bands:
@@ -255,7 +255,7 @@ if __name__ == "__main__":
                             oow_path,
                             None,
                             psf_path,
-                            current_type,
+                            TDE_types[objID],
                             0.262,
                             None,
                             band,
@@ -264,7 +264,7 @@ if __name__ == "__main__":
                             1,
                             5,
                             "COADDED_DESI",
-                            f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
+                            f"{names[objID]}_{band}-band_{TDE_types[objID]}_DESI_PSF",
                             5,
                             "deep",
                             )

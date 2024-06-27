@@ -168,11 +168,11 @@ for i in range(len(TDE_coords)):
     TDE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
-            n, r50, mag = get_n_and_r50(i, "None", redshift=TDE_redshifts[i], band=band, survey=tde_survey, qpe_oder_tde="TDE")
+            n, r50, mag = get_n_and_r50(i, TDE_types[i], redshift=TDE_redshifts[i], band=band, survey=tde_survey, qpe_oder_tde="TDE")
             TDE_sersicIndices[-1][band] = n
             TDE_r50s[-1][band] = r50
             TDE_magnitudes[-1][band] = mag
-            TDE_unreddenedMagnitudes[-1][band] = mag - QPE_extinction[objects_names[i]][band] #Change this
+            TDE_unreddenedMagnitudes[-1][band] = mag - TDE_extinction[TDE_names[i]][band]
         except:
             pass
 
@@ -188,6 +188,7 @@ if __name__ == "__main__":
     printPropertyAcrossFilters(TDE_sersicIndices, "Sérsic Index", qpe_oder_tde="TDE")
     printPropertyAcrossFilters(TDE_r50s, "Sérsic half-light radius (kpc)", qpe_oder_tde="TDE")
     printPropertyAcrossFilters(TDE_magnitudes, "Magnitude", qpe_oder_tde="TDE")
+    printPropertyAcrossFilters(TDE_unreddenedMagnitudes, "Dereddened magnitude", qpe_oder_tde="TDE")
 
     #From now on, keep only the r-band properties:
     band_to_keep = "r"
