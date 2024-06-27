@@ -261,7 +261,7 @@ if __name__ == "__main__":
 
     print_table(np.array([TDE_names, np.around(TDE_sersicIndices, 4)]).T,
                     header=["Name", "Sérsic index"],
-                    title="TDE hosts properties",
+                    title="TDE litterature hosts properties",
                     space_between_columns=4,
                     space_between_rows=0,
                     borders=2)

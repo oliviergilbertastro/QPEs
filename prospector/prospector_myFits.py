@@ -23,17 +23,17 @@ import numpy as np
 import astroquery
 from sedpy.observate import load_filters
 from prospect.utils.obsutils import fix_obs
-from download_data import objects_names, objects
+from download_data import objects_names, objects, TDE_coords, TDE_names
 if __name__ != "prospector.prospector_myFits":
     from cleanEverything_v2 import QPE_magnitudes, QPE_unreddenedMagnitudes
-from paper_data import QPE_redshifts
+from paper_data import QPE_redshifts, TDE_redshifts
 from prospect.sources import CSPSpecBasis
 from prospect.io import read_results as reader
 import matplotlib.pyplot as plt
 from prospect.plotting import corner
 from prospect.plotting.utils import best_sample
 
-def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
+def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, QPE=True):
     """
     Fits SED using prospector
     """
@@ -74,7 +74,7 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
     #model_params["tau"]["isfree"] = False
 
     #Fit directly in SURVIVING stellar masses
-    model_params["mass_units"]=dict(init="mstar", isfree=False, N=1)
+    #model_params["mass_units"]=dict(init="mstar", isfree=False, N=1)
 
 
     print("-------------------------------------")
@@ -103,15 +103,22 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
     surviving_mass = np.sum(model.params["mass"]) * mfrac
     print("surviving_mass:", surviving_mass)
     #print(phot / obs["maggies"])
-    #with open(f"prospector/data/{objects_names[objID]}_LEGACY_mfrac.txt", "w") as text_file:
-    #    text_file.write(str(mfrac))
+    if QPE:
+        with open(f"prospector/data/{objects_names[objID]}_LEGACY_mfrac.txt", "w") as text_file:
+            text_file.write(str(mfrac))
+    else:
+        with open(f"prospector/data/{TDE_names[objID]}_LEGACY_mfrac.txt", "w") as text_file:
+            text_file.write(str(mfrac))
 
     from prospect.fitting import lnprobfn, fit_model
     fitting_kwargs = dict(nlive_init=400, nested_method="rwalk", nested_target_n_effective=1000, nested_dlogz_init=0.05)
     output = fit_model(obs, model, sps, optimize=False, dynesty=True, lnprobfn=lnprobfn, noise=noise_model, **fitting_kwargs)
     result, duration = output["sampling"]
     from prospect.io import write_results as writer
-    hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
+    if QPE:
+        hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
+    else:
+        hfile = f"prospector/fits_data/{TDE_names[objID]}_survMass_prospector_SED.h5"
     writer.write_hdf5(hfile, {}, model, obs,
                     output["sampling"][0], None,
                     sps=sps,
@@ -121,15 +128,19 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None):
     #objID = objID + 1
     #fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=magnitudes_dicts[objID])
 
-def read_SED(objID):
-    try:
+def read_SED(objID, QPE=True):
+    #try:
         # Directly fitting the surviving mass
-        hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
-        out, out_obs, out_model = reader.results_from(hfile)
-    except:
+    #    hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
+    #    out, out_obs, out_model = reader.results_from(hfile)
+    #except:
         # Taking the fitted total formed mass and then multiplying it by the surviving fraction approximation
+
+    if QPE:
         hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
-        out, out_obs, out_model = reader.results_from(hfile)
+    else:
+        hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_SED.h5"
+    out, out_obs, out_model = reader.results_from(hfile)
     for k in out.keys():
         print(k, ":", out[k])
     #Plot the posterior's corner plot
@@ -181,7 +192,7 @@ def read_SED(objID):
     plt.show()
 
 
-def getStellarMass(objID):
+def getStellarMass(objID, QPE=True):
     if False:
         # Directly fitting the surviving mass
         hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
@@ -189,10 +200,14 @@ def getStellarMass(objID):
         mass = out["chain"][:,0]
     else:
         # Taking the fitted total formed mass and then multiplying it by the surviving fraction approximation
-        hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
+        if QPE:
+            hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
+            mfrac = np.float64(open(f"prospector/data/{objects_names[objID]}_LEGACY_mfrac.txt","r").read())
+        else:
+            hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_SED.h5"
+            mfrac = np.float64(open(f"prospector/data/{TDE_names[objID]}_LEGACY_mfrac.txt","r").read())
         out, out_obs, out_model = reader.results_from(hfile)
         mass = out["chain"][:,0]
-        mfrac = np.float64(open(f"prospector/data/{objects_names[objID]}_LEGACY_mfrac.txt","r").read())
         mass = mass*mfrac
 
 
@@ -209,31 +224,61 @@ def makeAstropyTableFromDictionnary(dict):
 
 
 
-
+# Do the magnitudes thing
 if __name__ == "__main__":
 
-    magnitudes_dicts = []
+    QPE_magnitudes_dicts = []
     for i in range(len(objects_names)):
-        magnitudes_dicts.append({"name":objects_names[i]})
+        QPE_magnitudes_dicts.append({"name":objects_names[i]})
         for band in "griz":
             try:
-                magnitudes_dicts[i][f"cModelMag_{band}"] = QPE_unreddenedMagnitudes[i][band]
-                magnitudes_dicts[i][f"cModelMagErr_{band}"] = 0
+                QPE_magnitudes_dicts[i][f"cModelMag_{band}"] = QPE_unreddenedMagnitudes[i][band]
+                QPE_magnitudes_dicts[i][f"cModelMagErr_{band}"] = 0
             except:
                 pass
 
-    for i in range(len(magnitudes_dicts)):
-        magnitudes_dicts[i] = makeAstropyTableFromDictionnary(magnitudes_dicts[i])
+    for i in range(len(QPE_magnitudes_dicts)):
+        QPE_magnitudes_dicts[i] = makeAstropyTableFromDictionnary(QPE_magnitudes_dicts[i])
 
-    if input("Fit objects? [y/n]") == "y":
+    TDE_magnitudes_dicts = []
+    for i in range(len(objects_names)):
+        TDE_magnitudes_dicts.append({"name":TDE_names[i]})
+        for band in "griz":
+            try:
+                TDE_magnitudes_dicts[i][f"cModelMag_{band}"] = TDE_unreddenedMagnitudes[i][band]
+                TDE_magnitudes_dicts[i][f"cModelMagErr_{band}"] = 0
+            except:
+                pass
+
+    for i in range(len(TDE_magnitudes_dicts)):
+        TDE_magnitudes_dicts[i] = makeAstropyTableFromDictionnary(TDE_magnitudes_dicts[i])
+
+    if input("Fit QPEs? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to fit [0-{len(objects_names)-1}]:\n"))
-        fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=magnitudes_dicts[objID])
+        fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=QPE_magnitudes_dicts[objID])
 
-    if input("Read object? [y/n]") == "y":
+    elif input("Read QPE? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
         read_SED(objID)
+
+    elif input("Fit TDEs? [y/n]") == "y":
+        objID = int(input(f"Input object ID you want to fit [0-{len(TDE_names)-1}]:\n"))
+        fit_SED(objID, bands="griz", redshift=TDE_redshifts[objID], magnitudes_dict=TDE_magnitudes_dicts[objID], QPE=False)
+
+    elif input("Read TDE? [y/n]") == "y":
+        objID = int(input(f"Input object ID you want to read [0-{len(TDE_names)-1}]:\n"))
+        read_SED(objID, QPE=False)
 
 else:
     QPE_stellar_masses_desiProspector = []
     for i in range(len(objects_names)):
         QPE_stellar_masses_desiProspector.append(getStellarMass(i))
+    TDE_stellar_masses_desiProspector = []
+    for i in range(len(TDE_names)):
+        TDE_stellar_masses_desiProspector.append(getStellarMass(i, QPE=False))
+
+
+
+# Magnitudes for DESI PSF
+if __name__ != "prospector.prospector_myFits":
+    from legacy_vs_legacy import QPE_unreddenedMagnitudes, TDE_unreddenedMagnitudes

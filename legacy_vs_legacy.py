@@ -52,6 +52,11 @@ def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_
     r50_data = np.array(r50_data)*kpc_per_arcsec
 
     magnitude = fitting_run_result.final_result_galaxy[0]['magnitude']
+    # Add the magnitude of the disk if there is a bulge+disk decomposition
+    try:
+        magnitude = -2.5*np.log10(10**(-0.4*magnitude)+10**(-0.4*fitting_run_result.final_result_galaxy[1]['magnitude']))
+    except:
+        pass
 
     return sersic_index_data, r50_data, magnitude
 
