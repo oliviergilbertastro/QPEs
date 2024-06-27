@@ -115,7 +115,7 @@ def print_table(a, header=None, title=None, space_between_columns=2, space_betwe
 
 
 
-def myCornerPlot(data, labels=None, fontsize=15):
+def myCornerPlot(data, labels=None, fontsize=15, smoothness=6):
     """
     data should be [data_set1, data_set2, ...] each containing multiple parameters
     """
@@ -160,7 +160,8 @@ def myCornerPlot(data, labels=None, fontsize=15):
             x_max = np.max(data[j][i]) if x_max < np.max(data[j][i]) else x_max
         for j in range(len(data)-1):
             X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
-            kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(data[j][i][:,np.newaxis])
+            bandwidth = np.abs(x_max-x_min)/smoothness
+            kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(data[j][i][:,np.newaxis])
             log_dens = kde.score_samples(X_plot)
             hist_axes[i].fill_between(X_plot[:, 0], np.exp(log_dens), fc=["blue","red","orange"][j%3], alpha=[0.4,0.4][j])
 

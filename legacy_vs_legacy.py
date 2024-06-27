@@ -4,12 +4,12 @@ Program to compare QPE hosts and TDE hosts "apples to apples" with the LEGACY DE
 import pickle
 import numpy as np
 from ned_wright_cosmology import calculate_cosmo
-from utils import print_table, myCornerPlot
+from utils import print_table, myCornerPlot, toLog, myFinalPlot
 import matplotlib.pyplot as plt
 from paper_data import *
 from download_data import *
 import sys
-from prospector.prospector_myFits import QPE_stellar_masses_desiProspector
+from prospector.prospector_myFits import QPE_stellar_masses_desiProspector, TDE_stellar_masses_desiProspector
 
 def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_oder_tde="QPE"):
     if qpe_oder_tde == "QPE":
@@ -213,20 +213,52 @@ if __name__ == "__main__":
     TDE_sersicIndices = TDE_placeholder_properties["n_sersic"]
     TDE_r50s = TDE_placeholder_properties["r_50"]
 
+    # Get the stellar masses:
+    QPE_stellar_masses = QPE_stellar_masses_desiProspector
+    TDE_stellar_masses = TDE_stellar_masses_desiProspector
+
+    # Calculate stellar mass surface densities
+    QPE_SMSDs = np.array([stellarMassDensity(QPE_stellar_masses[i], QPE_r50s[i]) for i in range(len(objects_names))])
+    TDE_SMSDs = np.array([stellarMassDensity(TDE_stellar_masses[i], TDE_r50s[i]) for i in range(len(TDE_names))])
+
+    # Convert the stellar masses, black hole masses and the SSMDs to logbase and numpy arrays:
+    QPE_stellar_masses = toLog(QPE_stellar_masses)
+    TDE_stellar_masses = toLog(TDE_stellar_masses)
+    QPE_SMSDs = toLog(QPE_SMSDs)
+    TDE_SMSDs = toLog(TDE_SMSDs)
+    QPE_mBH = toLog(QPE_mBH)
+    TDE_mBH = np.log10(TDE_mBH)
+
+    
+
     #Transform lists into arrays
     QPE_sersicIndices = np.array(QPE_sersicIndices)
     QPE_r50s = np.array(QPE_r50s)
+    QPE_mBH = np.array(QPE_mBH)
     TDE_sersicIndices = np.array(TDE_sersicIndices)
     TDE_r50s = np.array(TDE_r50s)
+    TDE_mBH = np.array(TDE_mBH)
 
-    QPE_data  = np.array([QPE_r50s[:,0], QPE_sersicIndices[:,0]])
-    TDE_data = np.array([TDE_r50s[:,0], TDE_sersicIndices[:,0]])
+
+    # Make final plot
+    QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
+    TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[[4,8]])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[[4,8]])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[[4,8]]))])
+    myFinalPlot([QPE_data, TDE_data])
+
+    # Make big plot
+    QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_redshifts, QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
+    TDE_data = np.array([TDE_mBH, TDE_stellar_masses[:,0], TDE_redshifts, TDE_r50s[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])
     double_hosts_data = QPE_data[:,[4,8]]
     TDE_data = np.vstack((TDE_data.T, double_hosts_data.T)).T
-    myCornerPlot([
-        QPE_data,TDE_data,double_hosts_data
-        ],
-                 labels=["$r_{50}$","$n_\mathrm{Sérsic}$"])
+    myCornerPlot(
+        [QPE_data,TDE_data,double_hosts_data],
+        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$z$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
+        smoothness=6
+        )
+
+
+
+
 
     sys.exit()
 
