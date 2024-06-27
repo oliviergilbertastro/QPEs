@@ -125,8 +125,8 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, QPE=True):
                     tsample=output["sampling"][1],
                     toptimize=0.0)
     #uncomment the rest to run the python file only once to make all files
-    objID = objID + 1
-    fit_SED(objID, bands="griz", redshift=TDE_redshifts[objID], magnitudes_dict=TDE_magnitudes_dicts[objID], QPE=False)
+    #objID = objID + 1
+    #fit_SED(objID, bands="griz", redshift=TDE_redshifts[objID], magnitudes_dict=TDE_magnitudes_dicts[objID], QPE=QPE)
 
 def read_SED(objID, QPE=True):
     #try:
@@ -243,7 +243,7 @@ if __name__ == "__main__":
         QPE_magnitudes_dicts[i] = makeAstropyTableFromDictionnary(QPE_magnitudes_dicts[i])
 
     TDE_magnitudes_dicts = []
-    for i in range(len(objects_names)):
+    for i in range(len(TDE_names)):
         TDE_magnitudes_dicts.append({"name":TDE_names[i]})
         for band in "griz":
             try:
@@ -274,9 +274,9 @@ else:
     QPE_stellar_masses_desiProspector = []
     for i in range(len(objects_names)):
         QPE_stellar_masses_desiProspector.append(getStellarMass(i))
-    #TDE_stellar_masses_desiProspector = []
-    #for i in range(len(TDE_names)):
-    #   TDE_stellar_masses_desiProspector.append(getStellarMass(i, QPE=False))
+    TDE_stellar_masses_desiProspector = []
+    for i in range(len(TDE_names)):
+       TDE_stellar_masses_desiProspector.append(getStellarMass(i, QPE=False))
 
 
 
