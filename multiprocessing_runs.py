@@ -237,7 +237,7 @@ if __name__ == "__main__":
         path_section = "qpe"
         names = objects_names
 
-    fitAllAtOnce = True
+    fitAllAtOnce = False
     if fitAllAtOnce:
         objIDs = range(len(coords))
         bands = "r" #r is already ran
@@ -279,11 +279,11 @@ if __name__ == "__main__":
         infos = input("Input objID, band and type. (e.g. '0 r None')\n")
         objID, band, current_type = infos.split()
         objID = int(objID)
-        img_path = f"data/images/tde{objID}_{band}.fits"
-        oow_path = f"data/images/tde{objID}_{band}.fits"
+        img_path = f"data/images/{path_section}{objID}_{band}.fits"
+        oow_path = f"data/images/{path_section}{objID}_{band}.fits"
         #Use the co-add PSF model from the survey
-        psf_path = f"data/images/tde{objID}_{band}_PSF.fits"
-        args = (TDE_coords[objID],
+        psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
+        args = (coords[objID],
                 img_path,
                 oow_path,
                 None,
@@ -297,7 +297,7 @@ if __name__ == "__main__":
                 1,
                 5,
                 "COADDED_DESI",
-                f"{TDE_names[objID]}_{band}-band_{current_type}_DESI_PSF",
+                f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
                 5,
                 "deep",
                 )

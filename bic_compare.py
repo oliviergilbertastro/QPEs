@@ -20,7 +20,7 @@ def get_bic(picklename):
 
 if __name__ == "__main__":
 
-    survey = "DESI"
+    survey = "DESI_PSF"
     band = "r"
     bics = []
     for model in ["None","AGN","Bulge"]:

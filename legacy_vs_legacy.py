@@ -15,7 +15,7 @@ def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_
     if qpe_oder_tde == "QPE":
         picklename = f"{objects_names[objID]}_{band}-band_{model}_{survey}.pkl"
     else:
-        picklename = f"{TDE_names[objID]}_{band}-band_{model}_{survey}_PSF.pkl"
+        picklename = f"{TDE_names[objID]}_{band}-band_{model}_{survey}.pkl"
     try:
         fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
     except:
@@ -123,6 +123,7 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
 
 
 survey = "DESI"
+tde_survey = "DESI_PSF"
 if __name__ == "__main__":
     #survey = input("Which survey? [default=DESI]\n")
     survey = "DESI" if survey == "" else survey
@@ -158,7 +159,7 @@ for i in range(len(TDE_coords)):
     TDE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
-            n, r50, mag = get_n_and_r50(i, "None", redshift=TDE_redshifts[i], band=band, survey=survey, qpe_oder_tde="TDE")
+            n, r50, mag = get_n_and_r50(i, "None", redshift=TDE_redshifts[i], band=band, survey=tde_survey, qpe_oder_tde="TDE")
             TDE_sersicIndices[-1][band] = n
             TDE_r50s[-1][band] = r50
             TDE_magnitudes[-1][band] = mag
@@ -176,6 +177,8 @@ if __name__ == "__main__":
 
     checkWhichFiltersWork(TDE_sersicIndices, qpe_oder_tde="TDE")
     printPropertyAcrossFilters(TDE_sersicIndices, "Sérsic Index", qpe_oder_tde="TDE")
+    printPropertyAcrossFilters(TDE_r50s, "Sérsic half-light radius (kpc)", qpe_oder_tde="TDE")
+    printPropertyAcrossFilters(TDE_magnitudes, "Magnitude", qpe_oder_tde="TDE")
 
     #From now on, keep only the r-band properties:
     band_to_keep = "r"
