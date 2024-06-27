@@ -75,6 +75,7 @@ TDE_coords = [
 ]
 
 TDE_types = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None"]
+TDE_types = ["Bulge", "Bulge", "Bulge", "Bulge", "Bulge", "Bulge", "AGN", "Bulge", "AGN", "AGN"]
 
 #TDE hosts
 comparisons = [

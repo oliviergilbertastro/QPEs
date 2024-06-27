@@ -24,7 +24,16 @@ def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_
     #Calculate the Sersic index + uncertainties
     chain = fitting_run_result.samples_mcmc
     params = fitting_run_result.param_mcmc
-    if "R_sersic_lens_light0" in params and "n_sersic_lens_light0" in params:
+    if "R_sersic_lens_light1" in params and "n_sersic_lens_light1" in params:
+        lo, mid, hi = np.percentile(chain[:, 7],16), np.percentile(chain[:, 7],50), np.percentile(chain[:, 7],84)
+        plus, minus = (hi-mid), (mid-lo)
+        sersic_index_data = [mid, minus, plus]
+
+        #Calculate the Sersic half-light radius + uncertainties:
+        lo, mid, hi = np.percentile(chain[:, 6],16), np.percentile(chain[:, 6],50), np.percentile(chain[:, 6],84)
+        plus, minus = (hi-mid), (mid-lo)
+        r50_data = [mid, minus, plus]
+    elif "R_sersic_lens_light0" in params and "n_sersic_lens_light0" in params:
         lo, mid, hi = np.percentile(chain[:, 1],16), np.percentile(chain[:, 1],50), np.percentile(chain[:, 1],84)
         plus, minus = (hi-mid), (mid-lo)
         sersic_index_data = [mid, minus, plus]
