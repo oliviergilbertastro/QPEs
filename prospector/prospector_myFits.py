@@ -116,17 +116,17 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, QPE=True):
     result, duration = output["sampling"]
     from prospect.io import write_results as writer
     if QPE:
-        hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
+        hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
     else:
-        hfile = f"prospector/fits_data/{TDE_names[objID]}_survMass_prospector_SED.h5"
+        hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_SED.h5"
     writer.write_hdf5(hfile, {}, model, obs,
                     output["sampling"][0], None,
                     sps=sps,
                     tsample=output["sampling"][1],
                     toptimize=0.0)
     #uncomment the rest to run the python file only once to make all files
-    #objID = objID + 1
-    #fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=magnitudes_dicts[objID])
+    objID = objID + 1
+    fit_SED(objID, bands="griz", redshift=TDE_redshifts[objID], magnitudes_dict=TDE_magnitudes_dicts[objID], QPE=True)
 
 def read_SED(objID, QPE=True):
     #try:
@@ -222,7 +222,9 @@ def makeAstropyTableFromDictionnary(dict):
     dtypes = [type(val) for val in dict.values()]
     return astropy.table.table.Table(data=data, names=names, dtype=dtypes)
 
-
+# Magnitudes for DESI PSF
+if __name__ != "prospector.prospector_myFits":
+    from legacy_vs_legacy import QPE_unreddenedMagnitudes, TDE_unreddenedMagnitudes
 
 # Do the magnitudes thing
 if __name__ == "__main__":
@@ -249,7 +251,6 @@ if __name__ == "__main__":
                 TDE_magnitudes_dicts[i][f"cModelMagErr_{band}"] = 0
             except:
                 pass
-
     for i in range(len(TDE_magnitudes_dicts)):
         TDE_magnitudes_dicts[i] = makeAstropyTableFromDictionnary(TDE_magnitudes_dicts[i])
 
@@ -279,6 +280,3 @@ else:
 
 
 
-# Magnitudes for DESI PSF
-if __name__ != "prospector.prospector_myFits":
-    from legacy_vs_legacy import QPE_unreddenedMagnitudes, TDE_unreddenedMagnitudes
