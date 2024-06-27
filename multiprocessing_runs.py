@@ -208,11 +208,12 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
     fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = None)
     #fit_run.run(algorithm_list = ['PSO', 'MCMC'], setting_list = [None, {'n_burn': 200, 'n_run': 1000, 'walkerRatio': 10, 'sigma_scale': .1}])
     fit_run.mcmc_result_range()
-    # Plot all the fitting results:
-    if type == "None" or type == "Bulge":
-        fit_run.plot_final_galaxy_fit(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
-    else:
-        fit_run.plot_final_qso_fit(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
+    if "I dont want to plot these as Im leaving the lab" == "y":
+        # Plot all the fitting results:
+        if type == "None" or type == "Bulge":
+            fit_run.plot_final_galaxy_fit(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
+        else:
+            fit_run.plot_final_qso_fit(target_ID=f'{str(ra_dec[0])+str(ra_dec[1])}-{band}')
     fit_run.coolinfos = coolinfos
     #Save the fitting class as pickle format:
     fit_run.dump_result()
@@ -241,33 +242,36 @@ if __name__ == "__main__":
         objIDs = range(len(coords))
         bands = "r" #r is already ran
         types = ["None", "AGN", "Bulge"]
-        current_type = types[2]
         procs = []
-        for band in bands:
-            for objID in objIDs:
-                img_path = f"data/images/{path_section}{objID}_{band}.fits"
-                oow_path = f"data/images/{path_section}{objID}_{band}.fits"
-                #Use the co-add PSF model from the survey
-                psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
-                args = (coords[objID],
-                        img_path,
-                        oow_path,
-                        None,
-                        psf_path,
-                        current_type,
-                        0.262,
-                        None,
-                        band,
-                        15,
-                        60,
-                        1,
-                        5,
-                        "COADDED_DESI",
-                        f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
-                        5,
-                        "deep",
-                        )
-                galight_fit_short(*args)
+        for current_type in types:
+            for band in bands:
+                for objID in objIDs:
+                    img_path = f"data/images/{path_section}{objID}_{band}.fits"
+                    oow_path = f"data/images/{path_section}{objID}_{band}.fits"
+                    #Use the co-add PSF model from the survey
+                    psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
+                    args = (coords[objID],
+                            img_path,
+                            oow_path,
+                            None,
+                            psf_path,
+                            current_type,
+                            0.262,
+                            None,
+                            band,
+                            15,
+                            60,
+                            1,
+                            5,
+                            "COADDED_DESI",
+                            f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
+                            5,
+                            "deep",
+                            )
+                    try:
+                        galight_fit_short(*args)
+                    except:
+                        "This one didn't work"
                 #proc = Process(target=galight_fit_short, args=args)
                 #procs.append(proc)
                 #proc.start()
