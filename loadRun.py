@@ -161,20 +161,20 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     if len(ps_list) != 0: #If there is an AGN
         flux_dict_2d = {'data':data, 'model':model, 'normalized residual':norm_residual}
         flux_dict_1d = {'data':data, 'model':model, 'AGN':ps_image, 'Sérsic':galaxy_image}
-        fig = total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
+        total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
                         zp=fitting_run_result.zp, if_annuli=False,
                         mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
                         target_ID = target_ID, cmap=my_cmap, center_pos= [-fitting_run_result.final_result_ps[0]['ra_image'][0]/fitting_run_result.fitting_specify_class.deltaPix, 
-                                                                        fitting_run_result.final_result_ps[0]['dec_image'][0]/fitting_run_result.fitting_specify_class.deltaPix] )
+                                                                        fitting_run_result.final_result_ps[0]['dec_image'][0]/fitting_run_result.fitting_specify_class.deltaPix], figsize=(8,4) )
     else: #If there is no AGN
         flux_dict_2d = {'data':data, 'model':model, 'normalized residual':norm_residual}
         flux_dict_1d = {'data':data, 'model':model, 'Sérsic':galaxy_image}
         if len(galaxy_list) == 2:
             flux_dict_1d = {'data':data, 'model':model, 'Bulge':galaxy_list[0], 'Disk':galaxy_list[1]}
-        fig = total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
+        total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
                         zp=fitting_run_result.zp, if_annuli=False,
                         mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
-                        target_ID = target_ID, cmap=my_cmap)
+                        target_ID = target_ID, cmap=my_cmap, figsize=(12,4))
     #flux_dict_2d['data-point source'] = flux_dict_2d.pop('data$-$point source')
     fitting_run_result.flux_2d_out = flux_dict_2d
     fitting_run_result.flux_1d_out = flux_dict_1d

@@ -11,6 +11,9 @@ from download_data import *
 import sys
 from prospector.prospector_myFits import QPE_stellar_masses_desiProspector, TDE_stellar_masses_desiProspector
 
+
+QPE_and_TDEs = [4,5,8]
+
 def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_oder_tde="QPE"):
     if qpe_oder_tde == "QPE":
         picklename = f"{objects_names[objID]}_{band}-band_{model}_{survey}.pkl"
@@ -136,7 +139,7 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
 
 
 
-survey = "DESI"
+survey = "DESI_PSF"
 tde_survey = "DESI_PSF"
 if __name__ == "__main__":
     #survey = input("Which survey? [default=DESI]\n")
@@ -173,7 +176,7 @@ for i in range(len(TDE_coords)):
     TDE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
-            n, r50, mag = get_n_and_r50(i, TDE_types[i], redshift=TDE_redshifts[i], band=band, survey=tde_survey, qpe_oder_tde="TDE")
+            n, r50, mag = get_n_and_r50(i, "None", redshift=TDE_redshifts[i], band=band, survey=tde_survey, qpe_oder_tde="TDE")
             TDE_sersicIndices[-1][band] = n
             TDE_r50s[-1][band] = r50
             TDE_magnitudes[-1][band] = mag
@@ -242,13 +245,13 @@ if __name__ == "__main__":
 
     # Make final plot
     QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
-    TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[[4,8]])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[[4,8]])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[[4,8]]))])
+    TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
     myFinalPlot([QPE_data, TDE_data])
 
     # Make big plot
     QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_redshifts, QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
     TDE_data = np.array([TDE_mBH, TDE_stellar_masses[:,0], TDE_redshifts, TDE_r50s[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])
-    double_hosts_data = QPE_data[:,[4,8]]
+    double_hosts_data = QPE_data[:,QPE_and_TDEs]
     TDE_data = np.vstack((TDE_data.T, double_hosts_data.T)).T
     myCornerPlot(
         [QPE_data,TDE_data,double_hosts_data],
@@ -305,4 +308,4 @@ if __name__ == "__main__":
     #Make a kind of corner plot, but with fitted gaussians to better illustrate the distributions:
     QPE_data  = np.array([np.log10(QPE_mBH[:,0]), np.log10(QPE_stellar_masses[:,0]), QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_stellar_surface_densities[:,0]])
     TDE_data = np.array([np.log10(TDE_mBH), np.log10(TDE_stellar_masses[:,0]), TDE_r50s[:,0], TDE_sersicIndices, TDE_stellar_surface_densities[:,0]])
-    double_hosts_data = QPE_data[:,[4,8]]
+    double_hosts_data = QPE_data[:,QPE_and_TDEs]

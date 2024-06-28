@@ -19,6 +19,8 @@ from compareModels import plot_sersicIndex_mBH, plot_surfaceStellarMassDensity_m
 import sys
 from prospector.prospector_myFits import QPE_stellar_masses_desiProspector
 
+QPE_and_TDEs = [4,5,8]
+
 def get_QPE_n_and_r50(ra_dec, model="None", band="i", survey="DESI", redshift=0):
     objID = objects.index(ra_dec)
     picklename = f"{objects_names[objID]}_{band}-band_{model}_{survey}.pkl"
@@ -270,7 +272,7 @@ if __name__ == "__main__":
     #Make a kind of corner plot, but with fitted gaussians to better illustrate the distributions:
     QPE_data  = np.array([np.log10(QPE_mBH[:,0]), np.log10(QPE_stellar_masses[:,0]), QPE_redshifts, QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_stellar_surface_densities[:,0]])
     TDE_data = np.array([np.log10(TDE_mBH), np.log10(TDE_stellar_masses[:,0]), TDE_redshifts, TDE_r50s[:,0], TDE_sersicIndices, TDE_stellar_surface_densities[:,0]])
-    double_hosts_data = QPE_data[:,[4,8]]
+    double_hosts_data = QPE_data[:,QPE_and_TDEs]
 
     myCornerPlot([
         QPE_data,TDE_data,double_hosts_data
@@ -278,8 +280,8 @@ if __name__ == "__main__":
                  labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$z$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"])
     
     QPE_data = np.array([QPE_sersicIndices, toLog(QPE_stellar_masses), toLog(QPE_mBH)])
-    double_hosts_data = QPE_data[:,[4,8]]
-    TDE_data = np.array([np.concatenate((add_0_uncertainties(TDE_sersicIndices), QPE_sersicIndices[[4,8]])), toLog(np.concatenate((TDE_stellar_masses,QPE_stellar_masses[[4,8]]))), toLog(np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[[4,8]])))])
+    double_hosts_data = QPE_data[:,QPE_and_TDEs]
+    TDE_data = np.array([np.concatenate((add_0_uncertainties(TDE_sersicIndices), QPE_sersicIndices[QPE_and_TDEs])), toLog(np.concatenate((TDE_stellar_masses,QPE_stellar_masses[QPE_and_TDEs]))), toLog(np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs])))])
     myFinalPlot([QPE_data, TDE_data])
 
     sys.exit()

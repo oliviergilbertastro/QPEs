@@ -56,7 +56,7 @@ def scale_bar(ax, d, dist=1/0.13, text='1"', color='black', flipped=False, fonts
 def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
                   deltaPix = 1., zp=27.0, target_ID = 'target_ID',
                   mask_image=None, if_annuli=False, center_pos = None,
-                  arrows=False, show_plot = True, cmap=None, sum_rest = False):
+                  arrows=False, show_plot = True, cmap=None, sum_rest = False, figsize=None):
     """
     Make quick plots to compare the flux profiles in a list and show the normalized residual.
     
@@ -87,7 +87,9 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
     """
     # norm = LogNorm() #ImageNormalize(stretch=SqrtStretch())
     cl_num = len(flux_list_2d) + 1 
-    f = plt.figure(0, figsize=(6.5+ (cl_num-1)*3.5,4))    
+    if figsize is None:
+        figsize = (6.5+ (cl_num-1)*3.5,4)
+    f = plt.figure(0, figsize=figsize)    
     ax_l = [plt.subplot2grid((6,cl_num), (0,i), rowspan=6) for i in range(len(flux_list_2d)-1)] #The image plot
     ax_r = plt.subplot2grid((6,cl_num), (0,cl_num-2), rowspan=6)   #The residual plot
     ax_rt = plt.subplot2grid((6,cl_num), (0,cl_num-1), rowspan=5)
@@ -131,6 +133,8 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
     f.colorbar(im_r, ax=ax_r, shrink=0.48, pad=0.01,   orientation="horizontal", aspect=15) 
     ax_r.text(frame_size*0.02, frame_size*0.87, 'normalized residual',fontsize=20, weight='bold', color='black')
     plt.subplots_adjust(wspace=-0.5, hspace=0)
+
+    
     
     #Plot the 1D profile:
     label_SB_list = label_list_1d #Not show the residual, in order of data, model, QSO, galaxy in principle.
@@ -199,6 +203,7 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
     pos5 = [pos5_o.x0+0.112 - 0.009 * cl_num , pos5_o.y0+0.08, pos5_o.width*0.72, pos5_o.height*1.1]      
     ax_rt.set_position(pos4) # set a new position
     ax_rb.set_position(pos5) # set a new position
+    plt.subplots_adjust(left=0.07,bottom=0.12,right=0.925,top=0.88,wspace=0.,hspace=0.)
     if show_plot == True:
         plt.show()       
     else:

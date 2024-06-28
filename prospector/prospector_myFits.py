@@ -125,8 +125,8 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, QPE=True):
                     tsample=output["sampling"][1],
                     toptimize=0.0)
     #uncomment the rest to run the python file only once to make all files
-    #objID = objID + 1
-    #fit_SED(objID, bands="griz", redshift=TDE_redshifts[objID], magnitudes_dict=TDE_magnitudes_dicts[objID], QPE=QPE)
+    objID = objID + 1
+    fit_SED(objID, bands="griz", redshift=TDE_redshifts[objID], magnitudes_dict=TDE_magnitudes_dicts[objID], QPE=QPE)
 
 def read_SED(objID, QPE=True):
     #try:
