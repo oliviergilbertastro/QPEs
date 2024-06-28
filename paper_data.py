@@ -12,9 +12,11 @@ home = os.getcwd()
 if home != "/Users/oliviergilbert":
     data = np.array(pd.read_csv("data/TDEsersic_mBH.csv"))
     #These are from the Law-Smith paper (https://arxiv.org/pdf/1707.01559) black hole mass vs Sérsic index plot
+
+    # You can also obtain the sérsic indices from the Simard11 decomposition database directly from https://vizier.cds.unistra.fr/viz-bin/VizieR-3?-source=+J%2FApJS%2F196%2F11%2Ftable3&-from=nav&-nav=cat%3AJ%2FApJS%2F196%2F11%26tab%3A%7BJ%2FApJS%2F196%2F11%2Ftable1%7D%26key%3Asource%3DJ%2FApJS%2F196%2F11%2Ftable1%26HTTPPRM%3A%26
     TDE_mBH = 10**data[:,0]
     TDE_sersicIndices = data[:,1]
-    
+
 if False:
     #TDE sersic indices from Review Paper (https://arxiv.org/pdf/2003.02863)
     TDE_sersicIndices = [

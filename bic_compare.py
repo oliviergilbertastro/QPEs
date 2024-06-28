@@ -21,7 +21,7 @@ def make_list_of_best_models(ic):
     """ic is an array of information criterions"""
     ic = np.array(ic).T
     models = []
-    choices = ["None","AGN","Bulge"]
+    choices = ["None","AGN","Bulge","Bulge_fixed"]
     for row in ic:
         models.append(choices[list(row).index(np.min(row))])
     return models
