@@ -47,6 +47,10 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
         type = "None"
         number_of_ps = 0
         bulge = False
+    elif type in ["Bulge_fixed", "BULGE_FIXED", "bulge_fixed"]:
+        type = "Bulge_fixed"
+        number_of_ps = 0
+        bulge = True
     else:
         raise ValueError(f"type {type} is not a supported fitting type")
     if band in ["g", "G"]:
@@ -181,11 +185,17 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
 
     #PREPARE THE FITTING
     fit_sepc = FittingSpecify(data_process)
+    
+
+    # For a fixed bulge:
+    fixed_n_list = None
+    if type == "Bulge_fixed":
+        fixed_n_list = [[0, 4]]
 
     #Prepare the fitting sequence, keywords see notes above.
     fit_sepc.prepare_fitting_seq(point_source_num = number_of_ps,
                                 fix_Re_list=None,
-                                fix_n_list=None, #To fix the Sérsic index at 2.09: [[0,2.09]]
+                                fix_n_list=fixed_n_list, #To fix the Sérsic index at 2.09: [[0,2.09]]
                                 fix_center = None,
                                 fix_ellipticity = None,
                                 manual_bounds = None, #{'lower':{'e1': -0.5, 'e2': -0.5, 'R_sersic': 0.01, 'n_sersic': 2., 'center_x': 0, 'center_y': 0},
@@ -240,8 +250,8 @@ if __name__ == "__main__":
     fitAllAtOnce = True
     if fitAllAtOnce:
         objIDs = range(len(coords))
-        bands = "giz" #r is already ran
-        types = "N"#["None", "AGN", "Bulge"]
+        bands = "r"
+        types = ["Bulge_fixed"]#["None", "AGN", "Bulge"]
         procs = []
         for current_type in types:
             for band in bands:
@@ -255,7 +265,7 @@ if __name__ == "__main__":
                             oow_path,
                             None,
                             psf_path,
-                            TDE_types[objID],
+                            current_type,
                             0.262,
                             None,
                             band,
@@ -264,7 +274,7 @@ if __name__ == "__main__":
                             1,
                             5,
                             "COADDED_DESI",
-                            f"{names[objID]}_{band}-band_{TDE_types[objID]}_DESI_PSF",
+                            f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
                             5,
                             "deep",
                             )

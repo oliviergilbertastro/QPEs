@@ -56,7 +56,7 @@ if __name__ == "__main__":
     band = "r"
     bics = []
     aics = []
-    for model in ["None","AGN","Bulge"]:
+    for model in ["None","AGN","Bulge","Bulge_fixed"]:
         bics.append([])
         aics.append([])
         for name in TDE_names:
@@ -69,9 +69,9 @@ if __name__ == "__main__":
             aics[-1].append(aic)
     data = [TDE_names]
     data.extend(bics)
-    print_table(np.array(data).T, header=["Names", "None ","AGN","Bulge"], title="TDE BICs", borders=2)
+    print_table(np.array(data).T, header=["Names", "None ", "AGN", "Bulge", "Bulge_fixed"], title="TDE BICs", borders=2)
     data = [TDE_names]
     data.extend(aics)
-    print_table(np.array(data).T, header=["Names", "None ","AGN","Bulge"], title="TDE AICs", borders=2)
+    print_table(np.array(data).T, header=["Names", "None ", "AGN", "Bulge", "Bulge_fixed"], title="TDE AICs", borders=2)
     print("BIC:",make_list_of_best_models(bics))
     print("AIC:",make_list_of_best_models(aics))
