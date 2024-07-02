@@ -45,6 +45,9 @@ def printSersicAcrossModels(properties, name_of_property="Name of property", rou
     properties["AGN"] = np.around(properties["AGN"], round_to_n_decimals)
     properties["Bulge (bulge)"] = np.around(np.array(properties["Bulge"])[:,0], round_to_n_decimals)
     properties["Bulge (disk)"] = np.around(np.array(properties["Bulge"])[:,1], round_to_n_decimals)
+    print(properties["Bulge+AGN"])
+    properties["Bulge+AGN (bulge)"] = np.around(np.array(properties["Bulge+AGN"])[:,0], round_to_n_decimals)
+    properties["Bulge+AGN (disk)"] = np.around(np.array(properties["Bulge+AGN"])[:,1], round_to_n_decimals)
 
     print_table(np.array([names, properties["None"], properties["AGN"], properties["Bulge (bulge)"], properties["Bulge (disk)"]]).T,
                 header=["Name","None ","AGN","Bulge (bulge)","Bulge (disk)"],
@@ -61,7 +64,7 @@ if __name__ == "__main__":
     bics = []
     aics = []
     n_sersics = {}
-    for model in ["None","AGN","Bulge"]:
+    for model in ["None","AGN","Bulge","Bulge+AGN"]:
         bics.append([])
         aics.append([])
         n_sersics[model] = []
@@ -78,10 +81,10 @@ if __name__ == "__main__":
             n_sersics[model].append(n)
     data = [objects_names]
     data.extend(bics)
-    print_table(np.array(data).T, header=["Names", "None ","AGN","Bulge"], title="QPE BICs", borders=2)
+    print_table(np.array(data).T, header=["Names", "None ","AGN","Bulge","Bulge+AGN"], title="QPE BICs", borders=2)
     data = [objects_names]
     data.extend(aics)
-    print_table(np.array(data).T, header=["Names", "None ","AGN","Bulge"], title="QPE AICs", borders=2)
+    print_table(np.array(data).T, header=["Names", "None ","AGN","Bulge","Bulge+AGN"], title="QPE AICs", borders=2)
     
     printSersicAcrossModels(n_sersics, "QPE sersic indices")
 

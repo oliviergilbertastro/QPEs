@@ -247,11 +247,11 @@ if __name__ == "__main__":
         path_section = "qpe"
         names = objects_names
 
-    fitAllAtOnce = False
+    fitAllAtOnce = True
     if fitAllAtOnce:
         objIDs = range(len(coords))
         bands = "r"
-        types = ["Bulge_fixed"]#["None", "AGN", "Bulge"]
+        types = ["Bulge+AGN"]#["None", "AGN", "Bulge"]
         procs = []
         for current_type in types:
             for band in bands:
