@@ -157,7 +157,7 @@ for i in range(len(objects)):
     QPE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
-            n, r50, mag = get_n_and_r50(i, objects_types[i], redshift=QPE_redshifts[i], band=band, survey=survey)
+            n, r50, mag = get_n_and_r50(i, "None", redshift=QPE_redshifts[i], band=band, survey=survey)
             QPE_sersicIndices[-1][band] = n
             QPE_r50s[-1][band] = r50
             QPE_magnitudes[-1][band] = mag

@@ -23,7 +23,10 @@ def get_n(picklename):
     except:
         fitting_run_result = pickle.load(open("galight_fitruns/big_fits/"+picklename,'rb'))
     # Get the sersic index
-    n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
+    try:
+        n = fitting_run_result.final_result_galaxy[0]["n_sersic"], fitting_run_result.final_result_galaxy[1]["n_sersic"]
+    except:
+        n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
     return n
 
 def make_list_of_best_models(ic):
@@ -36,10 +39,15 @@ def make_list_of_best_models(ic):
     return models
 
 
-def printPropertyAcrossModels(properties, name_of_property="Name of property", round_to_n_decimals=2, qpe_oder_tde="QPE"):
+def printSersicAcrossModels(properties, name_of_property="Name of property", round_to_n_decimals=2, qpe_oder_tde="QPE"):
     names = objects_names if qpe_oder_tde=="QPE" else TDE_names
-    print_table(np.array([names, properties["None"], properties["AGN"], properties["Bulge"]]).T,
-                header=["Name","None","AGN","Bulge"],
+    properties["None"] = np.around(properties["None"], round_to_n_decimals)
+    properties["AGN"] = np.around(properties["AGN"], round_to_n_decimals)
+    properties["Bulge (bulge)"] = np.around(np.array(properties["Bulge"])[:,0], round_to_n_decimals)
+    properties["Bulge (disk)"] = np.around(np.array(properties["Bulge"])[:,1], round_to_n_decimals)
+
+    print_table(np.array([names, properties["None"], properties["AGN"], properties["Bulge (bulge)"], properties["Bulge (disk)"]]).T,
+                header=["Name","None ","AGN","Bulge (bulge)","Bulge (disk)"],
                 title=name_of_property,
                 borders=2,
                 )
@@ -48,7 +56,7 @@ def printPropertyAcrossModels(properties, name_of_property="Name of property", r
 
 if __name__ == "__main__":
 
-    survey = "DESI"
+    survey = "DESI_PSF"
     band = "r"
     bics = []
     aics = []
@@ -75,7 +83,7 @@ if __name__ == "__main__":
     data.extend(aics)
     print_table(np.array(data).T, header=["Names", "None ","AGN","Bulge"], title="QPE AICs", borders=2)
     
-    printPropertyAcrossModels(n_sersics, "QPE sersic indices")
+    printSersicAcrossModels(n_sersics, "QPE sersic indices")
 
     survey = "DESI_PSF"
     band = "r"
@@ -105,7 +113,7 @@ if __name__ == "__main__":
     print_table(np.array(data).T, header=["Names", "None ", "AGN", "Bulge", "Bulge_fixed"], title="TDE AICs", borders=2)
     print("BIC:",make_list_of_best_models(bics))
     print("AIC:",make_list_of_best_models(aics))
-    printPropertyAcrossModels(n_sersics, "TDE sersic indices", qpe_oder_tde="TDE")
+    printSersicAcrossModels(n_sersics, "TDE sersic indices", qpe_oder_tde="TDE")
     plt.plot(n_sersics["None"], label="Sérsic")
     plt.plot(n_sersics["AGN"], label="Sérsic+AGN")
     plt.ylabel("Sérsic index", fontsize=16)

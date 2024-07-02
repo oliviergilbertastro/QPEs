@@ -247,7 +247,7 @@ if __name__ == "__main__":
         path_section = "qpe"
         names = objects_names
 
-    fitAllAtOnce = True
+    fitAllAtOnce = False
     if fitAllAtOnce:
         objIDs = range(len(coords))
         bands = "r"
@@ -293,6 +293,7 @@ if __name__ == "__main__":
         oow_path = f"data/images/{path_section}{objID}_{band}.fits"
         #Use the co-add PSF model from the survey
         psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
+        psf_path = f"data/images/{path_section}{objID}_{'z'}_PSF.fits"
         args = (coords[objID],
                 img_path,
                 oow_path,
