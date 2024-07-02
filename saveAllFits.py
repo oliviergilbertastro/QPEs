@@ -66,8 +66,8 @@ def saveFit(picklename=None, savename=None):
     ps_image = np.zeros_like(data)
 
     #target_ID = f'{str(ra_dec[0])+symbol+str(ra_dec[1])}-{band}'
-    target_ID = parse.parse("{}.pkl", picklename)[0]
-
+    target_ID = parse.parse("{}_{}.pkl", picklename)[0]
+    print(target_ID)
 
     for i in range(len(ps_list)):
         ps_image = ps_image+ps_list[i]
@@ -85,7 +85,7 @@ def saveFit(picklename=None, savename=None):
                         zp=fitting_run_result.zp, if_annuli=False,
                         mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
                         target_ID = target_ID, cmap=my_cmap, center_pos= [-fitting_run_result.final_result_ps[0]['ra_image'][0]/fitting_run_result.fitting_specify_class.deltaPix, 
-                                                                        fitting_run_result.final_result_ps[0]['dec_image'][0]/fitting_run_result.fitting_specify_class.deltaPix], figsize=(12,4), show_plot=False )
+                                                                        fitting_run_result.final_result_ps[0]['dec_image'][0]/fitting_run_result.fitting_specify_class.deltaPix], figsize=(13,4.5), show_plot=False )
     else: #If there is no AGN
         flux_dict_2d = {'data':data, 'model':model, 'normalized residual':norm_residual}
         flux_dict_1d = {'data':data, 'model':model, 'Sérsic':galaxy_image}
@@ -94,7 +94,7 @@ def saveFit(picklename=None, savename=None):
         fig = total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
                         zp=fitting_run_result.zp, if_annuli=False,
                         mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
-                        target_ID = target_ID, cmap=my_cmap, figsize=(12,4), show_plot=False)
+                        target_ID = target_ID, cmap=my_cmap, figsize=(13,4.5), show_plot=False)
     #flux_dict_2d['data-point source'] = flux_dict_2d.pop('data$-$point source')
     fitting_run_result.flux_2d_out = flux_dict_2d
     fitting_run_result.flux_1d_out = flux_dict_1d

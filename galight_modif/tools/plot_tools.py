@@ -103,10 +103,12 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
     for i in range(len(flux_list_2d)-1):
         if i >1:
             flux_list_2d[i] = flux_list_2d[i] * mask
+        if i == 1:
+            ax_l[i].set_title(target_ID, fontsize=20, weight='bold')
         if i == 0:
             im_i = ax_l[i].imshow(flux_list_2d[i],origin='lower',cmap=cmap, norm=LogNorm(vmax = flux_list_2d[0].max(), vmin = 1.e-4))
             clim=im_i.properties()['clim'] #To uniform the color bar scale.
-            ax_l[i].set_ylabel(target_ID, fontsize=15, weight='bold')
+            ax_l[i].set_ylabel("pixel", fontsize=18)
         else:
             im_i = ax_l[i].imshow(flux_list_2d[i],origin='lower',cmap=cmap, norm=LogNorm(), clim=clim)
             ax_l[i].get_yaxis().set_visible(False)
@@ -115,8 +117,9 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
         if arrows == True:
             coordinate_arrows(ax_l[i], frame_size, arrow_size=0.03, color = 'white')
         ticks= np.array([1.e-4, 1.e-3, 1.e-2,1.e-1,0, 10])
-        cb_i = f.colorbar(im_i, ax=ax_l[i], shrink=0.48, pad=0.01,  orientation="horizontal", 
+        cb_i = f.colorbar(im_i, ax=ax_l[i], shrink=0.85, pad=0.01,  orientation="horizontal", 
                           aspect=15, ticks=ticks)
+        cb_i.ax.tick_params(axis='x', labelsize=15)
         if len(label_list_2d[i])>10:
             fontsize = 20
         else:
@@ -130,7 +133,8 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
         coordinate_arrows(ax_r, frame_size, arrow_size=0.03)
     ax_r.get_xaxis().set_visible(False)
     ax_r.get_yaxis().set_visible(False)
-    f.colorbar(im_r, ax=ax_r, shrink=0.48, pad=0.01,   orientation="horizontal", aspect=15) 
+    cb_r = f.colorbar(im_r, ax=ax_r, shrink=0.85, pad=0.01,   orientation="horizontal", aspect=15) 
+    cb_r.ax.tick_params(axis='x', labelsize=15)
     ax_r.text(frame_size*0.02, frame_size*0.87, 'normalized residual',fontsize=20, weight='bold', color='black')
     plt.subplots_adjust(wspace=-0.5, hspace=0)
 
@@ -168,14 +172,14 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
     ax_rt.invert_yaxis()
     ax_rb.set_yticks([-0.5,-0.25, 0., 0.25])
     if if_annuli == False:
-        ax_rt.set_ylabel('$\mu$(mag, pixel$^{-2}$)', fontsize=12)
-        ax_rb.set_ylabel('$\Delta\mu$', fontsize=15)
+        ax_rt.set_ylabel('$\mu$(mag, pixel$^{-2}$)', fontsize=17)
+        ax_rb.set_ylabel('$\Delta\mu$', fontsize=17)
     elif if_annuli == True:
-        ax_rt.set_ylabel('$SB_{annuli}$(mag, pixel$^{-2}$)', fontsize=12)
-        ax_rb.set_ylabel('$\Delta SB$', fontsize=15)
+        ax_rt.set_ylabel('$SB_{annuli}$(mag, pixel$^{-2}$)', fontsize=15)
+        ax_rb.set_ylabel('$\Delta SB$', fontsize=18)
     plt.ylim([-0.5,0.5])
     
-    ax_rt.set_xlabel('pixel', fontsize=15)
+    ax_rt.set_xlabel('pixel', fontsize=18)
     ax_rt.xaxis.set_label_position('top')
     ax_rt.xaxis.tick_top()
     ax_rt.set_xscale('log')
@@ -183,17 +187,17 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
     ax_rt.yaxis.set_label_position('right')
     ax_rt.yaxis.tick_right()
     ax_rt.yaxis.set_ticks_position('both') 
-    ax_rt.legend()
+    ax_rt.legend(fontsize=14)
     x = np.linspace((r_grids*deltaPix).min()*0.85, (r_grids.max()+6)*deltaPix)
     y = x * 0
-    ax_rb.set_xlabel('arcsec', fontsize=15)
+    ax_rb.set_xlabel('arcsec', fontsize=18)
     ax_rb.set_xscale('log')
     ax_rb.get_xaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
     ax_rb.plot(x, y, 'k--')
     ax_rb.yaxis.set_label_position('right')
     ax_rb.yaxis.tick_right()
     ax_rb.yaxis.set_ticks_position('both')
-    ax_rt.set_xticks([2,4,6,10,15,20,30,50,100,150])
+    ax_rt.set_xticks([2,4,6,10,20,30,50,100,150])
     ax_rb.set_xticks([0.1, 0.2, 0.5, 1, 2,5,10,20])
     ax_rt.set_xlim([(r_grids).min()*0.85,r_grids.max()+6])
     ax_rb.set_xlim([(r_grids*deltaPix).min()*0.85, (r_grids.max()+6)*deltaPix])
@@ -203,6 +207,12 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
     pos5 = [pos5_o.x0+0.112 - 0.009 * cl_num , pos5_o.y0+0.08, pos5_o.width*0.72, pos5_o.height*1.1]      
     ax_rt.set_position(pos4) # set a new position
     ax_rb.set_position(pos5) # set a new position
+    # set the ticklabels' fontsizes
+    ax_l[0].yaxis.set_tick_params(labelsize=17)
+    ax_rt.yaxis.set_tick_params(labelsize=17)
+    ax_rt.xaxis.set_tick_params(labelsize=17)
+    ax_rb.yaxis.set_tick_params(labelsize=17)
+    ax_rb.xaxis.set_tick_params(labelsize=17)
     plt.subplots_adjust(left=0.07,bottom=0.12,right=0.925,top=0.88,wspace=0.,hspace=0.)
     if show_plot == True:
         plt.show()       

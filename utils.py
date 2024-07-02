@@ -169,7 +169,7 @@ def myCornerPlot(data, labels=None, fontsize=15, smoothness=6):
     for i in range(plot_size):
         for k in range(len(corner_axes[i])):
             for j in range(len(data)):
-                corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","d","*"][j%3], color=["blue","red","orange"][j%3])
+                corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","*","*"][j%3], color=["blue","red","red"][j%3])
     plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.94, wspace=0, hspace=0)
     plt.show()
     return

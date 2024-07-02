@@ -139,7 +139,7 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
 
 
 
-survey = "DESI"
+survey = "DESI_PSF"
 tde_survey = "DESI_PSF"
 if __name__ == "__main__":
     #survey = input("Which survey? [default=DESI]\n")

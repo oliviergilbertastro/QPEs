@@ -165,7 +165,7 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
                         zp=fitting_run_result.zp, if_annuli=False,
                         mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
                         target_ID = target_ID, cmap=my_cmap, center_pos= [-fitting_run_result.final_result_ps[0]['ra_image'][0]/fitting_run_result.fitting_specify_class.deltaPix, 
-                                                                        fitting_run_result.final_result_ps[0]['dec_image'][0]/fitting_run_result.fitting_specify_class.deltaPix], figsize=(8,4) )
+                                                                        fitting_run_result.final_result_ps[0]['dec_image'][0]/fitting_run_result.fitting_specify_class.deltaPix], figsize=(13,4.5) )
     else: #If there is no AGN
         flux_dict_2d = {'data':data, 'model':model, 'normalized residual':norm_residual}
         flux_dict_1d = {'data':data, 'model':model, 'Sérsic':galaxy_image}
@@ -174,7 +174,7 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
         total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
                         zp=fitting_run_result.zp, if_annuli=False,
                         mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
-                        target_ID = target_ID, cmap=my_cmap, figsize=(12,4))
+                        target_ID = target_ID, cmap=my_cmap, figsize=(13,4.5))
     #flux_dict_2d['data-point source'] = flux_dict_2d.pop('data$-$point source')
     fitting_run_result.flux_2d_out = flux_dict_2d
     fitting_run_result.flux_1d_out = flux_dict_1d
