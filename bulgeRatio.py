@@ -24,7 +24,7 @@ def get_fluxes(picklename):
 
 
 survey = "DESI_PSF"
-band = "r"
+band = "g"
 QPE_bulgeRatios = []
 for i in range(len(objects_names)):
     fluxes, labels = get_fluxes(f"{objects_names[i]}_{band}-band_{QPE_best_models[i]}_{survey}.pkl")

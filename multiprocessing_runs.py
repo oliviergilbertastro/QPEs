@@ -250,8 +250,8 @@ if __name__ == "__main__":
     fitAllAtOnce = True
     if fitAllAtOnce:
         objIDs = range(len(coords))
-        bands = "r"
-        types = ["Bulge+AGN"]#["None", "AGN", "Bulge"]
+        bands = "g"
+        types = ["Bulge"]#["None", "AGN", "Bulge"]
         procs = []
         for current_type in types:
             for band in bands:
