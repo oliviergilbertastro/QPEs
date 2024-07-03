@@ -169,7 +169,7 @@ def myCornerPlot(data, labels=None, fontsize=15, smoothness=6):
     for i in range(plot_size):
         for k in range(len(corner_axes[i])):
             for j in range(len(data)):
-                corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","*","*"][j%3], color=["blue","red","red"][j%3], markersize=10)
+                corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","*","*"][j%3], color=["blue","red","red"][j%3], markersize=[8,7,7][j%3])
     plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.94, wspace=0, hspace=0)
     plt.show()
     return
@@ -196,7 +196,10 @@ if __name__ == "__main__":
                 )
     
 
-def myFinalPlot(data, main_property=r"Sérsic index", fontsize=15):
+def myFinalPlot(data, main_property=r"Sérsic index", fontsize=15, smoothness=6):
+    """
+    Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
+    """
     for i in range(len(data)-1):
         assert len(data[i]) == len(data[i+1])
     # data should be in the shape of [QPE data, TDE data]
@@ -231,10 +234,11 @@ def myFinalPlot(data, main_property=r"Sérsic index", fontsize=15):
     x_min = np.min(QPE_data[0,:,0]) if np.min(TDE_data[0,:,0]) > np.min(QPE_data[0,:,0]) else np.min(TDE_data[0,:,0])
     x_max = np.max(QPE_data[0,:,0]) if np.max(TDE_data[0,:,0]) < np.max(QPE_data[0,:,0]) else np.max(TDE_data[0,:,0])
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
-    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(QPE_data[0,:,0][:,np.newaxis])
+    bandwidth = np.abs(x_max-x_min)/smoothness
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[0,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
-    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(TDE_data[0,:,0][:,np.newaxis])
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(TDE_data[0,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
 
@@ -242,10 +246,11 @@ def myFinalPlot(data, main_property=r"Sérsic index", fontsize=15):
     y_min = np.min(QPE_data[1,:,0]) if np.min(TDE_data[1,:,0]) > np.min(QPE_data[1,:,0]) else np.min(TDE_data[1,:,0])
     y_max = np.max(QPE_data[1,:,0]) if np.max(TDE_data[1,:,0]) < np.max(QPE_data[1,:,0]) else np.max(TDE_data[1,:,0])
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
-    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(QPE_data[1,:,0][:,np.newaxis])
+    bandwidth = np.abs(y_max-y_min)/smoothness
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[1,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
-    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(TDE_data[1,:,0][:,np.newaxis])
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(TDE_data[1,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
 
@@ -253,22 +258,23 @@ def myFinalPlot(data, main_property=r"Sérsic index", fontsize=15):
     y_min = np.min(QPE_data[2,:,0]) if np.min(TDE_data[2,:,0]) > np.min(QPE_data[2,:,0]) else np.min(TDE_data[2,:,0])
     y_max = np.max(QPE_data[2,:,0]) if np.max(TDE_data[2,:,0]) < np.max(QPE_data[2,:,0]) else np.max(TDE_data[2,:,0])
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
-    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(QPE_data[2,:,0][:,np.newaxis])
+    bandwidth = np.abs(y_max-y_min)/smoothness
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[2,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
-    kde = KernelDensity(kernel="gaussian", bandwidth=0.75).fit(TDE_data[2,:,0][:,np.newaxis])
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(TDE_data[2,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
 
     #----------Make the plots---------
 
     # n_sersic vs m_star
-    mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue")
-    mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red")
+    mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8)
+    mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=7)
 
     # n_sersic vs m_bh
-    mBH_ax.errorbar(QPE_data[0,:,0], QPE_data[2,:,0], yerr=[QPE_data[2,:,1],QPE_data[2,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue")
-    mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[2,:,0], yerr=[TDE_data[2,:,1],TDE_data[2,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red")
+    mBH_ax.errorbar(QPE_data[0,:,0], QPE_data[2,:,0], yerr=[QPE_data[2,:,1],QPE_data[2,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8)
+    mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[2,:,0], yerr=[TDE_data[2,:,1],TDE_data[2,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=7)
 
     #----------Make the labels---------
     mBH_ax.set_xlabel(main_property, fontsize=fontsize)

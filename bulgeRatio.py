@@ -27,7 +27,7 @@ survey = "DESI_PSF"
 band = "g"
 QPE_bulgeRatios = []
 for i in range(len(objects_names)):
-    fluxes, labels = get_fluxes(f"{objects_names[i]}_{band}-band_{QPE_best_models[i]}_{survey}.pkl")
+    fluxes, labels = get_fluxes(f"{objects_names[i]}_{band}-band_{'Bulge'}_{survey}.pkl")
     bulge_flux = fluxes[:,labels.index("Galaxy_0 flux")] # Bulge flux
     bulge_flux = (np.median(bulge_flux), np.median(bulge_flux)-np.quantile(bulge_flux, 0.16), np.quantile(bulge_flux, 0.84)-np.median(bulge_flux))
     disk_flux = fluxes[:,labels.index("Galaxy_1 flux")] # Disk flux
@@ -53,7 +53,7 @@ for i in range(len(TDE_names)):
 TDE_bulgeRatios = np.array(TDE_bulgeRatios)
 
 if __name__ == "__main__":
-    plt.plot(QPE_bulgeRatios[:,0], "o", label="QPEs")
-    plt.plot(TDE_bulgeRatios[:,0], "o", label="TDEs")
+    plt.errorbar(range(9), QPE_bulgeRatios[:,0], [QPE_bulgeRatios[:,1], QPE_bulgeRatios[:,2]], fmt="o", label="QPEs")
+    plt.errorbar(range(10), TDE_bulgeRatios[:,0], [TDE_bulgeRatios[:,1], TDE_bulgeRatios[:,2]], fmt="o", label="TDEs")
     plt.legend()
     plt.show()

@@ -673,10 +673,12 @@ def fitting_setting_temp(algorithm, fitting_level = 'norm'):
     elif algorithm == 'MCMC':     
         if fitting_level == 'deep':            
             setting = {'n_burn': 100, 'n_run': 200, 'walkerRatio': 10, 'sigma_scale': .1}
-        elif fitting_level == 'mega_deep':            
+        elif fitting_level == 'mega_deep':
             setting = {'n_burn': 100, 'n_run': 1000, 'walkerRatio': 10, 'sigma_scale': .1}
         elif fitting_level == 'giga_deep':            
             setting = {'n_burn': 100, 'n_run': 100000, 'walkerRatio': 10, 'sigma_scale': .1}
+        elif fitting_level == 'paper_deep':            
+            setting = {'n_burn': 1000, 'n_run': 9000, 'walkerRatio': 10, 'sigma_scale': .1}
         else:
             setting = {'n_burn': 100, 'n_run': 30, 'walkerRatio': 10, 'sigma_scale': .1}
     return setting

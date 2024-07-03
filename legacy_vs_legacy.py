@@ -250,7 +250,7 @@ if __name__ == "__main__":
 
     QPE_data = np.array([QPE_bulgeRatios, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_r$")
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$")
 
     # Make big plot
     QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_bulgeRatios[:,0], QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
@@ -259,7 +259,7 @@ if __name__ == "__main__":
     TDE_data = np.vstack((TDE_data.T, double_hosts_data.T)).T
     myCornerPlot(
         [QPE_data,TDE_data,double_hosts_data],
-        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$(B/T)_r$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
+        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$(B/T)_g$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
         smoothness=6
         )
 

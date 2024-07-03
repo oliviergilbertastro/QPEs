@@ -238,6 +238,7 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
 
 
 if __name__ == "__main__":
+
     if input("Fit TDE?") == "y":
         coords = TDE_coords
         path_section = "tde"
@@ -247,7 +248,7 @@ if __name__ == "__main__":
         path_section = "qpe"
         names = objects_names
 
-    fitAllAtOnce = True
+    fitAllAtOnce = input("Fit all the objects at once? [y/n]") == "y"
     if fitAllAtOnce:
         objIDs = range(len(coords))
         bands = "g"
@@ -276,7 +277,7 @@ if __name__ == "__main__":
                             "COADDED_DESI",
                             f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
                             5,
-                            "deep",
+                            "paper_deep",
                             )
                     try:
                         galight_fit_short(*args)
@@ -293,7 +294,7 @@ if __name__ == "__main__":
         oow_path = f"data/images/{path_section}{objID}_{band}.fits"
         #Use the co-add PSF model from the survey
         psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
-        psf_path = f"data/images/{path_section}{objID}_{'z'}_PSF.fits"
+        #psf_path = f"data/images/{path_section}{objID}_{'z'}_PSF.fits"
         args = (coords[objID],
                 img_path,
                 oow_path,
@@ -310,7 +311,7 @@ if __name__ == "__main__":
                 "COADDED_DESI",
                 f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
                 5,
-                "deep",
+                "mega_deep",
                 )
         try:
             galight_fit_short(*args)
