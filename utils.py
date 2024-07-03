@@ -196,7 +196,7 @@ if __name__ == "__main__":
                 )
     
 
-def myFinalPlot(data, fontsize=15):
+def myFinalPlot(data, main_property=r"Sérsic index", fontsize=15):
     for i in range(len(data)-1):
         assert len(data[i]) == len(data[i+1])
     # data should be in the shape of [QPE data, TDE data]
@@ -271,7 +271,7 @@ def myFinalPlot(data, fontsize=15):
     mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[2,:,0], yerr=[TDE_data[2,:,1],TDE_data[2,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red")
 
     #----------Make the labels---------
-    mBH_ax.set_xlabel(r"Sérsic index", fontsize=fontsize)
+    mBH_ax.set_xlabel(main_property, fontsize=fontsize)
     mS_ax.set_ylabel(r"$\log(M_\star)$", fontsize=fontsize)
     mBH_ax.set_ylabel(r"$\log(M_\mathrm{BH})$", fontsize=fontsize)
 

@@ -10,7 +10,7 @@ from paper_data import *
 from download_data import *
 import sys
 from prospector.prospector_myFits import QPE_stellar_masses_desiProspector, TDE_stellar_masses_desiProspector
-
+from bulgeRatio import QPE_bulgeRatios, TDE_bulgeRatios
 
 QPE_and_TDEs = [4,5,8]
 
@@ -246,16 +246,20 @@ if __name__ == "__main__":
     # Make final plot
     QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data])
+    myFinalPlot([QPE_data, TDE_data], main_property=r"Sérsic index")
+
+    QPE_data = np.array([QPE_bulgeRatios, QPE_stellar_masses, QPE_mBH])
+    TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$B/T$")
 
     # Make big plot
-    QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_redshifts, QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
-    TDE_data = np.array([TDE_mBH, TDE_stellar_masses[:,0], TDE_redshifts, TDE_r50s[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])
+    QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_bulgeRatios[:,0], QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
+    TDE_data = np.array([TDE_mBH, TDE_stellar_masses[:,0], TDE_bulgeRatios[:,0], TDE_r50s[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])
     double_hosts_data = QPE_data[:,QPE_and_TDEs]
     TDE_data = np.vstack((TDE_data.T, double_hosts_data.T)).T
     myCornerPlot(
         [QPE_data,TDE_data,double_hosts_data],
-        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$z$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
+        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$B/T$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
         smoothness=6
         )
 
