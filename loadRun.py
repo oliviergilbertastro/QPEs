@@ -51,6 +51,14 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     except:
         pixel_scale = 0.262 #Default value for almost all of the runs anyway
         print("No informations on the original fitting parameters used was stored! Running the fit again will solve this.")
+    if len(fitting_run_result.image_host_list) == 2:
+        if fitting_run_result.final_result_galaxy[0]["n_sersic"] < fitting_run_result.final_result_galaxy[1]["n_sersic"]:
+            placeholder = copy.deepcopy(fitting_run_result.final_result_galaxy[0])
+            fitting_run_result.final_result_galaxy[0] = copy.deepcopy(fitting_run_result.final_result_galaxy[1])
+            fitting_run_result.final_result_galaxy[1] = placeholder
+            placeholder2 = copy.deepcopy(fitting_run_result.image_host_list[0])
+            fitting_run_result.image_host_list[0] = copy.deepcopy(fitting_run_result.image_host_list[1])
+            fitting_run_result.image_host_list[1] = placeholder2
 
     print(fitting_run_result.final_result_galaxy[0])
     print("Flux of galaxy:", fitting_run_result.final_result_galaxy[0]['flux_sersic_model'])
@@ -203,6 +211,15 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
 
 
 from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types
+
+
+if input("Load FINAL BULGE QPE host? [y/n]") == "y":
+    objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
+    loadRun(objects[objID], type="None", band="g", picklename=f"{objects_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL.pkl")
+
+elif input("Load FINAL BULGE TDE host? [y/n]") == "y":
+    objID = int(input(f"Enter the object ID you want to load [0-{len(TDE_coords)-1}]:\n"))
+    loadRun(TDE_coords[objID], type="None", band="g", picklename=f"{TDE_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL.pkl")
 
 if input("Load CO-ADDED SURVEY_PSF QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))

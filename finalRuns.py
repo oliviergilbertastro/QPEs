@@ -86,15 +86,8 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
 
     elif survey == "COADDED_DESI":
         band_index = ["g","r","i","z"].index(band)
-        print(band_index)
         fov_image = (img[0].data)#[:,:,band_index]
-        print(np.shape(fov_image))
         header = img[0].header
-        for i in range(len(img)):
-            try:
-                print(img[i].header)
-            except:
-                print("No header info")
         exp =  1  #Read the exposure time
         exp_map = exp
         wht = wht_img[1].data
@@ -107,11 +100,6 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
         header = img[1].header
         #header.set('RADESYS','FK5') #Correction so target actually shows up in the image
         fov_image = (img[1].data)
-        for i in range(len(img)):
-            try:
-                print(img[i].header)
-            except:
-                print("No header info")
         exp =  1  #Read the exposure time
         exp_map = pyfits.open(exp_path)[1].data
         band_index = ["g","r","i","z"].index(band)
@@ -242,9 +230,10 @@ def fit_bunch_of_objects(qpe_oder_tde="QPE", bands="r", types=["None"]):
     for current_type in types:
         for band in bands:
             for objID in objIDs:
-                picklename = f"{names[objID]}_{band}-band_{current_type}_DESI_PSF.pkl"
+                picklename = f"{names[objID]}_r-band_None_DESI_PSF.pkl"
                 fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
                 n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
+                print(f"\x1b[33m{n}\x1b[0m")
                 if n < 1.5:
                     fixed_n_list = [[0,4]]
                 elif n > 3:
