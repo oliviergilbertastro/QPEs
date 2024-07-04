@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from download_data import *
 #from bic_compare import QPE_best_models, TDE_best_models
 import sys
+import copy
 
 
 def get_fluxes(picklename):
@@ -17,6 +18,10 @@ def get_fluxes(picklename):
     try:
         fluxes = fitting_run_result.mcmc_flux_list
         labels = fitting_run_result.labels_flux
+        if fitting_run_result.final_result_galaxy[0]["n_sersic"] < fitting_run_result.final_result_galaxy[1]["n_sersic"]:
+            placeholder = copy.deepcopy(fluxes[:,0])
+            fluxes[:,0] = copy.deepcopy(fluxes[:,1])
+            fluxes[:,1] = placeholder
     except:
         pass
     return fluxes, labels
@@ -24,7 +29,7 @@ def get_fluxes(picklename):
 
 
 
-survey = "DESI_PSF"
+survey = "DESI_PSF_FINAL"
 band = "g"
 QPE_bulgeRatios = []
 for i in range(len(objects_names)):

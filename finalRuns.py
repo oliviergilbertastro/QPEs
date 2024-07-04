@@ -267,14 +267,64 @@ def fit_bunch_of_objects(qpe_oder_tde="QPE", bands="r", types=["None"]):
                         fixed_n_list,
                         )
                 except:
-                    "This one didn't work"
+                    print("\x1b[31mThis one didn't work\x1b[0m")
 
 
+def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"]):
+    if qpe_oder_tde == "TDE":
+        coords = TDE_coords
+        path_section = "tde"
+        names = TDE_names
+    else:
+        coords = objects
+        path_section = "qpe"
+        names = objects_names
 
+    for current_type in types:
+        for band in bands:
+            picklename = f"{names[objID]}_r-band_None_DESI_PSF.pkl"
+            fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
+            n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
+            print(f"\x1b[33m{n}\x1b[0m")
+            if n < 1.5:
+                fixed_n_list = [[0,4]]
+            elif n > 3:
+                fixed_n_list = [[1,1]]
+            else:
+                fixed_n_list = None
+
+            img_path = f"data/images/{path_section}{objID}_{band}.fits"
+            oow_path = f"data/images/{path_section}{objID}_{band}.fits"
+            #Use the co-add PSF model from the survey
+            psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
+            try:
+                galight_fit_short(
+                    coords[objID],
+                    img_path,
+                    oow_path,
+                    None,
+                    psf_path,
+                    current_type,
+                    0.262,
+                    None,
+                    band,
+                    15,
+                    60,
+                    1,
+                    5,
+                    "COADDED_DESI",
+                    f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL",
+                    5,
+                    "mega_deep",
+                    fixed_n_list,
+                    )
+            except:
+                print("\x1b[31mThis one didn't work\x1b[0m")
 
 
 
 
 if __name__ == "__main__":
-    fit_bunch_of_objects("TDE", bands="g", types=["Bulge"])
-    fit_bunch_of_objects("QPE", bands="g", types=["Bulge"])
+    fit_single_object("QPE", 4, bands="g", types=["Bulge"]) # AT 2019vcb only has a PSF in the "z" band, so we use it for the g band
+    #fit_bunch_of_objects("TDE", bands="g", types=["Bulge"])
+    #fit_bunch_of_objects("QPE", bands="g", types=["Bulge"])
