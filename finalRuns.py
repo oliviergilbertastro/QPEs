@@ -261,16 +261,16 @@ def fit_bunch_of_objects(qpe_oder_tde="QPE", bands="r", types=["None"]):
                         1,
                         5,
                         "COADDED_DESI",
-                        f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL",
+                        f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
                         5,
-                        "mega_deep",
+                        "paper_deep",
                         fixed_n_list,
                         )
                 except:
                     print("\x1b[31mThis one didn't work\x1b[0m")
 
 
-def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"]):
+def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], psf_band="r"):
     if qpe_oder_tde == "TDE":
         coords = TDE_coords
         path_section = "tde"
@@ -296,7 +296,7 @@ def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"]):
             img_path = f"data/images/{path_section}{objID}_{band}.fits"
             oow_path = f"data/images/{path_section}{objID}_{band}.fits"
             #Use the co-add PSF model from the survey
-            psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
+            psf_path = f"data/images/{path_section}{objID}_{psf_band}_PSF.fits"
             try:
                 galight_fit_short(
                     coords[objID],
@@ -313,9 +313,9 @@ def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"]):
                     1,
                     5,
                     "COADDED_DESI",
-                    f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL",
+                    f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
                     5,
-                    "mega_deep",
+                    "paper_deep",
                     fixed_n_list,
                     )
             except:
@@ -325,6 +325,11 @@ def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"]):
 
 
 if __name__ == "__main__":
-    fit_single_object("QPE", 4, bands="g", types=["Bulge"]) # AT 2019vcb only has a PSF in the "z" band, so we use it for the g band
-    #fit_bunch_of_objects("TDE", bands="g", types=["Bulge"])
-    #fit_bunch_of_objects("QPE", bands="g", types=["Bulge"])
+    fit_bunch_of_objects("TDE", bands="g", types=["Bulge"])
+    fit_bunch_of_objects("QPE", bands="g", types=["Bulge"])
+
+    # Do the three exceptions which don't work like the rest
+    fit_single_object("QPE", 4, bands="g", types=["Bulge"], psf_band="z") # AT 2019vcb only has a PSF in the z band, so we use it for the g band
+    fit_single_object("TDE", 7, bands="g", types=["Bulge"], psf_band="r") # SDSS 1350 doesn't have a PSF in the g band, so we use the r band one.
+    fit_single_object("TDE", 9, bands="g", types=["Bulge"], psf_band="r") # SDSS 1201 doesn't have a PSF in the g band, so we use the r band one.
+    

@@ -59,6 +59,8 @@ for i in range(len(TDE_names)):
 TDE_bulgeRatios = np.array(TDE_bulgeRatios)
 
 if __name__ == "__main__":
+    np.savetxt("QPE_bulgeRatios.txt", QPE_bulgeRatios)
+    np.savetxt("TDE_bulgeRatios.txt", TDE_bulgeRatios)
     plt.errorbar(range(9), QPE_bulgeRatios[:,0], [QPE_bulgeRatios[:,1], QPE_bulgeRatios[:,2]], fmt="o", label="QPEs")
     plt.errorbar(range(10), TDE_bulgeRatios[:,0], [TDE_bulgeRatios[:,1], TDE_bulgeRatios[:,2]], fmt="o", label="TDEs")
     plt.legend()

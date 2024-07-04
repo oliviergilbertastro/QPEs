@@ -10,7 +10,9 @@ from paper_data import *
 from download_data import *
 import sys
 from prospector.prospector_myFits import QPE_stellar_masses_desiProspector, TDE_stellar_masses_desiProspector
-from bulgeRatio import QPE_bulgeRatios, TDE_bulgeRatios
+#from bulgeRatio import QPE_bulgeRatios, TDE_bulgeRatios
+
+QPE_bulgeRatios, TDE_bulgeRatios = np.loadtxt("QPE_bulgeRatios.txt"), np.loadtxt("TDE_bulgeRatios.txt")
 
 QPE_and_TDEs = [4,5,8]
 
