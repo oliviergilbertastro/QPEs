@@ -3,15 +3,16 @@ import numpy as np
 from utils import print_table, myCornerPlot
 import matplotlib.pyplot as plt
 from download_data import *
-from bic_compare import QPE_best_models, TDE_best_models
+#from bic_compare import QPE_best_models, TDE_best_models
 import sys
 
 
 def get_fluxes(picklename):
     try:
-        fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
+        fitting_run_result = pickle.load(open("galight_fitruns/big_fits/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
+        #print("bigfit")
     except:
-        fitting_run_result = pickle.load(open("galight_fitruns/big_fits/"+picklename,'rb'))
+        fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
     # Get the sersic index
     try:
         fluxes = fitting_run_result.mcmc_flux_list
@@ -56,4 +57,6 @@ if __name__ == "__main__":
     plt.errorbar(range(9), QPE_bulgeRatios[:,0], [QPE_bulgeRatios[:,1], QPE_bulgeRatios[:,2]], fmt="o", label="QPEs")
     plt.errorbar(range(10), TDE_bulgeRatios[:,0], [TDE_bulgeRatios[:,1], TDE_bulgeRatios[:,2]], fmt="o", label="TDEs")
     plt.legend()
+    plt.ylabel(r"$(B/T)_g$", fontsize=16)
+    plt.xlabel("Index", fontsize=16)
     plt.show()

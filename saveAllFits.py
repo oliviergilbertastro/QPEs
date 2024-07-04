@@ -114,7 +114,7 @@ if input("Save CO-ADDED SURVEY_PSF QPE hosts? [y/n]") == "y":
     os.mkdir(f"{save_folder}/{time_dir}")
     for band in "r":
         for i in range(len(objects_names)):
-            picklename=f"{objects_names[i]}_{band}-band_{objects_types[i]}_DESI_PSF.pkl"
+            picklename=f"{objects_names[i]}_{band}-band_{'None'}_DESI_PSF.pkl"
             saveFit(picklename, savename=f"{time_dir}/sersicfit_{objects_names[i]}")
 
 elif input("Save CO-ADDED SURVEY_PSF TDE hosts? [y/n]") == "y":

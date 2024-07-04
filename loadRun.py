@@ -40,9 +40,9 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     if picklename == None:
         picklename = f'ra{str(ra_dec[0])}_dec{str(ra_dec[1])}_{type}_{band}.pkl'
     try:
-        fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
-    except:
         fitting_run_result = pickle.load(open("galight_fitruns/big_fits/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
+    except:
+        fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
 
     try:
         pixel_scale = fitting_run_result.coolinfo["pixel_scale"]

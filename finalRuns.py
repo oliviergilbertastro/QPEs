@@ -25,10 +25,11 @@ from download_data import objects
 import copy
 import lenstronomy.Util.param_util as param_util
 from matplotlib.colors import LogNorm
+import pickle
 
 SUBTRACT_NOISE = False
 
-def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5, fitting_level="deep"):
+def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5, fitting_level="deep", fixed_n_list=None):
     
     
     if type in ["AGN", "agn", "Agn"]:
@@ -187,11 +188,6 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
     fit_sepc = FittingSpecify(data_process)
     
 
-    # For a fixed bulge:
-    fixed_n_list = None
-    if type == "Bulge_fixed":
-        fixed_n_list = [[0, 4]]
-
     #Prepare the fitting sequence, keywords see notes above.
     fit_sepc.prepare_fitting_seq(point_source_num = number_of_ps,
                                 fix_Re_list=None,
@@ -232,14 +228,8 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
 
 
 
-
-
-
-
-
-if __name__ == "__main__":
-
-    if input("Fit TDE?") == "y":
+def fit_bunch_of_objects(qpe_oder_tde="QPE", bands="r", types=["None"]):
+    if qpe_oder_tde == "TDE":
         coords = TDE_coords
         path_section = "tde"
         names = TDE_names
@@ -248,75 +238,54 @@ if __name__ == "__main__":
         path_section = "qpe"
         names = objects_names
 
-    fitAllAtOnce = input("Fit all the objects at once? [y/n]") == "y"
-    if fitAllAtOnce:
-        objIDs = range(len(coords))
-        bands = "g"
-        types = ["Bulge"]#["None", "AGN", "Bulge"]
-        procs = []
-        for current_type in types:
-            for band in bands:
-                for objID in objIDs:
-                    img_path = f"data/images/{path_section}{objID}_{band}.fits"
-                    oow_path = f"data/images/{path_section}{objID}_{band}.fits"
-                    #Use the co-add PSF model from the survey
-                    psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
-                    args = (coords[objID],
-                            img_path,
-                            oow_path,
-                            None,
-                            psf_path,
-                            current_type,
-                            0.262,
-                            None,
-                            band,
-                            15,
-                            60,
-                            1,
-                            5,
-                            "COADDED_DESI",
-                            f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF",
-                            5,
-                            "paper_deep",
-                            )
-                    try:
-                        galight_fit_short(*args)
-                    except:
-                        "This one didn't work"
-                #proc = Process(target=galight_fit_short, args=args)
-                #procs.append(proc)
-                #proc.start()
-    else:
-        infos = input("Input objID, band and type. (e.g. '0 r None')\n")
-        objID, band, current_type = infos.split()
-        objID = int(objID)
-        img_path = f"data/images/{path_section}{objID}_{band}.fits"
-        oow_path = f"data/images/{path_section}{objID}_{band}.fits"
-        #Use the co-add PSF model from the survey
-        psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
-        psf_path = f"data/images/{path_section}{objID}_{'r'}_PSF.fits"
-        args = (coords[objID],
-                img_path,
-                oow_path,
-                None,
-                psf_path,
-                current_type,
-                0.262,
-                None,
-                band,
-                15,
-                60,
-                1,
-                5,
-                "COADDED_DESI",
-                f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF",
-                5,
-                "paper_deep",
-                )
-        try:
-            galight_fit_short(*args)
-        except:
-            print("This one doesn't work")
-            pass
-    #for proc in procs:
-    #    proc.join()
+    objIDs = range(len(coords))
+    for current_type in types:
+        for band in bands:
+            for objID in objIDs:
+                picklename = f"{names[objID]}_{band}-band_{current_type}_DESI_PSF.pkl"
+                fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
+                n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
+                if n < 1.5:
+                    fixed_n_list = [[0,4]]
+                elif n > 3:
+                    fixed_n_list = [[1,1]]
+                else:
+                    fixed_n_list = None
+
+                img_path = f"data/images/{path_section}{objID}_{band}.fits"
+                oow_path = f"data/images/{path_section}{objID}_{band}.fits"
+                #Use the co-add PSF model from the survey
+                psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
+                try:
+                    galight_fit_short(
+                        coords[objID],
+                        img_path,
+                        oow_path,
+                        None,
+                        psf_path,
+                        current_type,
+                        0.262,
+                        None,
+                        band,
+                        15,
+                        60,
+                        1,
+                        5,
+                        "COADDED_DESI",
+                        f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL",
+                        5,
+                        "mega_deep",
+                        fixed_n_list,
+                        )
+                except:
+                    "This one didn't work"
+
+
+
+
+
+
+
+if __name__ == "__main__":
+    fit_bunch_of_objects("TDE", bands="g", types=["Bulge"])
+    fit_bunch_of_objects("QPE", bands="g", types=["Bulge"])
