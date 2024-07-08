@@ -91,7 +91,18 @@ comparisons_names = [
 ]
 
 if __name__ == "__main__":
-    if input("Download 1024x1024 of all QPEs? [y/n]") == "y":
+    if input("Download pictures of QPEs and TDEs?") == "y":
+        for i in tqdm(range(len(objects_names))):
+            ra, dec = objects[i]
+            url = f'https://www.legacysurvey.org/viewer/jpeg-cutout?ra={str(ra)}&dec={str(dec)}&size={256}&layer=ls-dr10&pixscale={0.262}&bands={"griz"}&invvar'
+            r = requests.get(url)
+            open(r'data/images/'+f'{objects_names[i]}'+r'.jpeg' , 'wb').write(r.content)
+        for i in tqdm(range(len(TDE_names))):
+            ra, dec = TDE_coords[i]
+            url = f'https://www.legacysurvey.org/viewer/jpeg-cutout?ra={str(ra)}&dec={str(dec)}&size={256}&layer=ls-dr10&pixscale={0.262}&bands={"griz"}&invvar'
+            r = requests.get(url)
+            open(r'data/images/'+f'{TDE_names[i]}'+r'.jpeg' , 'wb').write(r.content)
+    elif input("Download 1024x1024 of all QPEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
         for i in tqdm(range(len(objects_names))):
             for b in band:

@@ -107,9 +107,23 @@ def saveFit(picklename=None, savename=None):
 
 from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types
 
+if input("Save FINAL QPE hosts? [y/n]") == "y":
+    time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
+    os.mkdir(f"{save_folder}/{time_dir}")
+    for band in "g":
+        for i in range(len(objects_names)):
+            picklename=f"{objects_names[i]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl"
+            saveFit(picklename, savename=f"{time_dir}/sersicfit_{objects_names[i]}")
 
+elif input("Save FINAL TDE hosts? [y/n]") == "y":
+    time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
+    os.mkdir(f"{save_folder}/{time_dir}")
+    for band in "g":
+        for i in range(len(TDE_names)):
+            picklename=f"{TDE_names[i]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl"
+            saveFit(picklename, savename=f"{time_dir}/sersicfit_{TDE_names[i]}")
 
-if input("Save CO-ADDED SURVEY_PSF QPE hosts? [y/n]") == "y":
+elif input("Save CO-ADDED SURVEY_PSF QPE hosts? [y/n]") == "y":
     time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
     os.mkdir(f"{save_folder}/{time_dir}")
     for band in "r":

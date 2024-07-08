@@ -668,6 +668,8 @@ def fitting_setting_temp(algorithm, fitting_level = 'norm'):
             setting = {'sigma_scale': 0.8, 'n_particles': 200, 'n_iterations': 300}
         elif fitting_level == "giga_deep":
             setting = {'sigma_scale': 0.8, 'n_particles': 400, 'n_iterations': 600}
+        elif fitting_level == "paper_deep":
+            setting = {'sigma_scale': 0.8, 'n_particles': 200, 'n_iterations': 300}
         else:
             setting = {'sigma_scale': 0.8, 'n_particles': 50, 'n_iterations': 50}
     elif algorithm == 'MCMC':     

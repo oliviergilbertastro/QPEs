@@ -75,6 +75,16 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     #fitting_run_result.model_plot() #same here
     fitting_run_result.mcmc_result_range()
     if fitting_run_result.fitting_kwargs_list[-1][0] == 'MCMC':
+        print(np.shape(fitting_run_result.samples_mcmc))
+        samples = np.array(fitting_run_result.samples_mcmc).T
+        for sample in samples:
+            plt.plot(sample)
+        plt.xlabel("n step", fontsize=17)
+        plt.ylabel("Parameter position", fontsize=17)
+        plt.yscale("log")
+        plt.title(picklename, fontsize=17)
+        plt.show()
+        fitting_run_result.run_diag()
         fitting_run_result.plot_params_corner()
         fitting_run_result.plot_flux_corner()
     print("-------------------------------------------------------")
@@ -212,8 +222,15 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
 
 from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types
 
+if input("Load FINAL2 BULGE QPE host? [y/n]") == "y":
+    objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
+    loadRun(objects[objID], type="None", band="g", picklename=f"{objects_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
 
-if input("Load FINAL BULGE QPE host? [y/n]") == "y":
+elif input("Load FINAL2 BULGE TDE host? [y/n]") == "y":
+    objID = int(input(f"Enter the object ID you want to load [0-{len(TDE_coords)-1}]:\n"))
+    loadRun(TDE_coords[objID], type="None", band="g", picklename=f"{TDE_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
+
+elif input("Load FINAL BULGE QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
     loadRun(objects[objID], type="None", band="g", picklename=f"{objects_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL.pkl")
 
@@ -221,7 +238,7 @@ elif input("Load FINAL BULGE TDE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(TDE_coords)-1}]:\n"))
     loadRun(TDE_coords[objID], type="None", band="g", picklename=f"{TDE_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL.pkl")
 
-if input("Load CO-ADDED SURVEY_PSF QPE host? [y/n]") == "y":
+elif input("Load CO-ADDED SURVEY_PSF QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
     model = input("Which model do you want to load?\n")

@@ -233,6 +233,7 @@ def fit_bunch_of_objects(qpe_oder_tde="QPE", bands="r", types=["None"]):
                 picklename = f"{names[objID]}_r-band_None_DESI_PSF.pkl"
                 fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
                 n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
+                print(f"\x1b[34m{names[objID]}\x1b[0m")
                 print(f"\x1b[33m{n}\x1b[0m")
                 if n < 1.5:
                     fixed_n_list = [[0,4]]
@@ -261,13 +262,15 @@ def fit_bunch_of_objects(qpe_oder_tde="QPE", bands="r", types=["None"]):
                         1,
                         5,
                         "COADDED_DESI",
-                        f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
+                        f"big_fits/{names[objID]}_{band}-band_{current_type}_test",
                         5,
-                        "paper_deep",
+                        "normal",
                         fixed_n_list,
                         )
                 except:
                     print("\x1b[31mThis one didn't work\x1b[0m")
+                    psf_bands = "griz"
+                    fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(band)+1)%len(psf_bands)])
 
 
 def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], psf_band="r"):
@@ -285,6 +288,7 @@ def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], ps
             picklename = f"{names[objID]}_r-band_None_DESI_PSF.pkl"
             fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
             n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
+            print(f"\x1b[34m{names[objID]}\x1b[0m")
             print(f"\x1b[33m{n}\x1b[0m")
             if n < 1.5:
                 fixed_n_list = [[0,4]]
@@ -313,23 +317,38 @@ def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], ps
                     1,
                     5,
                     "COADDED_DESI",
-                    f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
+                    f"big_fits/{names[objID]}_{band}-band_{current_type}_test",
                     5,
-                    "paper_deep",
+                    "normal",
                     fixed_n_list,
                     )
+                print("\x1b[32mThis one did work\x1b[0m")
             except:
                 print("\x1b[31mThis one didn't work\x1b[0m")
+                psf_bands = "griz"
+                fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(psf_band)+1)%len(psf_bands)])
 
 
 
+import time
 
 if __name__ == "__main__":
-    fit_bunch_of_objects("TDE", bands="g", types=["Bulge"])
-    fit_bunch_of_objects("QPE", bands="g", types=["Bulge"])
+    start_time = time.time()
+    fit_bunch_of_objects("TDE", bands="riz", types=["Bulge"])
+    print("\x1b[33mTDEs: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+    fit_bunch_of_objects("QPE", bands="riz", types=["Bulge"])
 
-    # Do the three exceptions which don't work like the rest
-    fit_single_object("QPE", 4, bands="g", types=["Bulge"], psf_band="z") # AT 2019vcb only has a PSF in the z band, so we use it for the g band
-    fit_single_object("TDE", 7, bands="g", types=["Bulge"], psf_band="r") # SDSS 1350 doesn't have a PSF in the g band, so we use the r band one.
-    fit_single_object("TDE", 9, bands="g", types=["Bulge"], psf_band="r") # SDSS 1201 doesn't have a PSF in the g band, so we use the r band one.
-    
+    print("\x1b[33mTotal: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+
+    if False:
+        start_time = time.time()
+        fit_bunch_of_objects("TDE", bands="g", types=["Bulge"])
+        print("\x1b[33mTDEs: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+        fit_bunch_of_objects("QPE", bands="g", types=["Bulge"])
+        print("\x1b[33mTDEs+QPEs: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+
+        # Do the three exceptions which don't work like the rest because they don't have a PSF in the g band
+        fit_single_object("QPE", 4, bands="g", types=["Bulge"], psf_band="z") # AT 2019vcb only has a PSF in the z band, so we use it for the g band
+        fit_single_object("TDE", 7, bands="g", types=["Bulge"], psf_band="r") # SDSS 1350 doesn't have a PSF in the g band, so we use the r band one.
+        fit_single_object("TDE", 9, bands="g", types=["Bulge"], psf_band="r") # SDSS 1201 doesn't have a PSF in the g band, so we use the r band one.
+        print("\x1b[33mTotal: --- %s seconds ---\x1b[0m" % (time.time() - start_time))

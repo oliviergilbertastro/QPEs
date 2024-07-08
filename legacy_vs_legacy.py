@@ -254,6 +254,11 @@ if __name__ == "__main__":
     TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
     myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$")
 
+    QPE_data = np.array([QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
+    TDE_data = np.array([np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$\Sigma_{M_\star}$")
+
+
     # Make big plot
     QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_bulgeRatios[:,0], QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
     TDE_data = np.array([TDE_mBH, TDE_stellar_masses[:,0], TDE_bulgeRatios[:,0], TDE_r50s[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])

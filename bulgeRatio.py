@@ -26,10 +26,10 @@ def get_fluxes(picklename):
         pass
     return fluxes, labels
 
+# "DESI_PSF_FINAL" for 1,000 steps MCMC runs
+# "DESI_PSF_FINAL2" for 10,000 steps MCMC runs
 
-
-
-survey = "DESI_PSF_FINAL"
+survey = "DESI_PSF_FINAL2"
 band = "g"
 QPE_bulgeRatios = []
 for i in range(len(objects_names)):
