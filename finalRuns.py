@@ -262,18 +262,18 @@ def fit_bunch_of_objects(qpe_oder_tde="QPE", bands="r", types=["None"]):
                         1,
                         5,
                         "COADDED_DESI",
-                        f"big_fits/{names[objID]}_{band}-band_{current_type}_test",
+                        f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
                         5,
-                        "normal",
+                        "mega_deep",
                         fixed_n_list,
                         )
                 except:
                     print("\x1b[31mThis one didn't work\x1b[0m")
-                    psf_bands = "griz"
-                    fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(band)+1)%len(psf_bands)])
+                    #psf_bands = "griz"
+                    #fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(band)+1)%len(psf_bands)])
 
 
-def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], psf_band="r"):
+def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], psf_band="r", fixed_n_list=None):
     if qpe_oder_tde == "TDE":
         coords = TDE_coords
         path_section = "tde"
@@ -290,12 +290,14 @@ def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], ps
             n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
             print(f"\x1b[34m{names[objID]}\x1b[0m")
             print(f"\x1b[33m{n}\x1b[0m")
-            if n < 1.5:
-                fixed_n_list = [[0,4]]
-            elif n > 3:
-                fixed_n_list = [[1,1]]
-            else:
-                fixed_n_list = None
+
+            if fixed_n_list is None:
+                if n < 1.5:
+                    fixed_n_list = [[0,4]]
+                elif n > 3:
+                    fixed_n_list = [[1,1]]
+                else:
+                    fixed_n_list = None
 
             img_path = f"data/images/{path_section}{objID}_{band}.fits"
             oow_path = f"data/images/{path_section}{objID}_{band}.fits"
@@ -317,30 +319,36 @@ def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], ps
                     1,
                     5,
                     "COADDED_DESI",
-                    f"big_fits/{names[objID]}_{band}-band_{current_type}_test",
+                    f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
                     5,
-                    "normal",
+                    "mega_deep",
                     fixed_n_list,
                     )
                 print("\x1b[32mThis one did work\x1b[0m")
             except:
                 print("\x1b[31mThis one didn't work\x1b[0m")
-                psf_bands = "griz"
-                fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(psf_band)+1)%len(psf_bands)])
+                #psf_bands = "griz"
+                #fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(psf_band)+1)%len(psf_bands)])
 
 
 
 import time
 
 if __name__ == "__main__":
-    start_time = time.time()
-    fit_bunch_of_objects("TDE", bands="riz", types=["Bulge"])
-    print("\x1b[33mTDEs: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
-    fit_bunch_of_objects("QPE", bands="riz", types=["Bulge"])
-
-    print("\x1b[33mTotal: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+    #fit_single_object("TDE", 2, bands="r", types=["Bulge"], psf_band="r", fixed_n_list=[[0,4]])
+    fit_single_object("QPE", 6, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[1,1]])
 
     if False:
+        # this takes 21 hours to run with mega_deep
+        start_time = time.time()
+        fit_bunch_of_objects("TDE", bands="riz", types=["Bulge"])
+        print("\x1b[33mTDEs: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+        fit_bunch_of_objects("QPE", bands="riz", types=["Bulge"])
+
+        print("\x1b[33mTotal: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+
+    if False:
+        # this takes 69 hours to run with paper_deep
         start_time = time.time()
         fit_bunch_of_objects("TDE", bands="g", types=["Bulge"])
         print("\x1b[33mTDEs: --- %s seconds ---\x1b[0m" % (time.time() - start_time))

@@ -33,7 +33,7 @@ import matplotlib.pyplot as plt
 from prospect.plotting import corner
 from prospect.plotting.utils import best_sample
 
-def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, QPE=True):
+def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, extension="", QPE=True):
     """
     Fits SED using prospector
     """
@@ -116,9 +116,9 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, QPE=True):
     result, duration = output["sampling"]
     from prospect.io import write_results as writer
     if QPE:
-        hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
+        hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_{extension}.h5"
     else:
-        hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_SED.h5"
+        hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_{extension}.h5"
     writer.write_hdf5(hfile, {}, model, obs,
                     output["sampling"][0], None,
                     sps=sps,
@@ -126,9 +126,9 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, QPE=True):
                     toptimize=0.0)
     #uncomment the rest to run the python file only once to make all files
     objID = objID + 1
-    fit_SED(objID, bands="griz", redshift=TDE_redshifts[objID], magnitudes_dict=TDE_magnitudes_dicts[objID], QPE=QPE)
+    fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=QPE_magnitudes_dicts[objID], extension=extension, QPE=QPE)
 
-def read_SED(objID, QPE=True):
+def read_SED(objID, extension="", QPE=True):
     #try:
         # Directly fitting the surviving mass
     #    hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
@@ -137,9 +137,9 @@ def read_SED(objID, QPE=True):
         # Taking the fitted total formed mass and then multiplying it by the surviving fraction approximation
 
     if QPE:
-        hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
+        hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_{extension}.h5"
     else:
-        hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_SED.h5"
+        hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_{extension}.h5"
     out, out_obs, out_model = reader.results_from(hfile)
     for k in out.keys():
         print(k, ":", out[k])
@@ -192,7 +192,7 @@ def read_SED(objID, QPE=True):
     plt.show()
 
 
-def getStellarMass(objID, QPE=True):
+def getStellarMass(objID, extension="SED", QPE=True):
     if False:
         # Directly fitting the surviving mass
         hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
@@ -201,10 +201,10 @@ def getStellarMass(objID, QPE=True):
     else:
         # Taking the fitted total formed mass and then multiplying it by the surviving fraction approximation
         if QPE:
-            hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_SED.h5"
+            hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_{extension}.h5"
             mfrac = np.float64(open(f"prospector/data/{objects_names[objID]}_LEGACY_mfrac.txt","r").read())
         else:
-            hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_SED.h5"
+            hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_{extension}.h5"
             mfrac = np.float64(open(f"prospector/data/{TDE_names[objID]}_LEGACY_mfrac.txt","r").read())
         out, out_obs, out_model = reader.results_from(hfile)
         mass = out["chain"][:,0]
@@ -222,9 +222,15 @@ def makeAstropyTableFromDictionnary(dict):
     dtypes = [type(val) for val in dict.values()]
     return astropy.table.table.Table(data=data, names=names, dtype=dtypes)
 
-# Magnitudes for DESI PSF
-if __name__ != "prospector.prospector_myFits":
-    from legacy_vs_legacy import QPE_unreddenedMagnitudes, TDE_unreddenedMagnitudes
+
+    
+# Load the QPE and TDE magnitudes:
+import pickle
+with open('QPE_magnitudes.pkl', 'rb') as f:
+    QPE_unreddenedMagnitudes = pickle.load(f)
+with open('TDE_magnitudes.pkl', 'rb') as f:
+    TDE_unreddenedMagnitudes = pickle.load(f)
+
 
 # Do the magnitudes thing
 if __name__ == "__main__":
@@ -256,7 +262,7 @@ if __name__ == "__main__":
 
     if input("Fit QPEs? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to fit [0-{len(objects_names)-1}]:\n"))
-        fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=QPE_magnitudes_dicts[objID])
+        fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=QPE_magnitudes_dicts[objID], extension="FINAL")
 
     elif input("Read QPE? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
@@ -264,11 +270,22 @@ if __name__ == "__main__":
 
     elif input("Fit TDEs? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to fit [0-{len(TDE_names)-1}]:\n"))
-        fit_SED(objID, bands="griz", redshift=TDE_redshifts[objID], magnitudes_dict=TDE_magnitudes_dicts[objID], QPE=False)
+        fit_SED(objID, bands="griz", redshift=TDE_redshifts[objID], magnitudes_dict=TDE_magnitudes_dicts[objID], extension="FINAL", QPE=False)
 
     elif input("Read TDE? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to read [0-{len(TDE_names)-1}]:\n"))
-        read_SED(objID, QPE=False)
+        read_SED(objID, extension="FINAL", QPE=False)
+
+    elif input("SAVE STELLAR MASSES? [y/n]") == "y":
+        # Save to txt file so there are no problems of imports and what else
+        QPE_stellar_masses_desiProspector = []
+        for i in range(len(objects_names)):
+            QPE_stellar_masses_desiProspector.append(getStellarMass(i))
+        TDE_stellar_masses_desiProspector = []
+        for i in range(len(TDE_names)):
+            TDE_stellar_masses_desiProspector.append(getStellarMass(i, extension="FINAL", QPE=False))
+        np.savetxt("QPE_stellarMasses.txt", QPE_stellar_masses_desiProspector)
+        np.savetxt("TDE_stellarMasses.txt", TDE_stellar_masses_desiProspector)
 
 else:
     QPE_stellar_masses_desiProspector = []

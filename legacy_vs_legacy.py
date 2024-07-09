@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 from paper_data import *
 from download_data import *
 import sys
-from prospector.prospector_myFits import QPE_stellar_masses_desiProspector, TDE_stellar_masses_desiProspector
+#from prospector.prospector_myFits import QPE_stellar_masses_desiProspector, TDE_stellar_masses_desiProspector
 #from bulgeRatio import QPE_bulgeRatios, TDE_bulgeRatios
 
 QPE_bulgeRatios, TDE_bulgeRatios = np.loadtxt("QPE_bulgeRatios.txt"), np.loadtxt("TDE_bulgeRatios.txt")
@@ -22,10 +22,10 @@ def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_
     else:
         picklename = f"{TDE_names[objID]}_{band}-band_{model}_{survey}.pkl"
     try:
-        fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
+        fitting_run_result = pickle.load(open("galight_fitruns/big_fits/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
     except:
-        raise NameError("There is no picklerun with this name.")
-
+        fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
+    #print(picklename)
     #Calculate the Sersic index + uncertainties
     chain = fitting_run_result.samples_mcmc
     params = fitting_run_result.param_mcmc
@@ -143,62 +143,49 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
 
 survey = "DESI_PSF"
 tde_survey = "DESI_PSF"
-if __name__ == "__main__":
-    #survey = input("Which survey? [default=DESI]\n")
-    survey = "DESI" if survey == "" else survey
+
 #Do this part so other programs can load it (especially the magnitudes from prospector)
 #First, load the TDE sersic indices and half-light radii into arrays or list, idc:
 QPE_sersicIndices = []
 QPE_r50s = []
-QPE_magnitudes = []
-QPE_unreddenedMagnitudes = []
 for i in range(len(objects)):
     QPE_sersicIndices.append({})
     QPE_r50s.append({})
-    QPE_magnitudes.append({})
-    QPE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
             n, r50, mag = get_n_and_r50(i, "None", redshift=QPE_redshifts[i], band=band, survey=survey)
             QPE_sersicIndices[-1][band] = n
             QPE_r50s[-1][band] = r50
-            QPE_magnitudes[-1][band] = mag
-            QPE_unreddenedMagnitudes[-1][band] = mag - QPE_extinction[objects_names[i]][band]
         except:
             pass
 
+
+
 TDE_sersicIndices = []
 TDE_r50s = []
-TDE_magnitudes = []
-TDE_unreddenedMagnitudes = []
 for i in range(len(TDE_coords)):
     TDE_sersicIndices.append({})
     TDE_r50s.append({})
-    TDE_magnitudes.append({})
-    TDE_unreddenedMagnitudes.append({})
     for band in "griz":
         try:
             n, r50, mag = get_n_and_r50(i, "None", redshift=TDE_redshifts[i], band=band, survey=tde_survey, qpe_oder_tde="TDE")
             TDE_sersicIndices[-1][band] = n
             TDE_r50s[-1][band] = r50
-            TDE_magnitudes[-1][band] = mag
-            TDE_unreddenedMagnitudes[-1][band] = mag - TDE_extinction[TDE_names[i]][band]
         except:
             pass
+
+
+
 
 if __name__ == "__main__":
     #print(objects[i], objects_types[i], band)
     checkWhichFiltersWork(QPE_sersicIndices)
     printPropertyAcrossFilters(QPE_sersicIndices, "Sérsic Index")
     printPropertyAcrossFilters(QPE_r50s, "Sérsic half-light radius (kpc)")
-    printPropertyAcrossFilters(QPE_magnitudes, "Magnitude")
-    printPropertyAcrossFilters(QPE_unreddenedMagnitudes, "Dereddened magnitude")
 
     checkWhichFiltersWork(TDE_sersicIndices, qpe_oder_tde="TDE")
     printPropertyAcrossFilters(TDE_sersicIndices, "Sérsic Index", qpe_oder_tde="TDE")
     printPropertyAcrossFilters(TDE_r50s, "Sérsic half-light radius (kpc)", qpe_oder_tde="TDE")
-    printPropertyAcrossFilters(TDE_magnitudes, "Magnitude", qpe_oder_tde="TDE")
-    printPropertyAcrossFilters(TDE_unreddenedMagnitudes, "Dereddened magnitude", qpe_oder_tde="TDE")
 
     #From now on, keep only the r-band properties:
     band_to_keep = "r"
@@ -219,8 +206,8 @@ if __name__ == "__main__":
     TDE_r50s = TDE_placeholder_properties["r_50"]
 
     # Get the stellar masses:
-    QPE_stellar_masses = QPE_stellar_masses_desiProspector
-    TDE_stellar_masses = TDE_stellar_masses_desiProspector
+    QPE_stellar_masses = np.loadtxt("QPE_stellarMasses.txt")
+    TDE_stellar_masses = np.loadtxt("TDE_stellarMasses.txt")
 
     # Calculate stellar mass surface densities
     QPE_SMSDs = np.array([stellarMassDensity(QPE_stellar_masses[i], QPE_r50s[i]) for i in range(len(objects_names))])

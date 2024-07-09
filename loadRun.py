@@ -224,11 +224,13 @@ from download_data import objects, comparisons, objects_names, objects_types, TD
 
 if input("Load FINAL2 BULGE QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
-    loadRun(objects[objID], type="None", band="g", picklename=f"{objects_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
+    band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+    loadRun(objects[objID], type="None", band="g", picklename=f"{objects_names[objID]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
 
 elif input("Load FINAL2 BULGE TDE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(TDE_coords)-1}]:\n"))
-    loadRun(TDE_coords[objID], type="None", band="g", picklename=f"{TDE_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
+    band = input("Enter the filter band you want to load [g,r,i,z]:\n")
+    loadRun(TDE_coords[objID], type="None", band="g", picklename=f"{TDE_names[objID]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
 
 elif input("Load FINAL BULGE QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))

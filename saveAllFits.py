@@ -118,10 +118,13 @@ if input("Save FINAL QPE hosts? [y/n]") == "y":
 elif input("Save FINAL TDE hosts? [y/n]") == "y":
     time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
     os.mkdir(f"{save_folder}/{time_dir}")
-    for band in "g":
+    for band in "i":
         for i in range(len(TDE_names)):
             picklename=f"{TDE_names[i]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl"
-            saveFit(picklename, savename=f"{time_dir}/sersicfit_{TDE_names[i]}")
+            try:
+                saveFit(picklename, savename=f"{time_dir}/sersicfit_{TDE_names[i]}")
+            except:
+                pass
 
 elif input("Save CO-ADDED SURVEY_PSF QPE hosts? [y/n]") == "y":
     time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
