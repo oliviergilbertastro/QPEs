@@ -280,7 +280,7 @@ if __name__ == "__main__":
         # Save to txt file so there are no problems of imports and what else
         QPE_stellar_masses_desiProspector = []
         for i in range(len(objects_names)):
-            QPE_stellar_masses_desiProspector.append(getStellarMass(i))
+            QPE_stellar_masses_desiProspector.append(getStellarMass(i, extension="FINAL"))
         TDE_stellar_masses_desiProspector = []
         for i in range(len(TDE_names)):
             TDE_stellar_masses_desiProspector.append(getStellarMass(i, extension="FINAL", QPE=False))
