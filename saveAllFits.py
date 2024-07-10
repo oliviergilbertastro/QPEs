@@ -21,7 +21,14 @@ def saveFit(picklename=None, savename=None):
     except:
         fitting_run_result = pickle.load(open("galight_fitruns/big_fits/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
 
-
+    if len(fitting_run_result.image_host_list) == 2:
+        if fitting_run_result.final_result_galaxy[0]["n_sersic"] < fitting_run_result.final_result_galaxy[1]["n_sersic"]:
+            placeholder = copy.deepcopy(fitting_run_result.final_result_galaxy[0])
+            fitting_run_result.final_result_galaxy[0] = copy.deepcopy(fitting_run_result.final_result_galaxy[1])
+            fitting_run_result.final_result_galaxy[1] = placeholder
+            placeholder2 = copy.deepcopy(fitting_run_result.image_host_list[0])
+            fitting_run_result.image_host_list[0] = copy.deepcopy(fitting_run_result.image_host_list[1])
+            fitting_run_result.image_host_list[1] = placeholder2
 
     data = fitting_run_result.fitting_specify_class.kwargs_data['image_data']
     noise = fitting_run_result.fitting_specify_class.kwargs_data['noise_map']
@@ -118,7 +125,7 @@ if input("Save FINAL QPE hosts? [y/n]") == "y":
 elif input("Save FINAL TDE hosts? [y/n]") == "y":
     time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
     os.mkdir(f"{save_folder}/{time_dir}")
-    for band in "i":
+    for band in "g":
         for i in range(len(TDE_names)):
             picklename=f"{TDE_names[i]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl"
             try:

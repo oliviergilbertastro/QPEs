@@ -335,8 +335,16 @@ def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], ps
 import time
 
 if __name__ == "__main__":
-    #fit_single_object("TDE", 2, bands="r", types=["Bulge"], psf_band="r", fixed_n_list=[[0,4]])
-    fit_single_object("QPE", 6, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[1,1]])
+    # All the "if False" lines are previous runs that have been done
+    fit_single_object("QPE", 2, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[1,1]])
+    fit_single_object("TDE", 0, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[0,4]])
+    fit_single_object("TDE", 5, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[0,4]])
+
+
+
+    if False:
+        fit_single_object("TDE", 2, bands="r", types=["Bulge"], psf_band="r", fixed_n_list=[[0,4]])
+        fit_single_object("QPE", 6, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[1,1]])
 
     if False:
         # this takes 21 hours to run with mega_deep
