@@ -269,18 +269,20 @@ def myFinalPlot(data, main_property=r"Sérsic index", fontsize=15, smoothness=6)
     #----------Make the plots---------
 
     # n_sersic vs m_star
-    mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8)
-    mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=7)
-
+    mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8, label="QPE")
+    mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=7, mec="white", mew=0.5, label="TDE")
+    mS_ax.legend(loc="upper left", fontsize=fontsize-3)
     # n_sersic vs m_bh
     mBH_ax.errorbar(QPE_data[0,:,0], QPE_data[2,:,0], yerr=[QPE_data[2,:,1],QPE_data[2,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8)
-    mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[2,:,0], yerr=[TDE_data[2,:,1],TDE_data[2,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=7)
+    mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[2,:,0], yerr=[TDE_data[2,:,1],TDE_data[2,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", mec="white", mew=0.5, markersize=7)
 
     #----------Make the labels---------
     mBH_ax.set_xlabel(main_property, fontsize=fontsize)
     mS_ax.set_ylabel(r"$\log(M_\star)$", fontsize=fontsize)
     mBH_ax.set_ylabel(r"$\log(M_\mathrm{BH})$", fontsize=fontsize)
-
+    mBH_ax.xaxis.set_tick_params(labelsize=fontsize-2)
+    mS_ax.yaxis.set_tick_params(labelsize=fontsize-2)
+    mBH_ax.yaxis.set_tick_params(labelsize=fontsize-2)
     #plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.94, wspace=0, hspace=0)
     plt.show()
 
@@ -301,10 +303,8 @@ def SDSS_objid_to_values(objid):
     # Determined from http://skyserver.sdss.org/dr7/en/help/docs/algorithm.asp?key=objID
 
     bin_objid = bin(objid)
-    print(bin_objid)
     bin_objid = bin_objid[2:len(bin_objid)]
     bin_objid = bin_objid.zfill(64)
-    print(bin_objid)
 
     empty = int( '0b' + bin_objid[0], base=0)
     skyVersion = int( '0b' + bin_objid[1:4+1], base=0)
@@ -317,22 +317,20 @@ def SDSS_objid_to_values(objid):
 
     return skyVersion, rerun, run, camcol, field, object_num
 
-
-
-
+from astropy.coordinates import SkyCoord
+import astropy.units as u
+def get_smallest_sep(pos, ras, decs):
+    c1 = SkyCoord(pos[0]*u.deg, pos[1]*u.deg)
+    c2 = SkyCoord(ras*u.deg, decs*u.deg)
+    sep = (c1.separation(c2)).arcsec
+    smallest_sep = min(sep)
+    assert smallest_sep < 3
+    index = list(sep).index(smallest_sep)
+    return index
 
 if __name__ == "__main__":
 
-    skyVersion, rerun, run, camcol, field, object_num = SDSS_objid_to_values(587722983372161650)
-
-    print("587722983372161650")
-    print('Values extracted from DR7 Objid include:')
-    print('RERUN', 'RUN', 'CAMCOL', 'FIELD', 'OBJ')
-    print(rerun, run, camcol, field, object_num)
-    from astroquery.sdss import SDSS
-    result = SDSS.query_photoobj(run=run, rerun=rerun, camcol=camcol, field=field)
-    print(len(result[result.colnames[0]]))
-    print(result)
+    get_smallest_sep([2.36286871e+02, -5.18003056e-01], [2.36247096e+02,2.36286871e+02,2.36336501e+02,2.15640297e+02], [-4.75263889e-01,-5.18003056e-01,-4.89098889e-01,1.06889111e+00])
 
     import sys
     sys.exit()

@@ -5,6 +5,7 @@ from tqdm import tqdm
 # load all catalog text files
 mendel2014 = np.loadtxt("data/catalogs/Mendel2014/table6.dat")
 mpajhu = fits.open("data/catalogs/MPA_JHU/galSpecInfo-dr8.fits")
+ra_decs = fits.open("data/catalogs/asu.fit")
 simard2011a = np.loadtxt("data/catalogs/Simard2011/table1.dat")
 #simard2011b = np.loadtxt("data/catalogs/Simard2011/table2.dat")
 simard2011c = np.loadtxt("data/catalogs/Simard2011/table3.dat")
@@ -12,11 +13,8 @@ simard2011c = np.loadtxt("data/catalogs/Simard2011/table3.dat")
 # Extract the data in an astropy table
 from astropy.table import Table, Column
 my_table = Table(mpajhu[1].data)
-
 # Extract the names of the columns
 colnames = my_table.colnames
-
-
 mpajhu = []
 for i in tqdm(range(len(my_table[colnames[0]]))):
     try:
@@ -26,7 +24,18 @@ for i in tqdm(range(len(my_table[colnames[0]]))):
         pass
 mpajhu = np.array(mpajhu)
 
-
+from astropy.table import Table, Column
+my_table = Table(ra_decs[1].data)
+# Extract the names of the columns
+colnames = my_table.colnames
+simard_ra_decs = []
+for i in tqdm(range(len(my_table[colnames[0]]))):
+    try:
+        SpecObjID = int(my_table["objID"][i])
+        simard_ra_decs.append([SpecObjID, my_table["_RAJ2000"][i], my_table["_DEJ2000"][i]])
+    except:
+        pass
+simard_ra_decs = np.array(simard_ra_decs)
 
 
 
@@ -97,16 +106,20 @@ stellarMasses = mendel2014[:,2][indices]
 reference_catalog = np.vstack((reference_catalog.T, np.array(stellarMasses))).T
 
 
-# We need to find a way to get RA and DEC for the reference catalogue so we can cross-match the velocity dispersions from MPA_JHU
-from astroquery.sdss import SDSS
-from utils import SDSS_objid_to_values
+# Add RA and DECs by fetching values from the online Simard Vizier tool:
 
-for objid in tqdm(np.array(reference_catalog[:10,0], dtype=int)):
-    skyVersion, rerun, run, camcol, field, object_num = SDSS_objid_to_values(objid)
-    result = SDSS.query_photoobj(run=run, rerun=rerun, camcol=camcol, field=field)
-    print(result)
+sorter = np.argsort(simard_ra_decs[:,0])
+indices = np.searchsorted(simard_ra_decs[:,0], reference_catalog[:,0], sorter=sorter)
+ra_s, dec_s = simard_ra_decs[:,1][indices], simard_ra_decs[:,2][indices]
+reference_catalog = np.vstack((reference_catalog.T, np.array(ra_s))).T
+reference_catalog = np.vstack((reference_catalog.T, np.array(dec_s))).T
 
-#table = SDSS.query_photoobj_async()
+# Add the velocity dispersions in the reference catalog:
+from utils import get_smallest_sep
+
+sigma_a = []
+for i in tqdm(range(len(reference_catalog[:,0]))):
+    
 
 import sys
 sys.exit()
