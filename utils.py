@@ -296,9 +296,47 @@ def toLog(a):
     data = np.log10(data)
     return np.array([data, hi, lo]).T
 
+def SDSS_objid_to_values(objid):
+
+    # Determined from http://skyserver.sdss.org/dr7/en/help/docs/algorithm.asp?key=objID
+
+    bin_objid = bin(objid)
+    print(bin_objid)
+    bin_objid = bin_objid[2:len(bin_objid)]
+    bin_objid = bin_objid.zfill(64)
+    print(bin_objid)
+
+    empty = int( '0b' + bin_objid[0], base=0)
+    skyVersion = int( '0b' + bin_objid[1:4+1], base=0)
+    rerun = int( '0b' + bin_objid[5:15+1], base=0)
+    run = int( '0b' + bin_objid[16:31+1], base=0)
+    camcol = int( '0b' + bin_objid[32:34+1], base=0)
+    firstField = int( '0b' + bin_objid[35+1], base=0)
+    field = int( '0b' + bin_objid[36:47+1], base=0)
+    object_num = int( '0b' + bin_objid[48:63+1], base=0)
+
+    return skyVersion, rerun, run, camcol, field, object_num
+
+
+
 
 
 if __name__ == "__main__":
+
+    skyVersion, rerun, run, camcol, field, object_num = SDSS_objid_to_values(587722983372161650)
+
+    print("587722983372161650")
+    print('Values extracted from DR7 Objid include:')
+    print('RERUN', 'RUN', 'CAMCOL', 'FIELD', 'OBJ')
+    print(rerun, run, camcol, field, object_num)
+    from astroquery.sdss import SDSS
+    result = SDSS.query_photoobj(run=run, rerun=rerun, camcol=camcol, field=field)
+    print(len(result[result.colnames[0]]))
+    print(result)
+
+    import sys
+    sys.exit()
+
     from paper_data import TDE_sersicIndices, TDE_stellar_masses_litterature, TDE_mBH
     from legacy_vs_legacy import add_0_uncertainties
     TDE_data = np.array([add_0_uncertainties(TDE_sersicIndices), toLog(TDE_stellar_masses_litterature), toLog(add_0_uncertainties(TDE_mBH))])

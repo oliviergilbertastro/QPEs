@@ -75,7 +75,7 @@ for i in range(len(simard2011a[:,0])):
 reference_catalog = np.vstack((reference_catalog.T, np.array(bulge_gr))).T
 reference_catalog = np.vstack((reference_catalog.T, np.array(sigma_hlg))).T
 
-# Start cutting the reference catalogue:
+# Start cutting the reference catalog:
 
 # redshift cut
 print("Redshift cut...")
@@ -90,25 +90,35 @@ print("Sigma_hl,g cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=62, bounds=(2.05, None), verbose=True)
 
 
-# Add a stellar mass column by fetching values from the Mendel2014 catalogue
-if False:
-    def getSM(objID):
-        """Returns the stellar mass from the Mendel2014 catalogue by inputting a PhotObjID"""
-        diff_in_objID = np.abs(mendel2014[:,0] - np.ones_like(mendel2014[:,0])*objID)
-        index = list(diff_in_objID).index(np.min(diff_in_objID))
-        good_line = mendel2014[index]
-        return good_line[2]
-    stellarMasses = []
-    for objID in tqdm(reference_catalog[:,0]):
-        stellarMasses.append(getSM(objID))
+# Add a stellar mass column by fetching values from the Mendel2014 catalog
 sorter = np.argsort(mendel2014[:,0])
 indices = np.searchsorted(mendel2014[:,0], reference_catalog[:,0], sorter=sorter)
-print(indices)
-stellarMasses = mendel2014[:,0][indices]
+stellarMasses = mendel2014[:,2][indices]
 reference_catalog = np.vstack((reference_catalog.T, np.array(stellarMasses))).T
+
+
+# We need to find a way to get RA and DEC for the reference catalogue so we can cross-match the velocity dispersions from MPA_JHU
+from astroquery.sdss import SDSS
+from utils import SDSS_objid_to_values
+
+for objid in tqdm(np.array(reference_catalog[:10,0], dtype=int)):
+    skyVersion, rerun, run, camcol, field, object_num = SDSS_objid_to_values(objid)
+    result = SDSS.query_photoobj(run=run, rerun=rerun, camcol=camcol, field=field)
+    print(result)
+
+#table = SDSS.query_photoobj_async()
 
 import sys
 sys.exit()
+
+# Now we calculate black hole masses for the MPA_JHU catalog from its velocity dispersions
+sigma_e = []
+mBH = []
+for i in range(len(mpajhu[:,3])):
+    pass
+
+
+
 
 example_catalog = np.array([[10, 13, 14],
                             [11, 12, 14],
