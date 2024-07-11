@@ -77,12 +77,12 @@ reference_catalog = np.vstack((reference_catalog.T, simard2011c[:,34])).T #n_ser
 # Add a bulge g-r column to the reference catalog
 # Add a Sigma_hl,g column to the reference catalog
 bulge_gr = []
-sigma_hlg = []
+Sigma_hlg = []
 for i in range(len(simard2011a[:,0])):
     bulge_gr.append(simard2011a[i,46]-simard2011a[i,52])
-    sigma_hlg.append((simard2011c[i,5]+0.75254)/(np.pi*(simard2011c[i,14]/simard2011c[i,3])**2)) # this formula comes from section 4.6 of https://arxiv.org/pdf/1707.01559
+    Sigma_hlg.append((simard2011c[i,5]+0.75254)/(np.pi*(simard2011c[i,14]/simard2011c[i,3])**2)) # this formula comes from section 4.6 of https://arxiv.org/pdf/1707.01559
 reference_catalog = np.vstack((reference_catalog.T, np.array(bulge_gr))).T
-reference_catalog = np.vstack((reference_catalog.T, np.array(sigma_hlg))).T
+reference_catalog = np.vstack((reference_catalog.T, np.array(Sigma_hlg))).T
 
 # Start cutting the reference catalog:
 
@@ -113,13 +113,43 @@ indices = np.searchsorted(simard_ra_decs[:,0], reference_catalog[:,0], sorter=so
 ra_s, dec_s = simard_ra_decs[:,1][indices], simard_ra_decs[:,2][indices]
 reference_catalog = np.vstack((reference_catalog.T, np.array(ra_s))).T
 reference_catalog = np.vstack((reference_catalog.T, np.array(dec_s))).T
-
 # Add the velocity dispersions in the reference catalog:
 from utils import get_smallest_sep
 
+# Latitude cut to be physical
+print("Latitude cut in the MPA-JHU catalog...")
+mpajhu = cut_from_catalog(mpajhu, index=2, bounds=(-90, 90), verbose=False)
+
 sigma_a = []
+seps = []
+reference_catalog = reference_catalog[:100,:] # make it small so it doesn't take an hour to test
 for i in tqdm(range(len(reference_catalog[:,0]))):
-    
+    index, smallest_sep = get_smallest_sep(reference_catalog[i,64:66], mpajhu[:,1], mpajhu[:,2])
+    sigma_a.append(mpajhu[index,3])
+    seps.append(smallest_sep)
+sigma_a = np.array(sigma_a)
+seps = np.array(seps)
+reference_catalog = np.vstack((reference_catalog.T, np.array(sigma_a))).T
+# Add the separation between the catalogs in the reference catalogs, make a cut if the sep is > 3", then remove this column
+reference_catalog = np.vstack((reference_catalog.T, np.array(seps))).T
+print("Separation cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(None, 3), verbose=True)
+print(reference_catalog.shape)
+reference_catalog = reference_catalog[:,:-1]
+print(reference_catalog.shape)
+
+# Calculate the black hole mass
+log_ratio_sigmas = -0.065*np.log10(1.5/(reference_catalog[:,21]/reference_catalog[:,3]))-0.013*np.log10(1.5/(reference_catalog[:,21]/reference_catalog[:,3]))**2
+sigma_e = reference_catalog[:,66]/(10**(log_ratio_sigmas)) # in km/s
+mBH = np.log10(10**9*(0.309)*(sigma_e/200)) # in solar masses
+reference_catalog = np.vstack((reference_catalog.T, mBH)).T
+
+print(reference_catalog.shape)
+# Black hole mass cut
+print("Separation cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(5.5, 7), verbose=True)
+
+np.savetxt(f"referenceCatalog.txt", reference_catalog)
 
 import sys
 sys.exit()

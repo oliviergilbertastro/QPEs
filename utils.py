@@ -324,9 +324,8 @@ def get_smallest_sep(pos, ras, decs):
     c2 = SkyCoord(ras*u.deg, decs*u.deg)
     sep = (c1.separation(c2)).arcsec
     smallest_sep = min(sep)
-    assert smallest_sep < 3
     index = list(sep).index(smallest_sep)
-    return index
+    return index, smallest_sep
 
 if __name__ == "__main__":
 
