@@ -37,4 +37,8 @@ smsd = np.log10((10**reference_catalog[:,63])/reference_catalog[:,59]**2)
 reference_catalog = np.vstack((reference_catalog.T, smsd)).T
 print("Physical SMSD cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=68, bounds=(0, 20), verbose=True)
+
+print("Physical (B/T)g cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=12, bounds=(0, 1), verbose=True)
+
 np.savetxt("referenceCatalog_modif.txt", reference_catalog)

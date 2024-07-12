@@ -197,7 +197,7 @@ if __name__ == "__main__":
                 )
     
 
-def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None, columns_compare=None, fontsize=15, smoothness=6):
+def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None, columns_compare=None, fontsize=15, smoothness=6, save_plot=True):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
@@ -235,8 +235,15 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     # n_sersic
     x_min = np.min(QPE_data[0,:,0]) if np.min(TDE_data[0,:,0]) > np.min(QPE_data[0,:,0]) else np.min(TDE_data[0,:,0])
     x_max = np.max(QPE_data[0,:,0]) if np.max(TDE_data[0,:,0]) < np.max(QPE_data[0,:,0]) else np.max(TDE_data[0,:,0])
+    if referenceCatalogData is not None:
+        x_min = x_min if np.min(referenceCatalogData[f"col_{columns_compare[0]}"]) > x_min else np.min(referenceCatalogData[f"col_{columns_compare[0]}"])
+        x_max = x_max if np.max(referenceCatalogData[f"col_{columns_compare[0]}"]) < x_max else np.max(referenceCatalogData[f"col_{columns_compare[0]}"])
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(x_max-x_min)/smoothness
+    if referenceCatalogData is not None:
+        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[0]}"])[:,np.newaxis])
+        log_dens = kde.score_samples(X_plot)
+        n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[0,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -247,8 +254,15 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     # m_star
     y_min = np.min(QPE_data[1,:,0]) if np.min(TDE_data[1,:,0]) > np.min(QPE_data[1,:,0]) else np.min(TDE_data[1,:,0])
     y_max = np.max(QPE_data[1,:,0]) if np.max(TDE_data[1,:,0]) < np.max(QPE_data[1,:,0]) else np.max(TDE_data[1,:,0])
+    if referenceCatalogData is not None:
+        y_min = y_min if np.min(referenceCatalogData[f"col_{columns_compare[1]}"]) > y_min else np.min(referenceCatalogData[f"col_{columns_compare[1]}"])
+        y_max = y_max if np.max(referenceCatalogData[f"col_{columns_compare[1]}"]) < y_max else np.max(referenceCatalogData[f"col_{columns_compare[1]}"])
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(y_max-y_min)/smoothness
+    if referenceCatalogData is not None:
+        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[1]}"])[:,np.newaxis])
+        log_dens = kde.score_samples(Y_plot)
+        mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[1,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -259,8 +273,15 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     # m_bh
     y_min = np.min(QPE_data[2,:,0]) if np.min(TDE_data[2,:,0]) > np.min(QPE_data[2,:,0]) else np.min(TDE_data[2,:,0])
     y_max = np.max(QPE_data[2,:,0]) if np.max(TDE_data[2,:,0]) < np.max(QPE_data[2,:,0]) else np.max(TDE_data[2,:,0])
+    if referenceCatalogData is not None:
+        y_min = y_min if np.min(referenceCatalogData[f"col_{columns_compare[2]}"]) > y_min else np.min(referenceCatalogData[f"col_{columns_compare[2]}"])
+        y_max = y_max if np.max(referenceCatalogData[f"col_{columns_compare[2]}"]) < y_max else np.max(referenceCatalogData[f"col_{columns_compare[2]}"])
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(y_max-y_min)/smoothness
+    if referenceCatalogData is not None:
+        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[2]}"])[:,np.newaxis])
+        log_dens = kde.score_samples(Y_plot)
+        mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[2,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -272,7 +293,7 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
 
     # n_sersic vs m_star
     if referenceCatalogData is not None:
-        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, color="black", ax=mS_ax)
+        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, color="black", ax=mS_ax, label="Reference")
     mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8, label="QPE")
     mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=7, mec="white", mew=0.5, label="TDE")
     mS_ax.legend(loc="upper left", fontsize=fontsize-3)
@@ -290,6 +311,8 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     mS_ax.yaxis.set_tick_params(labelsize=fontsize-2)
     mBH_ax.yaxis.set_tick_params(labelsize=fontsize-2)
     #plt.subplots_adjust(left=0.06, bottom=0.06, right=0.97, top=0.94, wspace=0, hspace=0)
+    if save_plot:
+        plt.savefig(f"finalPlot_{columns_compare[0]}.pdf")
     plt.show()
 
 

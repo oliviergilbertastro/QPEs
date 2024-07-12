@@ -240,7 +240,7 @@ if __name__ == "__main__":
     # Make final plot
     QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"Sérsic index", referenceCatalogData=refCat, columns_compare=(60,63,67))
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$\text{Sérsic index } n$", referenceCatalogData=refCat, columns_compare=(60,63,67))
 
     QPE_data = np.array([QPE_bulgeRatios, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
