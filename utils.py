@@ -197,7 +197,7 @@ if __name__ == "__main__":
                 )
     
 
-def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None, fontsize=15, smoothness=6):
+def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None, columns_compare=None, fontsize=15, smoothness=6):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
@@ -206,9 +206,6 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     # data should be in the shape of [QPE data, TDE data]
     QPE_data, TDE_data = data
     QPE_data, TDE_data = np.array(QPE_data), np.array(TDE_data)
-
-    if referenceCatalogData is not None:
-        referenceCatalogData = np.array(referenceCatalogData)
 
     # QPE and TDE data should be in the shape of np.array([n_sersic, m_star, m_BH]), with each one containing their uncertainties
 
@@ -275,13 +272,13 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
 
     # n_sersic vs m_star
     if referenceCatalogData is not None:
-        sns.kdeplot((referenceCatalogData[:,0], referenceCatalogData[:,1]))
+        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, color="black", ax=mS_ax)
     mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8, label="QPE")
     mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=7, mec="white", mew=0.5, label="TDE")
     mS_ax.legend(loc="upper left", fontsize=fontsize-3)
     # n_sersic vs m_bh
     if referenceCatalogData is not None:
-        sns.kdeplot((referenceCatalogData[:,0], referenceCatalogData[:,2]))
+        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[2]}", fill=True, color="black", ax=mBH_ax)
     mBH_ax.errorbar(QPE_data[0,:,0], QPE_data[2,:,0], yerr=[QPE_data[2,:,1],QPE_data[2,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8)
     mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[2,:,0], yerr=[TDE_data[2,:,1],TDE_data[2,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", mec="white", mew=0.5, markersize=7)
 

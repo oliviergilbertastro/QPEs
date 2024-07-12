@@ -1,0 +1,40 @@
+import numpy as np
+
+# Just delete unphysical BH masses and add a stellar surface density column
+
+
+def cut_from_catalog(catalog, index, bounds, verbose=False):
+    """
+    catalog: numpy array
+    index: int of index of parameter column which is under study here
+    bounds: tuple of bound which we want to keep
+
+    returns: numpy array with only remaining objects
+    """
+    catalog = np.array(catalog)
+    if bounds[0] == None:
+        good_indices_lo = catalog[:,index] == catalog[:,index]
+    else:
+        good_indices_lo = catalog[:,index] >= bounds[0]
+    if bounds[1] == None:
+        good_indices_hi = catalog[:,index] == catalog[:,index]
+    else:
+        good_indices_hi = catalog[:,index] <= bounds[1]
+    good_indices = []
+    for i in range(len(good_indices_lo)):
+        good_indices.append(good_indices_lo[i] and good_indices_hi[i])
+    cut_catalog = catalog[good_indices]
+    if verbose:
+        print(f"\x1b[31m{catalog.shape[0]-cut_catalog.shape[0]} objects cut\x1b[0m")
+        print(f"\x1b[32m{cut_catalog.shape[0]} objects remaining\x1b[0m")
+    return cut_catalog
+
+reference_catalog = np.loadtxt("referenceCatalog.txt")
+print("Physical black hole mass cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(0, 20), verbose=True)
+
+smsd = np.log10((10**reference_catalog[:,63])/reference_catalog[:,59]**2)
+reference_catalog = np.vstack((reference_catalog.T, smsd)).T
+print("Physical SMSD cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=68, bounds=(0, 20), verbose=True)
+np.savetxt("referenceCatalog_modif.txt", reference_catalog)

@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 from paper_data import *
 from download_data import *
 import sys
+import pandas as pd
 #from prospector.prospector_myFits import QPE_stellar_masses_desiProspector, TDE_stellar_masses_desiProspector
 #from bulgeRatio import QPE_bulgeRatios, TDE_bulgeRatios
 
@@ -231,25 +232,23 @@ if __name__ == "__main__":
     TDE_r50s = np.array(TDE_r50s)
     TDE_mBH = np.array(TDE_mBH)
 
-    reference_catalog = np.loadtxt("referenceCatalog.txt")
-    referenceCatData = np.array(reference_catalog[:,60]) # sersic index
-    referenceCatData = np.vstack((referenceCatData.T, reference_catalog[:,63])).T # add stellar Mass
-    referenceCatData = np.vstack((referenceCatData.T, reference_catalog[:,67])).T # add BH Mass
+    
+    refCat = np.loadtxt("referenceCatalog_modif.txt")
+    fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
+    refCat = pd.read_csv("referenceCatalog_modif.txt", delimiter=" ", header=None, names=fieldnames)
 
     # Make final plot
     QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"Sérsic index", referenceCatalogData=referenceCatData)
+    myFinalPlot([QPE_data, TDE_data], main_property=r"Sérsic index", referenceCatalogData=refCat, columns_compare=(60,63,67))
 
-    referenceCatData[:,0] = reference_catalog[:,12] # change sersic index to B/T
     QPE_data = np.array([QPE_bulgeRatios, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$", referenceCatalogData=referenceCatData)
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$", referenceCatalogData=refCat, columns_compare=(12,63,67))
 
-    referenceCatData[:,0] = reference_catalog[:,63]/reference_catalog[:,59]**2 # change B/T to Sigma_M_star
     QPE_data = np.array([QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"$\Sigma_{M_\star}$", referenceCatalogData=referenceCatData)
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$\Sigma_{M_\star}$", referenceCatalogData=refCat, columns_compare=(68,63,67))
 
 
     # Make big plot
