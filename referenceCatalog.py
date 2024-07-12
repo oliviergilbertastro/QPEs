@@ -122,7 +122,7 @@ mpajhu = cut_from_catalog(mpajhu, index=2, bounds=(-90, 90), verbose=False)
 
 sigma_a = []
 seps = []
-reference_catalog = reference_catalog[:100,:] # make it small so it doesn't take an hour to test
+#reference_catalog = reference_catalog[:100,:] # make it small so it doesn't take an hour to test
 for i in tqdm(range(len(reference_catalog[:,0]))):
     index, smallest_sep = get_smallest_sep(reference_catalog[i,64:66], mpajhu[:,1], mpajhu[:,2])
     sigma_a.append(mpajhu[index,3])
@@ -134,9 +134,9 @@ reference_catalog = np.vstack((reference_catalog.T, np.array(sigma_a))).T
 reference_catalog = np.vstack((reference_catalog.T, np.array(seps))).T
 print("Separation cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(None, 3), verbose=True)
-print(reference_catalog.shape)
+
 reference_catalog = reference_catalog[:,:-1]
-print(reference_catalog.shape)
+
 
 # Calculate the black hole mass
 log_ratio_sigmas = -0.065*np.log10(1.5/(reference_catalog[:,21]/reference_catalog[:,3]))-0.013*np.log10(1.5/(reference_catalog[:,21]/reference_catalog[:,3]))**2
@@ -144,10 +144,11 @@ sigma_e = reference_catalog[:,66]/(10**(log_ratio_sigmas)) # in km/s
 mBH = np.log10(10**9*(0.309)*(sigma_e/200)) # in solar masses
 reference_catalog = np.vstack((reference_catalog.T, mBH)).T
 
-print(reference_catalog.shape)
-# Black hole mass cut
-print("Separation cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(5.5, 7), verbose=True)
+
+if False: # let's not do a black hole mass cut for the moment
+    # Black hole mass cut
+    print("Black hole mass cut...")
+    reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(5.5, 7), verbose=True)
 
 np.savetxt(f"referenceCatalog.txt", reference_catalog)
 
