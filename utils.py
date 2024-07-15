@@ -356,15 +356,26 @@ def get_smallest_sep(pos, ras, decs):
     index = list(sep).index(smallest_sep)
     return index, smallest_sep
 
+
+def get_smallest_sep_v2(pos, ras, decs):
+    c1 = SkyCoord(pos[0]*u.deg, pos[1]*u.deg)
+    c2 = SkyCoord(ras*u.deg, decs*u.deg)
+    sep = (c1.separation(c2)).arcsec
+    idx = (sep).argmin()
+    return idx, sep[idx]
+
+import time
 if __name__ == "__main__":
 
-    get_smallest_sep([2.36286871e+02, -5.18003056e-01], [2.36247096e+02,2.36286871e+02,2.36336501e+02,2.15640297e+02], [-4.75263889e-01,-5.18003056e-01,-4.89098889e-01,1.06889111e+00])
-
-    import sys
-    sys.exit()
+    start_time = time.time()
+    print(get_smallest_sep([2.36286871e+02, -5.18003056e-01], [2.36247096e+02,2.36286871e+02,2.36336501e+02,2.15640297e+02], [-4.75263889e-01,-5.18003056e-01,-4.89098889e-01,1.06889111e+00]))
+    print("\x1b[33m: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+    start_time = time.time()
+    print(get_smallest_sep_v2([2.36286871e+02, -5.18003056e-01], [2.36247096e+02,2.36286871e+02,2.36336501e+02,2.15640297e+02], [-4.75263889e-01,-5.18003056e-01,-4.89098889e-01,1.06889111e+00]))
+    print("\x1b[33m: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
     from paper_data import TDE_sersicIndices, TDE_stellar_masses_litterature, TDE_mBH
     from legacy_vs_legacy import add_0_uncertainties
     TDE_data = np.array([add_0_uncertainties(TDE_sersicIndices), toLog(TDE_stellar_masses_litterature), toLog(add_0_uncertainties(TDE_mBH))])
     data = np.array([TDE_data/2, TDE_data])
-    myFinalPlot(data)
+    #myFinalPlot(data, save_plot=False)
