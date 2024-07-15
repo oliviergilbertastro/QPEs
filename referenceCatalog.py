@@ -28,13 +28,14 @@ from astropy.table import Table, Column
 my_table = Table(ra_decs[1].data)
 # Extract the names of the columns
 colnames = my_table.colnames
+print(colnames)
 simard_ra_decs = []
 for i in tqdm(range(len(my_table[colnames[0]]))):
     try:
         SpecObjID = int(my_table["objID"][i])
         simard_ra_decs.append([SpecObjID, my_table["_RAJ2000"][i], my_table["_DEJ2000"][i]])
     except:
-        pass
+        simard_ra_decs.append([SpecObjID, my_table["_RA"][i], my_table["_DE"][i]])
 simard_ra_decs = np.array(simard_ra_decs)
 
 
@@ -88,7 +89,7 @@ reference_catalog = np.vstack((reference_catalog.T, np.array(Sigma_hlg))).T
 
 # redshift cut
 print("Redshift cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.09), verbose=True)
+reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, None), verbose=True)
 
 # bulge g-r cut
 print("Bulge g-r cut...")
@@ -114,7 +115,7 @@ ra_s, dec_s = simard_ra_decs[:,1][indices], simard_ra_decs[:,2][indices]
 reference_catalog = np.vstack((reference_catalog.T, np.array(ra_s))).T
 reference_catalog = np.vstack((reference_catalog.T, np.array(dec_s))).T
 # Add the velocity dispersions in the reference catalog:
-from utils import get_smallest_sep
+from utils import get_smallest_sep, get_smallest_sep_v2
 
 # Latitude cut to be physical
 print("Latitude cut in the MPA-JHU catalog...")
@@ -124,7 +125,7 @@ sigma_a = []
 seps = []
 #reference_catalog = reference_catalog[:100,:] # make it small so it doesn't take an hour to test
 for i in tqdm(range(len(reference_catalog[:,0]))):
-    index, smallest_sep = get_smallest_sep(reference_catalog[i,64:66], mpajhu[:,1], mpajhu[:,2])
+    index, smallest_sep = get_smallest_sep_v2(reference_catalog[i,64:66], mpajhu[:,1], mpajhu[:,2])
     sigma_a.append(mpajhu[index,3])
     seps.append(smallest_sep)
 sigma_a = np.array(sigma_a)
