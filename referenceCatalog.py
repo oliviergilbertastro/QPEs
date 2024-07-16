@@ -72,8 +72,8 @@ def cut_from_catalog(catalog, index, bounds, verbose=False):
 
 
 # Create a reference catalog, which is just the simard catalog with sersic indices and r50s
-reference_catalog = np.vstack((simard2011a.T, simard2011c[:,15])).T #r50
-reference_catalog = np.vstack((reference_catalog.T, simard2011c[:,34])).T #n_sersic
+reference_catalog = np.vstack((simard2011a.T, simard2011c[:,15])).T #r50 [59]
+reference_catalog = np.vstack((reference_catalog.T, simard2011c[:,34])).T #n_sersic [60]
 
 # Add a bulge g-r column to the reference catalog
 # Add a Sigma_hl,g column to the reference catalog
@@ -140,9 +140,10 @@ reference_catalog = reference_catalog[:,:-1]
 
 
 # Calculate the black hole mass
-log_ratio_sigmas = -0.065*np.log10(1.5/(reference_catalog[:,21]/reference_catalog[:,3]))-0.013*np.log10(1.5/(reference_catalog[:,21]/reference_catalog[:,3]))**2
+R_e = (reference_catalog[:,21]/reference_catalog[:,3])
+log_ratio_sigmas = -0.065*np.log10(1.5/R_e)-0.013*(np.log10(1.5/R_e))**2
 sigma_e = reference_catalog[:,66]/(10**(log_ratio_sigmas)) # in km/s
-mBH = np.log10(10**9*(0.309)*(sigma_e/200)) # in solar masses
+mBH = np.log10(10**9*(0.309)*(sigma_e/200)**4.38) # in solar masses
 reference_catalog = np.vstack((reference_catalog.T, mBH)).T
 
 

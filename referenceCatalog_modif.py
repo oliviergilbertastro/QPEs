@@ -41,5 +41,9 @@ reference_catalog = cut_from_catalog(reference_catalog, index=68, bounds=(0, 20)
 print("Physical (B/T)g cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=12, bounds=(0, 1), verbose=True)
 
+# redshift cut
+print("Redshift cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.09), verbose=True)
 
-np.savetxt("referenceCatalog_modif.txt", reference_catalog)
+
+np.savetxt("referenceCatalog_modif2.txt", reference_catalog)

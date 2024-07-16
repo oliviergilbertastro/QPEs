@@ -124,27 +124,42 @@ if False:
     plt.subplots_adjust(hspace=0.5)
     plt.show()
 
-import matplotlib.pyplot as plt
-import plotly.express as px
-import seaborn as sns
-import pandas as pd
+if False:
+    import matplotlib.pyplot as plt
+    import plotly.express as px
+    import seaborn as sns
+    import pandas as pd
+    import numpy as np
+    df = px.data.tips()
+
+    #fig = px.density_contour(df, x="total_bill", y="tip")
+    #fig.update_traces(contours_coloring="fill", contours_showlabels = True)
+    #fig.show()
+
+    #Import reference catalog:
+    refCat = np.loadtxt("referenceCatalog.txt")
+    fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
+    refCat = pd.read_csv("referenceCatalog.txt", delimiter=" ", header=None, names=fieldnames)
+    sns.kdeplot(refCat, x="col_60", y="col_63", fill=True, color="black")
+    plt.ylabel("$M_\star$")
+    plt.xlabel("n_sersic")
+    plt.show()
+
+    sns.kdeplot(refCat, x="col_67", y="col_63", fill=True, color="black")
+    plt.ylabel("$M_\star$")
+    plt.xlabel("$M_{BH}$")
+    plt.show()
+
 import numpy as np
-df = px.data.tips()
+from download_data import TDE_names
+from paper_data import TDE_stellarDensities
+import matplotlib.pyplot as plt
 
-#fig = px.density_contour(df, x="total_bill", y="tip")
-#fig.update_traces(contours_coloring="fill", contours_showlabels = True)
-#fig.show()
-
-#Import reference catalog:
-refCat = np.loadtxt("referenceCatalog.txt")
-fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
-refCat = pd.read_csv("referenceCatalog.txt", delimiter=" ", header=None, names=fieldnames)
-sns.kdeplot(refCat, x="col_60", y="col_63", fill=True, color="black")
-plt.ylabel("$M_\star$")
-plt.xlabel("n_sersic")
-plt.show()
-
-sns.kdeplot(refCat, x="col_67", y="col_63", fill=True, color="black")
-plt.ylabel("$M_\star$")
-plt.xlabel("$M_{BH}$")
+tde_stellarMassesDensities = np.loadtxt("TDE_distribution.txt")[:,2]
+for i, name in enumerate(TDE_names):
+    print(f"{name} : {np.around((tde_stellarMassesDensities[i]), decimals=2)} vs {TDE_stellarDensities[i][0]} -> Delta = {np.around(np.abs(tde_stellarMassesDensities[i]-TDE_stellarDensities[i][0]), decimals=2)} dex")
+plt.plot(tde_stellarMassesDensities[:-3], "o", label="Mine")
+plt.plot([i[0] for i in TDE_stellarDensities], "o", label="Graur")
+plt.ylabel(r"$\Sigma_{M_\star}$", fontsize=17)
+plt.legend()
 plt.show()

@@ -51,7 +51,7 @@ N_ref, mu_ref, std_ref = getStats(reference_distribution)
 
 
 if __name__ == "__main__":
-    different_params = ["B/T ratio", "n_sersic", "SMSD", "M_BH", "M_star"]
+    different_params = ["B/T ratio", "n_sersic", "SMSD", "M_star", "M_BH"]
     for i in range(len(different_params)):
         print(f"\x1b[33m{different_params[i]}:\x1b[0m")
         z = z_statistic(N_qpe, mu_qpe[i], std_qpe[i], N_tde, mu_tde[i], std_tde[i])
@@ -75,7 +75,7 @@ def F(sample, x):
     n_subsample = len(subsample)
     return n_subsample/n_sample
 
-def KolmogorovSmirnov(sample1, sample2, if_plot=False):
+def KolmogorovSmirnov(sample1, sample2, if_plot=True):
     # Combine and sort the samples
     combined = list(np.concatenate((sample1, sample2)))
     combined.sort()
@@ -86,13 +86,8 @@ def KolmogorovSmirnov(sample1, sample2, if_plot=False):
     if if_plot:
         index = absolute_differences.index(D_nm)
         plt.plot([combined[index],combined[index]], [F(sample1, combined[index]),F(sample2, combined[index])], "--", linewidth=3, color="black")
-        plt.plot(combined, [F(sample1, x) for x in combined], label="$F_1(x)$")
-        plt.plot(combined, [F(sample2, x) for x in combined], label="$F_2(x)$")
-        #plt.arrow(combined[index],F(sample1, combined[index]),0,D_nm)
-        #plt.arrow(combined[index],F(sample2, combined[index]),0,-D_nm)
-        #plt.arrow(combined[index], F(sample1, combined[index]), 0, D_nm, head_width=0.01, head_length=0.01, linewidth=3, color='black', length_includes_head=True)
-        #plt.arrow(combined[index], F(sample2, combined[index]), 0, -D_nm, head_width=0.01, head_length=0.01, linewidth=3, color='black', length_includes_head=True)
-
+        plt.step(combined, [F(sample1, x) for x in combined], label="$F_1(x)$")
+        plt.step(combined, [F(sample2, x) for x in combined], label="$F_2(x)$")
         plt.legend(fontsize=15)
         plt.xlabel("$x$", fontsize=17)
         plt.ylabel("Cumulative probability", fontsize=17)
