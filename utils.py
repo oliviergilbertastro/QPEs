@@ -364,6 +364,40 @@ def get_smallest_sep_v2(pos, ras, decs):
     idx = (sep).argmin()
     return idx, sep[idx]
 
+
+
+def print_color(message, color="yellow"):
+    possible_colors = ["black","red","green","yellow","blue","magenta","cyan","white"]
+    #Initialize the colors:
+    #Header color
+    if color == None or color == "grey":
+        color = "0"
+    elif type(color) == str:
+        color = color.lower()
+        if color in possible_colors:
+            color = str(possible_colors.index(color)+30)
+        else:
+            print(f"Color '{color}' not implemented, defaulting to grey.\nPossible colors are: {['grey']+possible_colors}")
+            color = "0"
+    else:
+        raise ValueError(f"Parameter 'header_color' needs to be a string.")
+    print(f"\x1b[{color}m{message}\x1b[0m")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 import time
 if __name__ == "__main__":
 
@@ -373,6 +407,7 @@ if __name__ == "__main__":
     start_time = time.time()
     print(get_smallest_sep_v2([2.36286871e+02, -5.18003056e-01], [2.36247096e+02,2.36286871e+02,2.36336501e+02,2.15640297e+02], [-4.75263889e-01,-5.18003056e-01,-4.89098889e-01,1.06889111e+00]))
     print("\x1b[33m: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+
 
     from paper_data import TDE_sersicIndices, TDE_stellar_masses_litterature, TDE_mBH
     from legacy_vs_legacy import add_0_uncertainties

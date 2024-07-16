@@ -51,7 +51,7 @@ N_ref, mu_ref, std_ref = getStats(reference_distribution)
 if __name__ == "__main__":
     different_params = ["B/T ratio", "n_sersic", "SMSD", "M_BH", "M_star"]
     for i in range(len(different_params)):
-        print(f"{different_params[i]}:")
+        print(f"\x1b[33m{different_params[i]}:\x1b[0m")
         print("QPE = TDE :", z_statistic(N_qpe, mu_qpe[i], std_qpe[i], N_tde, mu_tde[i], std_tde[i]) < 2.33)
         print("QPE = ref :", z_statistic(N_qpe, mu_qpe[i], std_qpe[i], N_ref, mu_ref[i], std_ref[i]) < 2.33)
         print("TDE = ref :", z_statistic(N_tde, mu_tde[i], std_tde[i], N_ref, mu_ref[i], std_ref[i]) < 2.33)
