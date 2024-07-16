@@ -1,4 +1,5 @@
 import numpy as np
+import matplotlib.pyplot as plt
 
 # Distributions should be [bt_ratio, n_sersic, surface_mass_density, mStar, mBH]
 # The program distributions.py creates the txt files of the QPE and TDE distributions
@@ -74,7 +75,7 @@ def F(sample, x):
     n_subsample = len(subsample)
     return n_subsample/n_sample
 
-def KolmogorovSmirnov(sample1, sample2):
+def KolmogorovSmirnov(sample1, sample2, if_plot=False):
     # Combine and sort the samples
     combined = list(np.concatenate((sample1, sample2)))
     combined.sort()
@@ -82,13 +83,21 @@ def KolmogorovSmirnov(sample1, sample2):
     for x in combined:
         absolute_differences.append(np.abs(F(sample1, x) - F(sample2, x)))
     D_nm = max(absolute_differences)
+    if if_plot:
+        index = absolute_differences.index(D_nm)
+        plt.plot([combined[index],combined[index]], [F(sample1, combined[index]),F(sample2, combined[index])], "--", linewidth=3, color="black")
+        plt.plot(combined, [F(sample1, x) for x in combined], label="$F_1(x)$")
+        plt.plot(combined, [F(sample2, x) for x in combined], label="$F_2(x)$")
+        #plt.arrow(combined[index],F(sample1, combined[index]),0,D_nm)
+        #plt.arrow(combined[index],F(sample2, combined[index]),0,-D_nm)
+        #plt.arrow(combined[index], F(sample1, combined[index]), 0, D_nm, head_width=0.01, head_length=0.01, linewidth=3, color='black', length_includes_head=True)
+        #plt.arrow(combined[index], F(sample2, combined[index]), 0, -D_nm, head_width=0.01, head_length=0.01, linewidth=3, color='black', length_includes_head=True)
+
+        plt.legend(fontsize=15)
+        plt.xlabel("$x$", fontsize=17)
+        plt.ylabel("Cumulative probability", fontsize=17)
+        plt.show()
     return D_nm
-
-Sample1 = [1.2,1.8,2.5,2.7,3.0]
-Sample2 = [1.0,2.1,2.4,2.8,3.2]
-
-dnm = KolmogorovSmirnov(Sample1, Sample2)
-
 
 def rejectNullHypothesis(D, n, m, alpha=0.2, verbose=True):
     # The null hypothesis is rejected if
