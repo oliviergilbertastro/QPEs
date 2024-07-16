@@ -46,4 +46,14 @@ print("Redshift cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.09), verbose=True)
 
 
+
+# add Stellar Masses from Mendel2014
+mendel2014 = np.loadtxt("data/catalogs/Mendel2014/table4.dat")
+# Add a stellar mass column by fetching values from the Mendel2014 catalog
+sorter = np.argsort(mendel2014[:,0])
+indices = np.searchsorted(mendel2014[:,0], reference_catalog[:,0], sorter=sorter)
+stellarMasses = mendel2014[:,2][indices]
+reference_catalog = np.vstack((reference_catalog.T, np.array(stellarMasses))).T
+
+
 np.savetxt("referenceCatalog_modif2.txt", reference_catalog)
