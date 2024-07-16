@@ -232,7 +232,6 @@ if __name__ == "__main__":
     TDE_r50s = np.array(TDE_r50s)
     TDE_mBH = np.array(TDE_mBH)
 
-    
     refCat = np.loadtxt("referenceCatalog_modif.txt")
     fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
     refCat = pd.read_csv("referenceCatalog_modif.txt", delimiter=" ", header=None, names=fieldnames)

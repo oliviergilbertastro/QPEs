@@ -179,13 +179,6 @@ for i in range(len(TDE_coords)):
 
 
 if __name__ == "__main__":
-    checkWhichFiltersWork(QPE_sersicIndices)
-    printPropertyAcrossFilters(QPE_sersicIndices, "Sérsic Index")
-    printPropertyAcrossFilters(QPE_r50s, "Sérsic half-light radius (kpc)")
-
-    checkWhichFiltersWork(TDE_sersicIndices, qpe_oder_tde="TDE")
-    printPropertyAcrossFilters(TDE_sersicIndices, "Sérsic Index", qpe_oder_tde="TDE")
-    printPropertyAcrossFilters(TDE_r50s, "Sérsic half-light radius (kpc)", qpe_oder_tde="TDE")
 
     #From now on, keep only the r-band properties:
     band_to_keep = "r"

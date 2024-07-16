@@ -1,17 +1,18 @@
 import numpy as np
 
-# Distributions should be [mBH, mStar, bt_ratio, n_sersic, surface_mass_density]
+# Distributions should be [bt_ratio, n_sersic, surface_mass_density, mStar, mBH]
 # The program distributions.py creates the txt files of the QPE and TDE distributions
 
 QPE_distribution = np.loadtxt("QPE_distribution.txt")
 TDE_distribution = np.loadtxt("TDE_distribution.txt")
 reference_distribution = np.loadtxt("referenceCatalog_modif.txt")
-reference_distribution = reference_distribution[:,[67,67,12,60,68]]
+reference_distribution = reference_distribution[:,[12,60,68,63,67]]
 
 def getStats(dist):
     n_data = dist.shape[0] # number of data points
     means = np.mean(dist, axis=0)
     stdevs = np.std(dist, axis=0)
+    print(n_data, means, stdevs)
     return n_data, means, stdevs
 
 def z_statistic(mu1, sig1, ndata1, mu2, sig2, ndata2, verbose=False):
@@ -52,7 +53,71 @@ if __name__ == "__main__":
     different_params = ["B/T ratio", "n_sersic", "SMSD", "M_BH", "M_star"]
     for i in range(len(different_params)):
         print(f"\x1b[33m{different_params[i]}:\x1b[0m")
-        print("QPE = TDE :", z_statistic(N_qpe, mu_qpe[i], std_qpe[i], N_tde, mu_tde[i], std_tde[i]) < 2.33)
-        print("QPE = ref :", z_statistic(N_qpe, mu_qpe[i], std_qpe[i], N_ref, mu_ref[i], std_ref[i]) < 2.33)
-        print("TDE = ref :", z_statistic(N_tde, mu_tde[i], std_tde[i], N_ref, mu_ref[i], std_ref[i]) < 2.33)
+        z = z_statistic(N_qpe, mu_qpe[i], std_qpe[i], N_tde, mu_tde[i], std_tde[i])
+        string = '\x1b[32mSame\x1b[0m' if z < 2.33 else '\x1b[31mDifferent\x1b[0m'
+        print(f"QPE = TDE : {string} ({z})")
+        z = z_statistic(N_qpe, mu_qpe[i], std_qpe[i], N_ref, mu_ref[i], std_ref[i])
+        string = '\x1b[32mSame\x1b[0m' if z < 2.33 else '\x1b[31mDifferent\x1b[0m'
+        print(f"QPE = ref : {string} ({z})")
+        z = z_statistic(N_tde, mu_tde[i], std_tde[i], N_ref, mu_ref[i], std_ref[i])
+        string = '\x1b[32mSame\x1b[0m' if z < 2.33 else '\x1b[31mDifferent\x1b[0m'
+        print(f"TDE = ref : {string} ({z})")
+
+
+
+def c(alpha):
+    return np.sqrt(-np.log(alpha/2)/2)
+
+def F(sample, x):
+    n_sample = len(sample)
+    subsample = np.array(sample)[np.array(sample) <= x]
+    n_subsample = len(subsample)
+    return n_subsample/n_sample
+
+def KolmogorovSmirnov(sample1, sample2):
+    # Combine and sort the samples
+    combined = list(np.concatenate((sample1, sample2)))
+    combined.sort()
+    absolute_differences = []
+    for x in combined:
+        absolute_differences.append(np.abs(F(sample1, x) - F(sample2, x)))
+    D_nm = max(absolute_differences)
+    return D_nm
+
+Sample1 = [1.2,1.8,2.5,2.7,3.0]
+Sample2 = [1.0,2.1,2.4,2.8,3.2]
+
+dnm = KolmogorovSmirnov(Sample1, Sample2)
+
+
+def rejectNullHypothesis(D, n, m, alpha=0.2, verbose=True):
+    # The null hypothesis is rejected if
+    rejectBool = D > c(alpha)*np.sqrt((n+m)/(n*m))
+    if verbose:
+        string = '\x1b[32mSame\x1b[0m' if not rejectBool else '\x1b[31mDifferent\x1b[0m'
+        print(string)
+    return rejectBool
+
+# Common alpha values:
+# alpha is basically the probability the test is wrong
+alphas = [0.20,0.15,0.10,0.05,0.025,0.01,0.005,0.001]
+
+
+
+if __name__ == "__main__":
+    print("*************************************")
+    for i in range(len(different_params)):
+        print(f"\x1b[33m{different_params[i]}:\x1b[0m")
+        print(f"QPE = TDE :", end=" ")
+        dnm = KolmogorovSmirnov(QPE_distribution[:,i], TDE_distribution[:,i])
+        rejectNullHypothesis(dnm, len(QPE_distribution), len(TDE_distribution))
+        print(f"QPE = ref :", end=" ")
+        dnm = KolmogorovSmirnov(QPE_distribution[:,i], reference_distribution[:,i])
+        rejectNullHypothesis(dnm, len(QPE_distribution), len(reference_distribution))
+        print(f"TDE = ref :", end=" ")
+        dnm = KolmogorovSmirnov(TDE_distribution[:,i], reference_distribution[:,i])
+        rejectNullHypothesis(dnm, len(TDE_distribution), len(reference_distribution))
+
+
+    # test from website
     #print(z_statistic(51.5,8,25,39.5,7,25))
