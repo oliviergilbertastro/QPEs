@@ -1,19 +1,19 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from utils import print_color
 
 # Distributions should be [bt_ratio, n_sersic, surface_mass_density, mStar, mBH]
 # The program distributions.py creates the txt files of the QPE and TDE distributions
 
 QPE_distribution = np.loadtxt("QPE_distribution.txt")
 TDE_distribution = np.loadtxt("TDE_distribution.txt")
-reference_distribution = np.loadtxt("referenceCatalog_modif.txt")
+reference_distribution = np.loadtxt("referenceCatalog_modif2.txt")
 reference_distribution = reference_distribution[:,[12,60,68,63,67]]
 
 def getStats(dist):
     n_data = dist.shape[0] # number of data points
     means = np.mean(dist, axis=0)
     stdevs = np.std(dist, axis=0)
-    print(n_data, means, stdevs)
     return n_data, means, stdevs
 
 def z_statistic(mu1, sig1, ndata1, mu2, sig2, ndata2, verbose=False):
@@ -52,6 +52,7 @@ N_ref, mu_ref, std_ref = getStats(reference_distribution)
 
 if __name__ == "__main__":
     different_params = ["B/T ratio", "n_sersic", "SMSD", "M_star", "M_BH"]
+    print_color("Z-STATISTIC", color="blue")
     for i in range(len(different_params)):
         print(f"\x1b[33m{different_params[i]}:\x1b[0m")
         z = z_statistic(N_qpe, mu_qpe[i], std_qpe[i], N_tde, mu_tde[i], std_tde[i])
@@ -75,7 +76,7 @@ def F(sample, x):
     n_subsample = len(subsample)
     return n_subsample/n_sample
 
-def KolmogorovSmirnov(sample1, sample2, if_plot=True):
+def KolmogorovSmirnov(sample1, sample2, if_plot=False):
     # Combine and sort the samples
     combined = list(np.concatenate((sample1, sample2)))
     combined.sort()
@@ -110,6 +111,7 @@ alphas = [0.20,0.15,0.10,0.05,0.025,0.01,0.005,0.001]
 
 if __name__ == "__main__":
     print("*************************************")
+    print_color("K-S", color="blue")
     for i in range(len(different_params)):
         print(f"\x1b[33m{different_params[i]}:\x1b[0m")
         print(f"QPE = TDE :", end=" ")
