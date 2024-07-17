@@ -33,27 +33,31 @@ reference_catalog = np.loadtxt("referenceCatalog.txt")
 print("Physical black hole mass cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(0, 20), verbose=True)
 
-smsd = np.log10((10**reference_catalog[:,63])/reference_catalog[:,59]**2)
-reference_catalog = np.vstack((reference_catalog.T, smsd)).T
-print("Physical SMSD cut...")
+ssmd = np.log10((10**reference_catalog[:,63])/reference_catalog[:,59]**2)
+reference_catalog = np.vstack((reference_catalog.T, ssmd)).T
+print("Physical SSMD cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=68, bounds=(0, 20), verbose=True)
 
 print("Physical (B/T)g cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=12, bounds=(0, 1), verbose=True)
 
-# redshift cut
-print("Redshift cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.09), verbose=True)
+#print("Black hole mass cut...")
+#reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(5.5, 7), verbose=True)
 
+#print("Stellar mass cut...")
+#reference_catalog = cut_from_catalog(reference_catalog, index=63, bounds=(8, None), verbose=True)
 
+print("r50 cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=59, bounds=(0, 10), verbose=True)
 
-# add Stellar Masses from Mendel2014
-mendel2014 = np.loadtxt("data/catalogs/Mendel2014/table4.dat")
-# Add a stellar mass column by fetching values from the Mendel2014 catalog
-sorter = np.argsort(mendel2014[:,0])
-indices = np.searchsorted(mendel2014[:,0], reference_catalog[:,0], sorter=sorter)
-stellarMasses = mendel2014[:,2][indices]
-reference_catalog = np.vstack((reference_catalog.T, np.array(stellarMasses))).T
+if False:
+    # add Stellar Masses from Mendel2014
+    mendel2014 = np.loadtxt("data/catalogs/Mendel2014/table4.dat")
+    # Add a stellar mass column by fetching values from the Mendel2014 catalog
+    sorter = np.argsort(mendel2014[:,0])
+    indices = np.searchsorted(mendel2014[:,0], reference_catalog[:,0], sorter=sorter)
+    stellarMasses = mendel2014[:,2][indices]
+    reference_catalog = np.vstack((reference_catalog.T, np.array(stellarMasses))).T
 
 
 np.savetxt("referenceCatalog_modif2.txt", reference_catalog)

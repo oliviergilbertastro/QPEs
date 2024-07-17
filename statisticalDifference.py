@@ -113,7 +113,7 @@ if __name__ == "__main__":
     print("*************************************")
     print_color("K-S", color="blue")
     for i in range(len(different_params)):
-        print(f"\x1b[33m{different_params[i]}:\x1b[0m")
+        print_color(f"{different_params[i]}:")
         print(f"QPE = TDE :", end=" ")
         dnm = KolmogorovSmirnov(QPE_distribution[:,i], TDE_distribution[:,i])
         rejectNullHypothesis(dnm, len(QPE_distribution), len(TDE_distribution))
@@ -124,20 +124,22 @@ if __name__ == "__main__":
         dnm = KolmogorovSmirnov(TDE_distribution[:,i], reference_distribution[:,i])
         rejectNullHypothesis(dnm, len(TDE_distribution), len(reference_distribution))
 
-    from scipy.stats import ks_2samp
-    print("*************************************")
-    print_color("K-S scipy", color="blue")
-    for i in range(len(different_params)):
-        print(f"\x1b[33m{different_params[i]}:\x1b[0m")
-        print(f"QPE = TDE :", end=" ")
-        dnm = ks_2samp(QPE_distribution[:,i], TDE_distribution[:,i])[0]
-        rejectNullHypothesis(dnm, len(QPE_distribution), len(TDE_distribution))
-        print(f"QPE = ref :", end=" ")
-        dnm = ks_2samp(QPE_distribution[:,i], reference_distribution[:,i])[0]
-        rejectNullHypothesis(dnm, len(QPE_distribution), len(reference_distribution))
-        print(f"TDE = ref :", end=" ")
-        dnm = ks_2samp(TDE_distribution[:,i], reference_distribution[:,i])[0]
-        rejectNullHypothesis(dnm, len(TDE_distribution), len(reference_distribution))
+if False:
+        # Testing if it's the same as scipy's function (spoiler: it is)
+        from scipy.stats import ks_2samp
+        print("*************************************")
+        print_color("K-S scipy", color="blue")
+        for i in range(len(different_params)):
+            print(f"\x1b[33m{different_params[i]}:\x1b[0m")
+            print(f"QPE = TDE :", end=" ")
+            dnm = ks_2samp(QPE_distribution[:,i], TDE_distribution[:,i])[0]
+            rejectNullHypothesis(dnm, len(QPE_distribution), len(TDE_distribution))
+            print(f"QPE = ref :", end=" ")
+            dnm = ks_2samp(QPE_distribution[:,i], reference_distribution[:,i])[0]
+            rejectNullHypothesis(dnm, len(QPE_distribution), len(reference_distribution))
+            print(f"TDE = ref :", end=" ")
+            dnm = ks_2samp(TDE_distribution[:,i], reference_distribution[:,i])[0]
+            rejectNullHypothesis(dnm, len(TDE_distribution), len(reference_distribution))
 
 
 

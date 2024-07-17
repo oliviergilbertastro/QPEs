@@ -68,8 +68,27 @@ def cut_from_catalog(catalog, index, bounds, verbose=False):
         print(f"\x1b[32m{cut_catalog.shape[0]} objects remaining\x1b[0m")
     return cut_catalog
 
-
-
+def mergeCatalogs_withObjIDs(cat1,cat2,columnsToAdd=[0]):
+    """
+    Merge catalog1 with catalog2 assuming their first columns are the objIDs
+    """
+    good_indices = []
+    properties_toAdd = []
+    for i in range(len(columnsToAdd)):
+        properties_toAdd.append([])
+    for i in tqdm(range(len(cat1[:,0]))):
+        try:
+            index = list(cat2[:,0]).index(cat1[i,0])
+            good_indices.append(i)
+            for k in range(len(columnsToAdd)):
+                properties_toAdd[k].append(cat2[index,columnsToAdd[k]])
+            #print(f"{cat1[i,0]} vs {cat2[index,0]}")
+        except:
+            pass
+    cat1 = cat1[[good_indices],:][0]
+    for i in range(len(columnsToAdd)):
+        cat1 = np.vstack((cat1.T, np.array(properties_toAdd[i]))).T
+    return cat1
 
 # Create a reference catalog, which is just the simard catalog with sersic indices and r50s
 reference_catalog = np.vstack((simard2011a.T, simard2011c[:,15])).T #r50 [59]
@@ -89,7 +108,7 @@ reference_catalog = np.vstack((reference_catalog.T, np.array(Sigma_hlg))).T
 
 # redshift cut
 print("Redshift cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, None), verbose=True)
+reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.2), verbose=True)
 
 # bulge g-r cut
 print("Bulge g-r cut...")
@@ -101,19 +120,16 @@ reference_catalog = cut_from_catalog(reference_catalog, index=62, bounds=(2.05, 
 
 
 # Add a stellar mass column by fetching values from the Mendel2014 catalog
-sorter = np.argsort(mendel2014[:,0])
-indices = np.searchsorted(mendel2014[:,0], reference_catalog[:,0], sorter=sorter)
-stellarMasses = mendel2014[:,2][indices]
-reference_catalog = np.vstack((reference_catalog.T, np.array(stellarMasses))).T
+print(reference_catalog.shape)
+reference_catalog = mergeCatalogs_withObjIDs(reference_catalog, mendel2014, columnsToAdd=[2,])
+print(reference_catalog.shape)
 
 
 # Add RA and DECs by fetching values from the online Simard Vizier tool:
 
-sorter = np.argsort(simard_ra_decs[:,0])
-indices = np.searchsorted(simard_ra_decs[:,0], reference_catalog[:,0], sorter=sorter)
-ra_s, dec_s = simard_ra_decs[:,1][indices], simard_ra_decs[:,2][indices]
-reference_catalog = np.vstack((reference_catalog.T, np.array(ra_s))).T
-reference_catalog = np.vstack((reference_catalog.T, np.array(dec_s))).T
+print(reference_catalog.shape)
+reference_catalog = mergeCatalogs_withObjIDs(reference_catalog, simard_ra_decs, columnsToAdd=[1,2])
+print(reference_catalog.shape)
 # Add the velocity dispersions in the reference catalog:
 from utils import get_smallest_sep, get_smallest_sep_v2
 

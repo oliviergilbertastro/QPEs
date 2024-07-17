@@ -239,15 +239,15 @@ if __name__ == "__main__":
     # Make final plot
     QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"$\text{Sérsic index } n$", referenceCatalogData=refCat, columns_compare=(60,69,67))
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$\text{Sérsic index } n$", referenceCatalogData=refCat, columns_compare=(60,63,67), save_plot="n_sersic_final")
 
     QPE_data = np.array([QPE_bulgeRatios, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$", referenceCatalogData=refCat, columns_compare=(12,69,67))
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$", referenceCatalogData=refCat, columns_compare=(12,63,67), save_plot="bt_final")
 
     QPE_data = np.array([QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"$\Sigma_{M_\star}$", referenceCatalogData=refCat, columns_compare=(68,69,67))
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$\Sigma_{M_\star}$", referenceCatalogData=refCat, columns_compare=(68,63,67), save_plot="stellar_density_final")
 
 
     # Make big plot
@@ -258,7 +258,10 @@ if __name__ == "__main__":
     myCornerPlot(
         [QPE_data,TDE_data,double_hosts_data],
         labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$(B/T)_g$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
-        smoothness=6
+        smoothness=6,
+        refCat=refCat,
+        columns_compare=[67,63,12,59,60,68],
+        save_plot="corner_plot"
         )
 
 
