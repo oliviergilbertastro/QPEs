@@ -124,6 +124,22 @@ if __name__ == "__main__":
         dnm = KolmogorovSmirnov(TDE_distribution[:,i], reference_distribution[:,i])
         rejectNullHypothesis(dnm, len(TDE_distribution), len(reference_distribution))
 
+    from scipy.stats import ks_2samp
+    print("*************************************")
+    print_color("K-S scipy", color="blue")
+    for i in range(len(different_params)):
+        print(f"\x1b[33m{different_params[i]}:\x1b[0m")
+        print(f"QPE = TDE :", end=" ")
+        dnm = ks_2samp(QPE_distribution[:,i], TDE_distribution[:,i])[0]
+        rejectNullHypothesis(dnm, len(QPE_distribution), len(TDE_distribution))
+        print(f"QPE = ref :", end=" ")
+        dnm = ks_2samp(QPE_distribution[:,i], reference_distribution[:,i])[0]
+        rejectNullHypothesis(dnm, len(QPE_distribution), len(reference_distribution))
+        print(f"TDE = ref :", end=" ")
+        dnm = ks_2samp(TDE_distribution[:,i], reference_distribution[:,i])[0]
+        rejectNullHypothesis(dnm, len(TDE_distribution), len(reference_distribution))
+
+
 
     # test from website
     #print(z_statistic(51.5,8,25,39.5,7,25))
