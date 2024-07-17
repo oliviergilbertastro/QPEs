@@ -8,7 +8,7 @@ from utils import print_color
 QPE_distribution = np.loadtxt("QPE_distribution.txt")
 TDE_distribution = np.loadtxt("TDE_distribution.txt")
 reference_distribution = np.loadtxt("referenceCatalog_modif2.txt")
-reference_distribution = reference_distribution[:,[12,60,68,69,67]]
+reference_distribution = reference_distribution[:,[12,60,68,63,67]]
 
 def getStats(dist):
     n_data = dist.shape[0] # number of data points
@@ -95,13 +95,22 @@ def KolmogorovSmirnov(sample1, sample2, if_plot=False):
         plt.show()
     return D_nm
 
-def rejectNullHypothesis(D, n, m, alpha=0.2, verbose=True):
+def rejectNullHypothesis(D, n, m, alpha=0.158, verbose=True):
     # The null hypothesis is rejected if
     rejectBool = D > c(alpha)*np.sqrt((n+m)/(n*m))
     if verbose:
         string = '\x1b[32mSame\x1b[0m' if not rejectBool else '\x1b[31mDifferent\x1b[0m'
         print(string)
     return rejectBool
+
+
+def plot_hypothesis(D_nm, n, m, label):
+    alphas = np.linspace(0,1,1000)
+    rejecting = []
+    for i in alphas:
+        rejecting.append(rejectNullHypothesis(D_nm, n, m, alpha=i, verbose=False))
+    plt.plot(alphas, rejecting, label=label)
+
 
 # Common alpha values:
 # alpha is basically the probability the test is wrong
@@ -116,13 +125,20 @@ if __name__ == "__main__":
         print_color(f"{different_params[i]}:")
         print(f"QPE = TDE :", end=" ")
         dnm = KolmogorovSmirnov(QPE_distribution[:,i], TDE_distribution[:,i])
+        plot_hypothesis(dnm, len(QPE_distribution), len(TDE_distribution), label="QPE-TDE")
         rejectNullHypothesis(dnm, len(QPE_distribution), len(TDE_distribution))
         print(f"QPE = ref :", end=" ")
         dnm = KolmogorovSmirnov(QPE_distribution[:,i], reference_distribution[:,i])
+        plot_hypothesis(dnm, len(QPE_distribution), len(reference_distribution), label="QPE-ref")
         rejectNullHypothesis(dnm, len(QPE_distribution), len(reference_distribution))
         print(f"TDE = ref :", end=" ")
         dnm = KolmogorovSmirnov(TDE_distribution[:,i], reference_distribution[:,i])
+        plot_hypothesis(dnm, len(TDE_distribution), len(reference_distribution), label="TDE-ref")
         rejectNullHypothesis(dnm, len(TDE_distribution), len(reference_distribution))
+        plt.legend()
+        plt.yticks([0,1], labels=["Same", "Different"])
+        plt.show()
+
 
 if False:
         # Testing if it's the same as scipy's function (spoiler: it is)
