@@ -134,8 +134,49 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
     return
 
 
+def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, filename="latexTable.txt", verbose=False):
+    """
+    columns are: NAME, REDSHIFT, R_50, N_SERSIC, BT_RATIO, SSMD
 
+    makes a .txt file
+    """
+    total_string = ""
+    each_lines = []
 
+    assert len(names) == len(redshifts) == len(r50s[:,0]) == len(n_sersics[:,0]) == len(bt_ratios[:,0]) == len(ssmds[:,0])
+    length = len(names)
+
+    def LatexUncertainty(value):
+        return f"${round(value[0],2)}_{r'{-'+str(round(value[1],2))+r'}'}^{r'{+'+str(round(value[2],2))+r'}'}$"
+
+    for i in range(length):
+        each_lines.append(names[i] + " & " + "$" + str(redshifts[i]) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + r" \\" + "\n")        
+
+    # want to swap lines around here easily
+    onlyQPEs = np.array(each_lines)[[0,1,2,3,6,7]]
+    QPE_TDEs = np.array(each_lines)[[4,5,8]]
+    onlyTDEs = np.array(each_lines)[[9,10,11,12,13,14,15,16,17,18]]
+    
+    total_string += r"\multicolumn{6}{c}{\emph{QPE hosts}}\\"+"\n\hline\n\hline\n"
+    for line in onlyQPEs:
+        total_string += line
+        if line != onlyQPEs[-1]:
+            total_string += r"\vspace{2pt}"+"\n"
+    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{Confirmed TDE hosts with a possible QPE}}\\"+"\n\hline\n\hline\n"
+    for line in QPE_TDEs:
+        total_string += line
+        if line != QPE_TDEs[-1]:
+            total_string += r"\vspace{2pt}"+"\n"
+    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{TDE hosts}}\\"+"\n\hline\n\hline\n"
+    for line in onlyTDEs:
+        total_string += line
+        if line != onlyTDEs[-1]:
+            total_string += r"\vspace{2pt}"+"\n"
+
+    with open(filename, "w") as text_file:
+        text_file.write(total_string)
+    if verbose:
+        print(total_string)
 
 
 
@@ -228,13 +269,24 @@ if __name__ == "__main__":
     QPE_sersicIndices = np.array(QPE_sersicIndices)
     QPE_r50s = np.array(QPE_r50s)
     QPE_mBH = np.array(QPE_mBH)
+    objects_names = np.array(objects_names)
     TDE_sersicIndices = np.array(TDE_sersicIndices)
     TDE_r50s = np.array(TDE_r50s)
     TDE_mBH = np.array(TDE_mBH)
+    TDE_names = np.array(TDE_names)
 
     refCat = np.loadtxt("referenceCatalog_modif2.txt")
     fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
     refCat = pd.read_csv("referenceCatalog_modif2.txt", delimiter=" ", header=None, names=fieldnames)
+
+    makeLatexTable(np.concatenate((objects_names, TDE_names)),
+                   np.concatenate((QPE_redshifts,TDE_redshifts)),
+                   np.concatenate((QPE_r50s,TDE_r50s)),
+                   np.concatenate((QPE_sersicIndices,TDE_sersicIndices)),
+                   np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
+                   np.concatenate((QPE_SMSDs,TDE_SMSDs))
+                   )
+
 
     # Make final plot
     QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
@@ -258,12 +310,13 @@ if __name__ == "__main__":
     myCornerPlot(
         [QPE_data,TDE_data,double_hosts_data],
         labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$(B/T)_g$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
-        units=["$M_\odot$", "$M_\odot$", " ", "kpc", " ", "$M_\odot/\mathrm{kpc}^2$"],
+        units=["$M_\odot$", "$M_\odot$", " ", "$\mathrm{kpc}$", " ", "$M_\odot/\mathrm{kpc}^2$"],
         smoothness=6,
         refCat=refCat,
         columns_compare=[67,63,12,59,60,68],
         save_plot="corner_plot"
         )
+
 
 
 
