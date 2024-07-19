@@ -67,6 +67,39 @@ if __name__ == "__main__":
 
 
 
+
+
+from scipy.stats import anderson_ksamp, PermutationMethod
+
+def checkReject_kSamp(stat, crit_vals, p_level):
+    values = [0.25,0.10,0.05,0.025,0.01,0.005,0.001]
+    current = f"Cannot reject - \x1b[32mSimilar\x1b[0m - pvalue={p_level}"
+    for i in range(len(values)):
+        if stat < crit_vals[i]:
+            return current
+        current = f"Can reject at a confidence level of {(1-values[i])*100}% - pvalue={p_level}"
+    return current
+
+if __name__ == "__main__":
+    print("*************************************")
+    print_color("Anderson-Darling", color="blue")
+    for i in range(len(different_params)):
+        print_color(f"{different_params[i]}:")
+        print(f"QPE = TDE :", end=" ")
+        res = anderson_ksamp((QPE_distribution[:,i], TDE_distribution[:,i]), method=PermutationMethod())
+        print(checkReject_kSamp(res.statistic, res.critical_values, res.pvalue))
+        print(f"QPE = ref :", end=" ")
+        res = anderson_ksamp((QPE_distribution[:,i], reference_distribution[:,i]), method=PermutationMethod())
+        print(checkReject_kSamp(res.statistic, res.critical_values, res.pvalue))
+        print(f"TDE = ref :", end=" ")
+        res = anderson_ksamp((TDE_distribution[:,i], reference_distribution[:,i]), method=PermutationMethod())
+        print(checkReject_kSamp(res.statistic, res.critical_values, res.pvalue))
+
+
+
+
+
+
 def c(alpha):
     return np.sqrt(-np.log(alpha/2)/2)
 
@@ -104,6 +137,7 @@ def rejectNullHypothesis(D, n, m, alpha=0.158, verbose=True):
     return rejectBool
 
 
+
 def plot_hypothesis(D_nm, n, m, label):
     alphas = np.linspace(0,1,1000)
     rejecting = []
@@ -116,11 +150,33 @@ def plot_hypothesis(D_nm, n, m, label):
 # alpha is basically the probability the test is wrong
 alphas = [0.20,0.15,0.10,0.05,0.025,0.01,0.005,0.001]
 
+from scipy.stats import ks_2samp
+def KS_criticalValue(n,m,alpha):
+    return c(alpha)*np.sqrt((n+m)/(n*m))
+
+def check_KS(stat, n, m, p_level):
+    crits = [KS_criticalValue(n,m,alpha) for alpha in [0.25,0.10,0.05,0.025,0.01,0.005,0.001]]
+    return checkReject_kSamp(stat, crits, p_level)
 
 
 if __name__ == "__main__":
     print("*************************************")
-    print_color("K-S", color="blue")
+    print_color("Kolmogorov-Smirnov", color="blue")
+    for i in range(len(different_params)):
+        print_color(f"{different_params[i]}:")
+        print(f"QPE = TDE :", end=" ")
+        dnm = ks_2samp(QPE_distribution[:,i], TDE_distribution[:,i])
+        print(check_KS(dnm.statistic, len(QPE_distribution), len(TDE_distribution), dnm.pvalue))
+        print(f"QPE = ref :", end=" ")
+        dnm = ks_2samp(QPE_distribution[:,i], reference_distribution[:,i])
+        print(check_KS(dnm.statistic, len(QPE_distribution), len(reference_distribution), dnm.pvalue))
+        print(f"TDE = ref :", end=" ")
+        dnm = ks_2samp(TDE_distribution[:,i], reference_distribution[:,i])
+        print(check_KS(dnm.statistic, len(TDE_distribution), len(reference_distribution), dnm.pvalue))
+
+if False:
+    print("*************************************")
+    print_color("Kolmogorov-Smirnov", color="blue")
     for i in range(len(different_params)):
         print_color(f"{different_params[i]}:")
         print(f"QPE = TDE :", end=" ")
