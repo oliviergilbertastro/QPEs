@@ -134,7 +134,7 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
     return
 
 
-def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, filename="latexTable.txt", verbose=False):
+def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, references=None, filename="latexTable.txt", verbose=False):
     """
     columns are: NAME, REDSHIFT, R_50, N_SERSIC, BT_RATIO, SSMD
 
@@ -142,17 +142,19 @@ def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, filename
     """
     total_string = ""
     each_lines = []
+    if references is None:
+        references = ["" for i in range(len(names))]
 
-    assert len(names) == len(redshifts) == len(r50s[:,0]) == len(n_sersics[:,0]) == len(bt_ratios[:,0]) == len(ssmds[:,0])
+    assert len(names) == len(redshifts) == len(r50s[:,0]) == len(n_sersics[:,0]) == len(bt_ratios[:,0]) == len(ssmds[:,0]) == len(references)
     length = len(names)
 
     def LatexUncertainty(value):
         return f"${round(value[0],2)}_{r'{-'+str(round(value[1],2))+r'}'}^{r'{+'+str(round(value[2],2))+r'}'}$"
 
     for i in range(length):
-        each_lines.append(names[i] + " & " + "$" + str(redshifts[i]) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + r" \\" + "\n")        
+        each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(redshifts[i]) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + r" \\" + "\n")        
 
-    # want to swap lines around here easily
+    # swap lines around here easily
     onlyQPEs = np.array(each_lines)[[0,1,2,3,6,7]]
     QPE_TDEs = np.array(each_lines)[[4,5,8]]
     onlyTDEs = np.array(each_lines)[[9,10,11,12,13,14,15,16,17,18]]
@@ -284,22 +286,23 @@ if __name__ == "__main__":
                    np.concatenate((QPE_r50s,TDE_r50s)),
                    np.concatenate((QPE_sersicIndices,TDE_sersicIndices)),
                    np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
-                   np.concatenate((QPE_SMSDs,TDE_SMSDs))
+                   np.concatenate((QPE_SMSDs,TDE_SMSDs)),
+                   references="abccefddghijklmnopq"
                    )
 
 
     # Make final plot
     QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    #myFinalPlot([QPE_data, TDE_data], main_property=r"$\text{Sérsic index } n$", referenceCatalogData=refCat, columns_compare=(60,63,67), save_plot="n_sersic_final")
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$\text{Sérsic index } n$", referenceCatalogData=refCat, columns_compare=(60,63,67), save_plot="n_sersic_final", fontsize=16)
 
     QPE_data = np.array([QPE_bulgeRatios, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    #myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$", referenceCatalogData=refCat, columns_compare=(12,63,67), save_plot="bt_final")
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$", referenceCatalogData=refCat, columns_compare=(12,63,67), save_plot="bt_final", fontsize=16)
 
     QPE_data = np.array([QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    #myFinalPlot([QPE_data, TDE_data], main_property=r"$\Sigma_{M_\star}$", referenceCatalogData=refCat, columns_compare=(68,63,67), save_plot="stellar_density_final")
+    myFinalPlot([QPE_data, TDE_data], main_property=r"$\Sigma_{M_\star}$", referenceCatalogData=refCat, columns_compare=(68,63,67), save_plot="stellar_density_final", fontsize=16)
 
 
     # Make big plot
