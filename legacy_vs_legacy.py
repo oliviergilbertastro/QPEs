@@ -152,24 +152,24 @@ def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, referenc
         return f"${round(value[0],2)}_{r'{-'+str(round(value[1],2))+r'}'}^{r'{+'+str(round(value[2],2))+r'}'}$"
 
     for i in range(length):
-        each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(redshifts[i]) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + r" \\" + "\n")        
+        each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(round(redshifts[i],3)) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + r" \\" + "\n")        
 
     # swap lines around here easily
     onlyQPEs = np.array(each_lines)[[0,1,2,3,6,7]]
     QPE_TDEs = np.array(each_lines)[[4,5,8]]
     onlyTDEs = np.array(each_lines)[[9,10,11,12,13,14,15,16,17,18]]
     
-    total_string += r"\multicolumn{6}{c}{\emph{QPE hosts}}\\"+"\n\hline\n\hline\n"
+    total_string += r"\multicolumn{6}{c}{\emph{QPE host galaxies}}\\"+"\n\hline\n\hline\n"
     for line in onlyQPEs:
         total_string += line
         if line != onlyQPEs[-1]:
             total_string += r"\vspace{2pt}"+"\n"
-    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{Confirmed TDE hosts with a possible QPE}}\\"+"\n\hline\n\hline\n"
+    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{TDE+QPE host galaxies}}\\"+"\n\hline\n\hline\n"
     for line in QPE_TDEs:
         total_string += line
         if line != QPE_TDEs[-1]:
             total_string += r"\vspace{2pt}"+"\n"
-    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{TDE hosts}}\\"+"\n\hline\n\hline\n"
+    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{TDE host galaxies}}\\"+"\n\hline\n\hline\n"
     for line in onlyTDEs:
         total_string += line
         if line != onlyTDEs[-1]:
