@@ -99,7 +99,7 @@ def rejectNullHypothesis(D, n, m, alpha=0.158, verbose=True):
     # The null hypothesis is rejected if
     rejectBool = D > c(alpha)*np.sqrt((n+m)/(n*m))
     if verbose:
-        string = '\x1b[32mSame\x1b[0m' if not rejectBool else '\x1b[31mDifferent\x1b[0m'
+        string = '\x1b[32mSimilar\x1b[0m' if not rejectBool else '\x1b[31mDifferent\x1b[0m'
         print(string)
     return rejectBool
 
@@ -136,7 +136,9 @@ if __name__ == "__main__":
         plot_hypothesis(dnm, len(TDE_distribution), len(reference_distribution), label="TDE-ref")
         rejectNullHypothesis(dnm, len(TDE_distribution), len(reference_distribution))
         plt.legend()
-        plt.yticks([0,1], labels=["Same", "Different"])
+        plt.xlabel(r"$\alpha$", fontsize=17)
+        plt.yticks([0,1], labels=["Similar", "Different"])
+        plt.title(f"{different_params[i]}", fontsize=17)
         plt.show()
 
 

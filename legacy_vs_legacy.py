@@ -287,7 +287,7 @@ if __name__ == "__main__":
                    np.concatenate((QPE_sersicIndices,TDE_sersicIndices)),
                    np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
                    np.concatenate((QPE_SMSDs,TDE_SMSDs)),
-                   references="abccefddghijklmnopq"
+                   references="abccefddghijklmnnno"
                    )
 
 
