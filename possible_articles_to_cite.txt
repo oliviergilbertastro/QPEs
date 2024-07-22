@@ -1,4 +1,30 @@
+Interesting articles to cite:
 
-Delayed appearance and evolution of coronal lines in the TDE AT2019qiz:
-https://ui.adsabs.harvard.edu/abs/2023MNRAS.525.1568S/abstract
+    Delayed appearance and evolution of coronal lines in the TDE AT2019qiz
+    https://ui.adsabs.harvard.edu/abs/2023MNRAS.525.1568S/abstract
 
+    The hunt for Quasi-Periodic Eruptions
+    https://ui.adsabs.harvard.edu/abs/2023sf2a.conf..163Q/abstract
+
+    QPE or QPO? - Quasiperiodic activity in low-mass galaxy nuclei
+    https://ui.adsabs.harvard.edu/abs/2023MNRAS.523L..26K/abstract
+
+
+
+
+
+
+Future research prospects:
+
+    Repeating nuclear transients as candidate electromagnetic counterparts of LISA extreme mass ratio inspirals
+    https://ui.adsabs.harvard.edu/abs/2024MNRAS.532.2143K/abstract
+
+    Cosmic hide and seek: The volumetric rate of X-ray quasi-periodic eruptions
+    https://ui.adsabs.harvard.edu/abs/2024A%26A...684L..14A/abstract
+
+
+
+Tau-model:
+Bruzual 1983; Papovich et al.
+2001; Shapley et al. 2005; Lee et al. 2009; Pozzetti et al.
+2010; F¨orster Schreiber et al. 2009
