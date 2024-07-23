@@ -69,31 +69,15 @@ if __name__ == "__main__":
 
 
 
-from scipy.stats import anderson_ksamp, PermutationMethod
-
 def checkReject_kSamp(stat, crit_vals, p_level):
     values = [0.25,0.10,0.05,0.025,0.01,0.005,0.001]
+    p_level = round(p_level, 3)
     current = f"Cannot reject - \x1b[32mSimilar\x1b[0m - pvalue={p_level}"
     for i in range(len(values)):
         if stat < crit_vals[i]:
             return current
         current = f"Can reject at a confidence level of {(1-values[i])*100}% - pvalue={p_level}"
     return current
-
-if __name__ == "__main__":
-    print("*************************************")
-    print_color("Anderson-Darling", color="blue")
-    for i in range(len(different_params)):
-        print_color(f"{different_params[i]}:")
-        print(f"QPE = TDE :", end=" ")
-        res = anderson_ksamp((QPE_distribution[:,i], TDE_distribution[:,i]), method=PermutationMethod())
-        print(checkReject_kSamp(res.statistic, res.critical_values, res.pvalue))
-        print(f"QPE = ref :", end=" ")
-        res = anderson_ksamp((QPE_distribution[:,i], reference_distribution[:,i]), method=PermutationMethod())
-        print(checkReject_kSamp(res.statistic, res.critical_values, res.pvalue))
-        print(f"TDE = ref :", end=" ")
-        res = anderson_ksamp((TDE_distribution[:,i], reference_distribution[:,i]), method=PermutationMethod())
-        print(checkReject_kSamp(res.statistic, res.critical_values, res.pvalue))
 
 
 
@@ -173,6 +157,36 @@ if __name__ == "__main__":
         print(f"TDE = ref :", end=" ")
         dnm = ks_2samp(TDE_distribution[:,i], reference_distribution[:,i])
         print(check_KS(dnm.statistic, len(TDE_distribution), len(reference_distribution), dnm.pvalue))
+
+
+
+
+
+
+
+
+from scipy.stats import anderson_ksamp, PermutationMethod
+
+
+
+if __name__ == "__main__":
+    print("*************************************")
+    print_color("Anderson-Darling", color="blue")
+    for i in range(len(different_params)):
+        print_color(f"{different_params[i]}:")
+        print(f"QPE = TDE :", end=" ")
+        res = anderson_ksamp((QPE_distribution[:,i], TDE_distribution[:,i]), method=PermutationMethod())
+        print(checkReject_kSamp(res.statistic, res.critical_values, res.pvalue))
+        print(f"QPE = ref :", end=" ")
+        res = anderson_ksamp((QPE_distribution[:,i], reference_distribution[:,i]), method=PermutationMethod())
+        print(checkReject_kSamp(res.statistic, res.critical_values, res.pvalue))
+        print(f"TDE = ref :", end=" ")
+        res = anderson_ksamp((TDE_distribution[:,i], reference_distribution[:,i]), method=PermutationMethod())
+        print(checkReject_kSamp(res.statistic, res.critical_values, res.pvalue))
+
+
+
+
 
 if False:
     print("*************************************")

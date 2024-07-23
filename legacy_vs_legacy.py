@@ -4,7 +4,7 @@ Program to compare QPE hosts and TDE hosts "apples to apples" with the LEGACY DE
 import pickle
 import numpy as np
 from ned_wright_cosmology import calculate_cosmo
-from utils import print_table, myCornerPlot, toLog, myFinalPlot
+from utils import print_table, myCornerPlot, toLog, myFinalPlot, myCombinedFinalPlot
 import matplotlib.pyplot as plt
 from paper_data import *
 from download_data import *
@@ -290,20 +290,23 @@ if __name__ == "__main__":
                    references="abccefddghijklmnnno"
                    )
 
+    if False: # Old final plots
+        # Make final plot
+        QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
+        TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
+        myFinalPlot([QPE_data, TDE_data], main_property=r"$\text{Sérsic index } n$", referenceCatalogData=refCat, columns_compare=(60,63,67), save_plot="n_sersic_final", fontsize=16)
 
-    # Make final plot
-    QPE_data = np.array([QPE_sersicIndices, QPE_stellar_masses, QPE_mBH])
-    TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"$\text{Sérsic index } n$", referenceCatalogData=refCat, columns_compare=(60,63,67), save_plot="n_sersic_final", fontsize=16)
+        QPE_data = np.array([QPE_bulgeRatios, QPE_stellar_masses, QPE_mBH])
+        TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
+        myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$", referenceCatalogData=refCat, columns_compare=(12,63,67), save_plot="bt_final", fontsize=16)
 
-    QPE_data = np.array([QPE_bulgeRatios, QPE_stellar_masses, QPE_mBH])
-    TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"$(B/T)_g$", referenceCatalogData=refCat, columns_compare=(12,63,67), save_plot="bt_final", fontsize=16)
+        QPE_data = np.array([QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
+        TDE_data = np.array([np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
+        myFinalPlot([QPE_data, TDE_data], main_property=r"$\Sigma_{M_\star}$", referenceCatalogData=refCat, columns_compare=(68,63,67), save_plot="stellar_density_final", fontsize=16)
 
-    QPE_data = np.array([QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
-    TDE_data = np.array([np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
-    myFinalPlot([QPE_data, TDE_data], main_property=r"$\Sigma_{M_\star}$", referenceCatalogData=refCat, columns_compare=(68,63,67), save_plot="stellar_density_final", fontsize=16)
-
+    QPE_data = np.array([QPE_sersicIndices, QPE_bulgeRatios, QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
+    TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((add_0_uncertainties(TDE_mBH), QPE_mBH[QPE_and_TDEs]))])
+    myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16)
 
     # Make big plot
     QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_bulgeRatios[:,0], QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
