@@ -84,7 +84,7 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, extension="",
     print("-------------------------------------")
     
 
-
+    print(model_params)
     model = SpecModel(model_params)
     print("Number of free parameters:", len(model.free_params))
     #assert len(model.free_params) == 5
@@ -128,6 +128,49 @@ def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, extension="",
     objID = objID + 1
     fit_SED(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=QPE_magnitudes_dicts[objID], extension=extension, QPE=QPE)
 
+
+def rewrite_mfracFiles(objID, extension="", QPE=True):
+    if QPE:
+        hfile = f"prospector/fits_data/{objects_names[objID]}_prospector_{extension}.h5"
+    else:
+        hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_{extension}.h5"
+    out, out_obs, out_model = reader.results_from(hfile)
+    for k in out.keys():
+        pass
+        #print(k, ":", out[k])
+
+    # Get the surviving fraction mass redone:
+    sps = CSPSpecBasis(zcontinuous=1)#reader.get_sps(out)
+    from prospect.plotting.utils import sample_posterior
+    theta = sample_posterior(out["chain"], weights=out.get("weights", None), nsample=10000)[0,:]
+
+    # Get the modeled spectra and photometry.
+    # These have the same shape as the obs['spectrum'] and obs['maggies'] arrays.
+    from prospect.models.templates import TemplateLibrary
+    from prospect.models import SpecModel
+    model_params = TemplateLibrary["parametric_sfh"]
+    #model_params.update(TemplateLibrary["nebular"]) #This is to add nebular emission lines (I don't care about that)
+    #model_params.update(TemplateLibrary["continuity_psb_sfh"]) #This is to add additional parameters
+    model_params["zred"]["init"] = out['obs']["redshift"]
+    out_model = SpecModel(model_params)
+    thing = out_model.predict(theta, obs=out['obs'], sps=sps)
+    print("OUT MFRAC:", thing[2])
+    if QPE:
+        with open(f"prospector/data/{objects_names[objID]}_LEGACY_mfrac.txt", "w") as text_file:
+            text_file.write(str(thing[2]))
+    else:
+        with open(f"prospector/data/{TDE_names[objID]}_LEGACY_mfrac.txt", "w") as text_file:
+            text_file.write(str(thing[2]))
+
+if input("Rewrite mfrac_files? [y/n]") == "y":
+    # QPEs:
+    for i in range(len(objects_names)):
+        rewrite_mfracFiles(i, extension="FINAL")
+    # TDEs:
+    for i in range(len(TDE_names)):
+        rewrite_mfracFiles(i, extension="FINAL", QPE=False)
+
+
 def read_SED(objID, extension="", QPE=True):
     #try:
         # Directly fitting the surviving mass
@@ -142,7 +185,27 @@ def read_SED(objID, extension="", QPE=True):
         hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_{extension}.h5"
     out, out_obs, out_model = reader.results_from(hfile)
     for k in out.keys():
-        print(k, ":", out[k])
+        pass
+        #print(k, ":", out[k])
+
+    
+    # Get the surviving fraction mass redone:
+    sps = CSPSpecBasis(zcontinuous=1)#reader.get_sps(out)
+    from prospect.plotting.utils import sample_posterior
+    theta = sample_posterior(out["chain"], weights=out.get("weights", None), nsample=1)[0,:]
+
+    # Get the modeled spectra and photometry.
+    # These have the same shape as the obs['spectrum'] and obs['maggies'] arrays.
+    from prospect.models.templates import TemplateLibrary
+    from prospect.models import SpecModel
+    model_params = TemplateLibrary["parametric_sfh"]
+    #model_params.update(TemplateLibrary["nebular"]) #This is to add nebular emission lines (I don't care about that)
+    #model_params.update(TemplateLibrary["continuity_psb_sfh"]) #This is to add additional parameters
+    model_params["zred"]["init"] = out['obs']["redshift"]
+    out_model = SpecModel(model_params)
+    thing = out_model.predict(theta, obs=out['obs'], sps=sps)
+    print("OUT MFRAC:", thing)
+
     #Plot the posterior's corner plot
     nsamples, ndim = out["chain"].shape
     cfig, axes = plt.subplots(ndim, ndim, figsize=(10,9))
@@ -266,7 +329,7 @@ if __name__ == "__main__":
 
     elif input("Read QPE? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
-        read_SED(objID)
+        read_SED(objID, extension="FINAL")
 
     elif input("Fit TDEs? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to fit [0-{len(TDE_names)-1}]:\n"))
