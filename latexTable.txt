@@ -1,4 +1,4 @@
-\multicolumn{6}{c}{\emph{QPE host galaxies}}\\
+\multicolumn{7}{c}{\emph{QPE host galaxies}}\\
 \hline
 \hline
 GSN 069$^{\rm a}$ & $0.018$ & $2.87_{-0.01}^{+0.01}$ & $5.06_{-0.01}^{+0.0}$ & $0.38_{-0.0}^{+0.0}$ & $8.91_{-0.21}^{+0.19}$ & $9.82_{-0.21}^{+0.19}$ \\

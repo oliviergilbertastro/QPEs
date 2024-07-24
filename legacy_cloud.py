@@ -53,7 +53,9 @@ if __name__ == "__main__":
 
     QPE_data = np.array([QPE_sersicIndices, QPE_bulgeRatios, QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs]))])
-    myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16, markersize=9, levels=[0.3,0.5,0.89,0.9,1])
+    myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16, markersize=9,
+                        levels=[0.5]#levels=[0.3,0.5,0.9,1]
+                        )
 
     # Make big plot
     QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_bulgeRatios[:,0], QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
@@ -63,8 +65,10 @@ if __name__ == "__main__":
     myCornerPlot(
         [QPE_data,TDE_data,double_hosts_data],
         labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$(B/T)_g$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
-        units=["$M_\odot$", "$M_\odot$", " ", "$\mathrm{kpc}$", " ", "$M_\odot/\mathrm{kpc}^2$"],
+        units=["$[M_\odot]$", "$[M_\odot]$", " ", "$[\mathrm{kpc}]$", " ", "$[M_\odot/\mathrm{kpc}^2]$"],
         smoothness=6,
+        markersize=10,
+        levels=[0.3,0.5,0.89,0.9,1],
         refCat=refCat,
         columns_compare=[67,63,12,59,60,68],
         save_plot="corner_plot"

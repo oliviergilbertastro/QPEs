@@ -117,7 +117,7 @@ def print_table(a, header=None, title=None, space_between_columns=2, space_betwe
 
 
 
-def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, refCat=None, columns_compare=None, save_plot=None):
+def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, linewidth=3, levels=4, markersize=8, cmap="Greys", refCat=None, columns_compare=None, save_plot=None):
     """
     data should be [data_set1, data_set2, ...] each containing multiple parameters
     """
@@ -175,7 +175,8 @@ def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, refCa
             if (refCat is not None) and j == 0:
                 kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(refCat[f"col_{columns_compare[i]}"])[:,np.newaxis])
                 log_dens = kde.score_samples(X_plot)
-                hist_axes[i].fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+                #hist_axes[i].fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+                hist_axes[i].plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
             kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(data[j][i][:,np.newaxis])
             log_dens = kde.score_samples(X_plot)
             hist_axes[i].fill_between(X_plot[:, 0], np.exp(log_dens), fc=["blue","red","orange"][j%3], alpha=[0.4,0.4][j])
@@ -185,10 +186,10 @@ def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, refCa
     for i in range(plot_size):
         for k in range(len(corner_axes[i])):
             for j in range(len(data)):
-                corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","*","*"][j%3], color=["blue","red","red"][j%3], markersize=[8,7,7][j%3])
+                corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","*","*"][j%3], color=["blue","red","red"][j%3], markersize=[markersize,markersize-1,markersize-1][j%3])
             if refCat is not None:
-                sns.kdeplot(refCat, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=True, levels=7, color="black", ax=corner_axes[i][k])
-                sns.kdeplot(refCat, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=False, levels=7, linewidths=0.5, color="black", ax=corner_axes[i][k])
+                sns.kdeplot(refCat, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=True, levels=levels, cmap=cmap, color="black", ax=corner_axes[i][k])
+                #sns.kdeplot(refCat, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=False, levels=levels, linewidths=0.5, color="black", ax=corner_axes[i][k])
         print_color(f"{labels[i]} :")
         print(f"QPE: {(np.min(data[0][i]), np.median(data[0][i]), np.max(data[0][i]))}")
         print(f"TDE: {(np.min(data[1][i]), np.median(data[1][i]), np.max(data[1][i]))}")
@@ -200,13 +201,13 @@ def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, refCa
     for i in range(plot_size):
         if i < plot_size-1:
             if i > 0:
-                corner_axes[0][i-1].set_ylabel(units[i], fontsize=fontsize-1)
-            corner_axes[i][-1].set_xlabel(units[i], fontsize=fontsize-1)
+                corner_axes[0][i-1].set_ylabel(labels[i]+"\n"+units[i], fontsize=fontsize-1)
+            corner_axes[i][-1].set_xlabel(labels[i]+"\n"+units[i], fontsize=fontsize-1)
         else:
-            corner_axes[0][i-1].set_ylabel(units[i], fontsize=fontsize-1)
-            hist_axes[i].set_xlabel(units[i], fontsize=fontsize-1)
+            corner_axes[0][i-1].set_ylabel(labels[i]+"\n"+units[i], fontsize=fontsize-1)
+            hist_axes[i].set_xlabel(labels[i]+"\n"+units[i], fontsize=fontsize-1)
     
-    plt.subplots_adjust(left=0.06, bottom=0.07, right=0.97, top=0.94, wspace=0, hspace=0)
+    plt.subplots_adjust(left=0.095, bottom=0.1, right=0.99, top=0.955, wspace=0, hspace=0)
     if save_plot is not None:
         plt.savefig(f"{save_plot}.pdf")
     plt.show()
@@ -356,7 +357,7 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
 
 
 
-def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, fontsize=15, markersize=8, smoothness=6, save_plot=None, background_colors = ["#252525","#969696","#f0f0f0"], cmap="Greys", linewidth=2, levels = 4):
+def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, fontsize=15, markersize=8, smoothness=6, save_plot=None, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
@@ -512,7 +513,7 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     
     # n_sersic vs m_star
     if referenceCatalogData is not None:
-        kde00 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[1]}", fill=True, cmap=cmap, levels=levels, ax=n_mS_ax, label="Reference")
+        kde00 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=n_mS_ax, label="Reference")
         for contour, color in zip(kde00.collections, background_colors):
             contour.set_facecolor(color)
             #contour.set_color(color)
@@ -522,20 +523,20 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     n_mS_ax.legend(loc="lower right", fontsize=fontsize-3)
     # n_sersic vs m_bh
     if referenceCatalogData is not None:
-        kde01 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[2]}", fill=True, cmap=cmap, levels=levels, ax=n_mBH_ax)
+        kde01 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=n_mBH_ax)
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[2]}", fill=False, levels=levels, linewidths=0.5, color="black", ax=n_mBH_ax)
     n_mBH_ax.errorbar(QPE_data[0,:,0], QPE_data[4,:,0], yerr=[QPE_data[4,:,1],QPE_data[4,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize)
     n_mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[4,:,0], yerr=[TDE_data[4,:,1],TDE_data[4,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1)
 
     # bt vs m_star
     if referenceCatalogData is not None:
-        kde10 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[1]}", fill=True, cmap=cmap, levels=levels, ax=bt_mS_ax, label="Reference")
+        kde10 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=bt_mS_ax, label="Reference")
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[1]}", fill=False, levels=levels, linewidths=0.5, color="black", ax=bt_mS_ax, label="Reference")
     bt_mS_ax.errorbar(QPE_data[1,:,0], QPE_data[3,:,0], yerr=[QPE_data[3,:,1],QPE_data[3,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize, label="QPE")
     bt_mS_ax.errorbar(TDE_data[1,:,0], TDE_data[3,:,0], yerr=[TDE_data[3,:,1],TDE_data[3,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1, label="TDE")
     # n_sersic vs m_bh
     if referenceCatalogData is not None:
-        kde11 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[2]}", fill=True, cmap=cmap, levels=levels, ax=bt_mBH_ax)
+        kde11 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=bt_mBH_ax)
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[2]}", fill=False, levels=levels, linewidths=0.5, color="black", ax=bt_mBH_ax)
     bt_mBH_ax.errorbar(QPE_data[1,:,0], QPE_data[4,:,0], yerr=[QPE_data[4,:,1],QPE_data[4,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize)
     bt_mBH_ax.errorbar(TDE_data[1,:,0], TDE_data[4,:,0], yerr=[TDE_data[4,:,1],TDE_data[4,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1)
@@ -543,13 +544,13 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
 
     # ssmd vs m_star
     if referenceCatalogData is not None:
-        kde20 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[1]}", fill=True, cmap=cmap, levels=3, ax=ssmd_mS_ax, label="Reference")
+        kde20 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=3, ax=ssmd_mS_ax, label="Reference")
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[1]}", fill=False, levels=3, linewidths=0.5, color="black", ax=ssmd_mS_ax, label="Reference")
     ssmd_mS_ax.errorbar(QPE_data[2,:,0], QPE_data[3,:,0], yerr=[QPE_data[3,:,1],QPE_data[3,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize, label="QPE")
     ssmd_mS_ax.errorbar(TDE_data[2,:,0], TDE_data[3,:,0], yerr=[TDE_data[3,:,1],TDE_data[3,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1, label="TDE")
     # n_sersic vs m_bh
     if referenceCatalogData is not None:
-        kde21 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[2]}", fill=True, cmap=cmap, levels=3, ax=ssmd_mBH_ax)
+        kde21 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=3, ax=ssmd_mBH_ax)
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[2]}", fill=False, levels=3, linewidths=0.5, color="black", ax=ssmd_mBH_ax)
     ssmd_mBH_ax.errorbar(QPE_data[2,:,0], QPE_data[4,:,0], yerr=[QPE_data[4,:,1],QPE_data[4,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize)
     ssmd_mBH_ax.errorbar(TDE_data[2,:,0], TDE_data[4,:,0], yerr=[TDE_data[4,:,1],TDE_data[4,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1)
