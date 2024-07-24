@@ -12,22 +12,7 @@ import sys
 import pandas as pd
 
 
-QPE_and_TDEs = [4,5,8]
-
-
-def add_0_uncertainties(a):
-    a = np.array(a)
-    placeholder = np.zeros((a.shape[0],3))
-    placeholder[:,0] = a
-    a = placeholder
-    return a
-
-
-
-
-
-
-
+QPE_and_TDEs = [4,5,8] # indices of QPE+TDE hosts which are currently only in the QPE arrays
 
 
 if __name__ == "__main__":
@@ -62,6 +47,7 @@ if __name__ == "__main__":
                    np.concatenate((QPE_sersicIndices,TDE_sersicIndices)),
                    np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
                    np.concatenate((QPE_SMSDs,TDE_SMSDs)),
+                   np.concatenate((QPE_stellar_masses,TDE_stellar_masses)),
                    references="abccefddghijklmnnno"
                    )
 
