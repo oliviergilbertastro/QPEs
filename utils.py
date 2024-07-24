@@ -357,12 +357,17 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
 
 
 
-def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, fontsize=15, markersize=8, smoothness=6, save_plot=None, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
+def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, extremums=None, fontsize=15, markersize=8, smoothness=6, save_plot=None, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
     for i in range(len(data)-1):
         assert len(data[i]) == len(data[i+1])
+    if extremums is None:
+        extremums = {}
+    for param in ["n_sersic", "bt_ratio", "ssmd", "m_star", "m_bh"]:
+        if param not in extremums:
+            extremums[param] = None
     # data should be in the shape of [QPE data, TDE data]
     QPE_data, TDE_data = data
     QPE_data, TDE_data = np.array(QPE_data), np.array(TDE_data)
@@ -371,19 +376,19 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     # Columns compare should be [[n_sersic, bt_ratio, ssmd], m_star, m_BH]
 
     # Create the plot axes:
-    fig = plt.figure(figsize=(10.4,8))
-    gs = mpl.gridspec.GridSpec(10, 26, wspace=0.0, hspace=0.0)    
-    n_hist_ax = fig.add_subplot(gs[0:2, 0:8]) # Sérsic index histogram
-    bt_hist_ax = fig.add_subplot(gs[0:2, 8:16]) # B/T histogram
-    ssmd_hist_ax = fig.add_subplot(gs[0:2, 16:24]) # SSMD histogram
-    mS_hist_ax =fig.add_subplot(gs[2:6, 24:26]) # Stellar mass histogram
-    mBH_hist_ax = fig.add_subplot(gs[6:10, 24:26]) # Black hole mass histogram
-    n_mS_ax = fig.add_subplot(gs[2:6, 0:8], sharex=n_hist_ax, sharey=mS_hist_ax) #  n vs log(M_star)
-    n_mBH_ax = fig.add_subplot(gs[6:10, 0:8], sharex=n_hist_ax, sharey=mBH_hist_ax) # n vs log(M_BH)
-    bt_mS_ax = fig.add_subplot(gs[2:6, 8:16], sharex=bt_hist_ax, sharey=mS_hist_ax) #  bt vs log(M_star)
-    bt_mBH_ax = fig.add_subplot(gs[6:10, 8:16], sharex=bt_hist_ax, sharey=mBH_hist_ax) # bt vs log(M_BH)
-    ssmd_mS_ax = fig.add_subplot(gs[2:6, 16:24], sharex=ssmd_hist_ax, sharey=mS_hist_ax) #  ssmd vs log(M_star)
-    ssmd_mBH_ax = fig.add_subplot(gs[6:10, 16:24], sharex=ssmd_hist_ax, sharey=mBH_hist_ax) # ssmd vs log(M_BH)
+    fig = plt.figure(figsize=(10.5,7.5))
+    gs = mpl.gridspec.GridSpec(10, 14, wspace=0.0, hspace=0.0)    
+    n_hist_ax = fig.add_subplot(gs[0:2, 0:4]) # Sérsic index histogram
+    bt_hist_ax = fig.add_subplot(gs[0:2, 4:8]) # B/T histogram
+    ssmd_hist_ax = fig.add_subplot(gs[0:2, 8:12]) # SSMD histogram
+    mS_hist_ax =fig.add_subplot(gs[2:6, 12:14]) # Stellar mass histogram
+    mBH_hist_ax = fig.add_subplot(gs[6:10, 12:14]) # Black hole mass histogram
+    n_mS_ax = fig.add_subplot(gs[2:6, 0:4], sharex=n_hist_ax, sharey=mS_hist_ax) #  n vs log(M_star)
+    n_mBH_ax = fig.add_subplot(gs[6:10, 0:4], sharex=n_hist_ax, sharey=mBH_hist_ax) # n vs log(M_BH)
+    bt_mS_ax = fig.add_subplot(gs[2:6, 4:8], sharex=bt_hist_ax, sharey=mS_hist_ax) #  bt vs log(M_star)
+    bt_mBH_ax = fig.add_subplot(gs[6:10, 4:8], sharex=bt_hist_ax, sharey=mBH_hist_ax) # bt vs log(M_BH)
+    ssmd_mS_ax = fig.add_subplot(gs[2:6, 8:12], sharex=ssmd_hist_ax, sharey=mS_hist_ax) #  ssmd vs log(M_star)
+    ssmd_mBH_ax = fig.add_subplot(gs[6:10, 8:12], sharex=ssmd_hist_ax, sharey=mBH_hist_ax) # ssmd vs log(M_BH)
     # Hide some of the axes ticks
     plt.setp(n_hist_ax.get_xticklabels(), visible=False)
     plt.setp(bt_hist_ax.get_xticklabels(), visible=False)
@@ -413,6 +418,8 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     if referenceCatalogData is not None:
         x_min = x_min if np.min(referenceCatalogData[f"col_{columns_compare[0][0]}"]) > x_min else np.min(referenceCatalogData[f"col_{columns_compare[0][0]}"])
         x_max = x_max if np.max(referenceCatalogData[f"col_{columns_compare[0][0]}"]) < x_max else np.max(referenceCatalogData[f"col_{columns_compare[0][0]}"])
+    if extremums["n_sersic"] is not None:
+        x_min, x_max = extremums["n_sersic"]
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(x_max-x_min)/smoothness
     if referenceCatalogData is not None:
@@ -433,6 +440,8 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     if referenceCatalogData is not None:
         x_min = x_min if np.min(referenceCatalogData[f"col_{columns_compare[0][1]}"]) > x_min else np.min(referenceCatalogData[f"col_{columns_compare[0][1]}"])
         x_max = x_max if np.max(referenceCatalogData[f"col_{columns_compare[0][1]}"]) < x_max else np.max(referenceCatalogData[f"col_{columns_compare[0][1]}"])
+    if extremums["bt_ratio"] is not None:
+        x_min, x_max = extremums["bt_ratio"]
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(x_max-x_min)/smoothness
     if referenceCatalogData is not None:
@@ -453,6 +462,8 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     if referenceCatalogData is not None:
         x_min = x_min if np.min(referenceCatalogData[f"col_{columns_compare[0][2]}"]) > x_min else np.min(referenceCatalogData[f"col_{columns_compare[0][2]}"])
         x_max = x_max if np.max(referenceCatalogData[f"col_{columns_compare[0][2]}"]) < x_max else np.max(referenceCatalogData[f"col_{columns_compare[0][2]}"])
+    if extremums["ssmd"] is not None:
+        x_min, x_max = extremums["ssmd"]
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(x_max-x_min)/smoothness
     if referenceCatalogData is not None:
@@ -473,6 +484,8 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     if referenceCatalogData is not None:
         y_min = y_min if np.min(referenceCatalogData[f"col_{columns_compare[1]}"]) > y_min else np.min(referenceCatalogData[f"col_{columns_compare[1]}"])
         y_max = y_max if np.max(referenceCatalogData[f"col_{columns_compare[1]}"]) < y_max else np.max(referenceCatalogData[f"col_{columns_compare[1]}"])
+    if extremums["m_star"] is not None:
+        y_min, y_max = extremums["m_star"]
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(y_max-y_min)/smoothness
     if referenceCatalogData is not None:
@@ -493,6 +506,8 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     if referenceCatalogData is not None:
         y_min = y_min if np.min(referenceCatalogData[f"col_{columns_compare[2]}"]) > y_min else np.min(referenceCatalogData[f"col_{columns_compare[2]}"])
         y_max = y_max if np.max(referenceCatalogData[f"col_{columns_compare[2]}"]) < y_max else np.max(referenceCatalogData[f"col_{columns_compare[2]}"])
+    if extremums["m_bh"] is not None:
+        y_min, y_max = extremums["m_bh"]
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(y_max-y_min)/smoothness
     if referenceCatalogData is not None:
@@ -544,13 +559,13 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
 
     # ssmd vs m_star
     if referenceCatalogData is not None:
-        kde20 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=3, ax=ssmd_mS_ax, label="Reference")
+        kde20 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=ssmd_mS_ax, label="Reference")
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[1]}", fill=False, levels=3, linewidths=0.5, color="black", ax=ssmd_mS_ax, label="Reference")
     ssmd_mS_ax.errorbar(QPE_data[2,:,0], QPE_data[3,:,0], yerr=[QPE_data[3,:,1],QPE_data[3,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize, label="QPE")
     ssmd_mS_ax.errorbar(TDE_data[2,:,0], TDE_data[3,:,0], yerr=[TDE_data[3,:,1],TDE_data[3,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1, label="TDE")
     # n_sersic vs m_bh
     if referenceCatalogData is not None:
-        kde21 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=3, ax=ssmd_mBH_ax)
+        kde21 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=ssmd_mBH_ax)
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[2]}", fill=False, levels=3, linewidths=0.5, color="black", ax=ssmd_mBH_ax)
     ssmd_mBH_ax.errorbar(QPE_data[2,:,0], QPE_data[4,:,0], yerr=[QPE_data[4,:,1],QPE_data[4,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize)
     ssmd_mBH_ax.errorbar(TDE_data[2,:,0], TDE_data[4,:,0], yerr=[TDE_data[4,:,1],TDE_data[4,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1)
@@ -568,7 +583,19 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     ssmd_mBH_ax.xaxis.set_tick_params(labelsize=fontsize-2)
     n_mS_ax.yaxis.set_tick_params(labelsize=fontsize-2)
     n_mBH_ax.yaxis.set_tick_params(labelsize=fontsize-2)
-    plt.subplots_adjust(left=0.07, bottom=0.15, right=0.99, top=0.975, wspace=0, hspace=0)
+
+    if extremums["n_sersic"] is not None:
+        n_hist_ax.set_xlim(*extremums["n_sersic"])
+    if extremums["bt_ratio"] is not None:
+        bt_hist_ax.set_xlim(*extremums["bt_ratio"])
+    if extremums["ssmd"] is not None:
+        ssmd_hist_ax.set_xlim(*extremums["ssmd"])
+    if extremums["m_star"] is not None:
+        mS_hist_ax.set_ylim(*extremums["m_star"])
+    if extremums["m_bh"] is not None:
+        mBH_hist_ax.set_ylim(*extremums["m_bh"])
+
+    plt.subplots_adjust(left=0.1, bottom=0.1, right=0.99, top=0.975, wspace=0, hspace=0)
     if save_plot is not None:
         plt.savefig(f"{save_plot}.pdf")
     plt.show()

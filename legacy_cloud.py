@@ -54,7 +54,13 @@ if __name__ == "__main__":
     QPE_data = np.array([QPE_sersicIndices, QPE_bulgeRatios, QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs]))])
     myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16, markersize=9,
-                        levels=[0.5]#levels=[0.3,0.5,0.9,1]
+                        levels=[0.5,0.7,0.9,1],
+                        extremums={"n_sersic": (0,5.5),
+                                   "bt_ratio": (-0.15,1.05),
+                                   "ssmd": (8.2,10.6),
+                                   "m_star": (9,11.25),
+                                   "m_bh": (4.5,9),
+                                   }
                         )
 
     # Make big plot
