@@ -664,7 +664,12 @@ if __name__ == "__main__":
     hi = np.loadtxt("TDE_allRelevantData_2.txt")
     recombine_arrays(data, lo, hi)
 
-
+def add_0_uncertainties(a):
+    a = np.array(a)
+    placeholder = np.zeros((a.shape[0],3))
+    placeholder[:,0] = a
+    a = placeholder
+    return a
 
 import time
 if __name__ == "__main__":
@@ -677,7 +682,6 @@ if __name__ == "__main__":
     print("\x1b[33m: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
     from paper_data import TDE_sersicIndices, TDE_stellar_masses_litterature, TDE_mBH
-    from legacy_vs_legacy import add_0_uncertainties
     TDE_data = np.array([add_0_uncertainties(TDE_sersicIndices), toLog(TDE_stellar_masses_litterature), toLog(add_0_uncertainties(TDE_mBH))])
     data = np.array([TDE_data/2, TDE_data])
     #myFinalPlot(data, save_plot=False)
