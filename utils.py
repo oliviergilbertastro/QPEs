@@ -639,16 +639,30 @@ def print_color(message, color="yellow", **kwargs):
 
 
 
+import copy
 
+def recombine_arrays(data, lo, hi):
+    """
+    Recombine 2D arrays into a single 3D array
+    data: array containing the data
+    lo: array containing the lower uncertainties
+    hi: array containing the high uncertainties
+    """
 
+    assert data.shape == lo.shape == hi.shape
 
+    new_array = np.zeros((3,*(data.shape)))
+    new_array[0,:,:] = data
+    new_array[1,:,:] = lo
+    new_array[2,:,:] = hi
 
+    return new_array
 
-
-
-
-
-
+if __name__ == "__main__":
+    data = np.loadtxt("TDE_allRelevantData_0.txt")
+    lo = np.loadtxt("TDE_allRelevantData_1.txt")
+    hi = np.loadtxt("TDE_allRelevantData_2.txt")
+    recombine_arrays(data, lo, hi)
 
 
 
