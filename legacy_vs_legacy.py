@@ -4,7 +4,7 @@ Program to compare QPE hosts and TDE hosts "apples to apples" with the LEGACY DE
 import pickle
 import numpy as np
 from ned_wright_cosmology import calculate_cosmo
-from utils import print_table, myCornerPlot, toLog, myFinalPlot, myCombinedFinalPlot, add_0_uncertainties
+from utils import print_table, myCornerPlot, toLog, myFinalPlot, myCombinedFinalPlot, add_0_uncertainties, makeLatexTable
 import matplotlib.pyplot as plt
 from paper_data import *
 from download_data import *
@@ -127,54 +127,6 @@ def printPropertyAcrossFilters(list_of_dicts, name_of_property="Name of property
                 borders=2,
                 )
     return
-
-
-def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, references=None, filename="latexTable.txt", verbose=False):
-    """
-    columns are: NAME, REDSHIFT, R_50, N_SERSIC, BT_RATIO, SSMD
-
-    makes a .txt file
-    """
-    total_string = ""
-    each_lines = []
-    if references is None:
-        references = ["" for i in range(len(names))]
-
-    assert len(names) == len(redshifts) == len(r50s[:,0]) == len(n_sersics[:,0]) == len(bt_ratios[:,0]) == len(ssmds[:,0]) == len(references)
-    length = len(names)
-
-    def LatexUncertainty(value):
-        return f"${round(value[0],2)}_{r'{-'+str(round(value[1],2))+r'}'}^{r'{+'+str(round(value[2],2))+r'}'}$"
-
-    for i in range(length):
-        each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(round(redshifts[i],3)) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + r" \\" + "\n")        
-
-    # swap lines around here easily
-    onlyQPEs = np.array(each_lines)[[0,1,2,3,6,7]]
-    QPE_TDEs = np.array(each_lines)[[4,5,8]]
-    onlyTDEs = np.array(each_lines)[[9,10,11,12,13,14,15,16,17,18]]
-    
-    total_string += r"\multicolumn{6}{c}{\emph{QPE host galaxies}}\\"+"\n\hline\n\hline\n"
-    for line in onlyQPEs:
-        total_string += line
-        if line != onlyQPEs[-1]:
-            total_string += r"\vspace{2pt}"+"\n"
-    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{TDE+QPE host galaxies}}\\"+"\n\hline\n\hline\n"
-    for line in QPE_TDEs:
-        total_string += line
-        if line != QPE_TDEs[-1]:
-            total_string += r"\vspace{2pt}"+"\n"
-    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{TDE host galaxies}}\\"+"\n\hline\n\hline\n"
-    for line in onlyTDEs:
-        total_string += line
-        if line != onlyTDEs[-1]:
-            total_string += r"\vspace{2pt}"+"\n"
-
-    with open(filename, "w") as text_file:
-        text_file.write(total_string)
-    if verbose:
-        print(total_string)
-
 
 
 

@@ -572,6 +572,54 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, f
     plt.show()
 
 
+def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, references=None, filename="latexTable.txt", verbose=False):
+    """
+    columns are: NAME, REDSHIFT, R_50, N_SERSIC, BT_RATIO, SSMD
+
+    makes a .txt file
+    """
+    total_string = ""
+    each_lines = []
+    if references is None:
+        references = ["" for i in range(len(names))]
+
+    assert len(names) == len(redshifts) == len(r50s[:,0]) == len(n_sersics[:,0]) == len(bt_ratios[:,0]) == len(ssmds[:,0]) == len(references)
+    length = len(names)
+
+    def LatexUncertainty(value):
+        return f"${round(value[0],2)}_{r'{-'+str(round(value[1],2))+r'}'}^{r'{+'+str(round(value[2],2))+r'}'}$"
+
+    for i in range(length):
+        each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(round(redshifts[i],3)) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + r" \\" + "\n")        
+
+    # swap lines around here easily
+    onlyQPEs = np.array(each_lines)[[0,1,2,3,6,7]]
+    QPE_TDEs = np.array(each_lines)[[4,5,8]]
+    onlyTDEs = np.array(each_lines)[[9,10,11,12,13,14,15,16,17,18]]
+    
+    total_string += r"\multicolumn{6}{c}{\emph{QPE host galaxies}}\\"+"\n\hline\n\hline\n"
+    for line in onlyQPEs:
+        total_string += line
+        if line != onlyQPEs[-1]:
+            total_string += r"\vspace{2pt}"+"\n"
+    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{TDE+QPE host galaxies}}\\"+"\n\hline\n\hline\n"
+    for line in QPE_TDEs:
+        total_string += line
+        if line != QPE_TDEs[-1]:
+            total_string += r"\vspace{2pt}"+"\n"
+    total_string += "\hline\n"+r"\multicolumn{6}{c}{\emph{TDE host galaxies}}\\"+"\n\hline\n\hline\n"
+    for line in onlyTDEs:
+        total_string += line
+        if line != onlyTDEs[-1]:
+            total_string += r"\vspace{2pt}"+"\n"
+
+    with open(filename, "w") as text_file:
+        text_file.write(total_string)
+    if verbose:
+        print(total_string)
+
+
+
 
 def toLog(a):
     """Convert array of data and uncertainties in log base"""
@@ -651,10 +699,10 @@ def recombine_arrays(data, lo, hi):
 
     assert data.shape == lo.shape == hi.shape
 
-    new_array = np.zeros((3,*(data.shape)))
-    new_array[0,:,:] = data
-    new_array[1,:,:] = lo
-    new_array[2,:,:] = hi
+    new_array = np.zeros((*(data.shape),3))
+    new_array[:,:,0] = data
+    new_array[:,:,1] = lo
+    new_array[:,:,2] = hi
 
     return new_array
 
@@ -662,7 +710,7 @@ if __name__ == "__main__":
     data = np.loadtxt("TDE_allRelevantData_0.txt")
     lo = np.loadtxt("TDE_allRelevantData_1.txt")
     hi = np.loadtxt("TDE_allRelevantData_2.txt")
-    recombine_arrays(data, lo, hi)
+    print(recombine_arrays(data, lo, hi)[:,0,:])
 
 def add_0_uncertainties(a):
     a = np.array(a)
