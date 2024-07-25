@@ -53,7 +53,7 @@ if __name__ == "__main__":
 
     QPE_data = np.array([QPE_sersicIndices, QPE_bulgeRatios, QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs]))])
-    myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16, markersize=9,
+    myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
                         extremums={"n_sersic": (0,5.5),
                                    "bt_ratio": (-0.15,1.05),
@@ -74,8 +74,15 @@ if __name__ == "__main__":
         units=["$[M_\odot]$", "$[M_\odot]$", " ", "$[\mathrm{kpc}]$", " ", "$[M_\odot/\mathrm{kpc}^2]$"],
         smoothness=6,
         markersize=10,
-        levels=[0.3,0.5,0.89,0.9,1],
+        levels=[0.5,0.7,0.9,1],
         refCat=refCat,
         columns_compare=[67,63,12,59,60,68],
-        save_plot="corner_plot"
+        save_plot="corner_plot",
+        extremums={"$\log(M_\mathrm{BH})$": (4.5,9),
+                   "$\log(M_\star)$": (9,11.25),
+                   "$(B/T)_g$": (-0.15,1.05),
+                   "$r_{50}$": (0,10.5),
+                   "$n_\mathrm{Sérsic}$": (0,5.5),
+                   "$\log(\Sigma_{M_\star})$": (8.2,10.6) 
+                   }
         )

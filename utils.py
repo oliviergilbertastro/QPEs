@@ -117,12 +117,21 @@ def print_table(a, header=None, title=None, space_between_columns=2, space_betwe
 
 
 
-def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, linewidth=3, levels=4, markersize=8, cmap="Greys", refCat=None, columns_compare=None, save_plot=None):
+def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, linewidth=3, extremums=None, background_colors=["#f0f0f0","#969696","#252525"], levels=4, markersize=8, refCat=None, columns_compare=None, save_plot=None):
     """
     data should be [data_set1, data_set2, ...] each containing multiple parameters
     """
     for i in range(len(data)-1):
         assert len(data[i]) == len(data[i+1])
+
+    # labels are now required (just put empty ones if you don't want them to appear)
+    if extremums is None:
+        extremums = {}
+    for label in labels:
+        if label not in extremums:
+            extremums[label] = None
+    
+    
     # Create the plot axes:
     fig = plt.figure(figsize=(10,8))
     plot_size = len(data[0])
@@ -169,6 +178,8 @@ def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, linew
         if refCat is not None:
             x_min = x_min if x_min < np.min(refCat[f"col_{columns_compare[i]}"]) else np.min(refCat[f"col_{columns_compare[i]}"])
             x_max = x_max if x_max > np.max(refCat[f"col_{columns_compare[i]}"]) else np.max(refCat[f"col_{columns_compare[i]}"])
+        if extremums[labels[i]] is not None:
+            x_min, x_max = extremums[labels[i]]
         for j in range(len(data)-1):
             X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
             bandwidth = np.abs(x_max-x_min)/smoothness
@@ -188,24 +199,32 @@ def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, linew
             for j in range(len(data)):
                 corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","*","*"][j%3], color=["blue","red","red"][j%3], markersize=[markersize,markersize-1,markersize-1][j%3])
             if refCat is not None:
-                sns.kdeplot(refCat, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=True, levels=levels, cmap=cmap, color="black", ax=corner_axes[i][k])
+                sns.kdeplot(refCat, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=True, levels=levels, colors=background_colors, ax=corner_axes[i][k])
                 #sns.kdeplot(refCat, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=False, levels=levels, linewidths=0.5, color="black", ax=corner_axes[i][k])
         print_color(f"{labels[i]} :")
         print(f"QPE: {(np.min(data[0][i]), np.median(data[0][i]), np.max(data[0][i]))}")
         print(f"TDE: {(np.min(data[1][i]), np.median(data[1][i]), np.max(data[1][i]))}")
         print(f"ref: {(np.min(refCat[f'col_{columns_compare[i]}']), np.median(refCat[f'col_{columns_compare[i]}']), np.max(refCat[f'col_{columns_compare[i]}']))}")
     
-    # Make units labels:
+    # Make units labels and set axis limits:
     if units is None:
         units = [" " for i in range(plot_size)]
     for i in range(plot_size):
         if i < plot_size-1:
             if i > 0:
                 corner_axes[0][i-1].set_ylabel(labels[i]+"\n"+units[i], fontsize=fontsize-1)
+                if extremums[labels[i]] is not None:
+                    corner_axes[0][i-1].set_ylim(*extremums[labels[i]])
             corner_axes[i][-1].set_xlabel(labels[i]+"\n"+units[i], fontsize=fontsize-1)
+            if extremums[labels[i]] is not None:
+                corner_axes[i][-1].set_xlim(*extremums[labels[i]])
         else:
             corner_axes[0][i-1].set_ylabel(labels[i]+"\n"+units[i], fontsize=fontsize-1)
+            if extremums[labels[i]] is not None:
+                corner_axes[0][i-1].set_ylim(*extremums[labels[i]])
             hist_axes[i].set_xlabel(labels[i]+"\n"+units[i], fontsize=fontsize-1)
+            if extremums[labels[i]] is not None:
+                hist_axes[i].set_xlim(*extremums[labels[i]])
     
     plt.subplots_adjust(left=0.095, bottom=0.1, right=0.99, top=0.955, wspace=0, hspace=0)
     if save_plot is not None:
