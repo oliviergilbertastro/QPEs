@@ -36,7 +36,7 @@ if __name__ == "__main__":
         for i in range(9):
             refCats.append(np.loadtxt(f"referenceCatalog_{i}.txt"))
         recombine_catalog(refCats, savename="referenceCatalog")
-    
+
     #refCat1 = np.loadtxt("referenceCatalog.txt")
     #refCat2 = np.loadtxt("REFCAAT.txt")
     #for col in tqdm(range(refCat1.shape[1])):
