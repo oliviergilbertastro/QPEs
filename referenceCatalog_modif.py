@@ -10,32 +10,7 @@ import numpy as np
 
 # Just delete unphysical BH masses and add a stellar surface density column
 
-
-def cut_from_catalog(catalog, index, bounds, verbose=False):
-    """
-    catalog: numpy array
-    index: int of index of parameter column which is under study here
-    bounds: tuple of bound which we want to keep
-
-    returns: numpy array with only remaining objects
-    """
-    catalog = np.array(catalog)
-    if bounds[0] == None:
-        good_indices_lo = catalog[:,index] == catalog[:,index]
-    else:
-        good_indices_lo = catalog[:,index] >= bounds[0]
-    if bounds[1] == None:
-        good_indices_hi = catalog[:,index] == catalog[:,index]
-    else:
-        good_indices_hi = catalog[:,index] <= bounds[1]
-    good_indices = []
-    for i in range(len(good_indices_lo)):
-        good_indices.append(good_indices_lo[i] and good_indices_hi[i])
-    cut_catalog = catalog[good_indices]
-    if verbose:
-        print(f"\x1b[31m{catalog.shape[0]-cut_catalog.shape[0]} objects cut\x1b[0m")
-        print(f"\x1b[32m{cut_catalog.shape[0]} objects remaining\x1b[0m")
-    return cut_catalog
+from utils import cut_from_catalog
 
 reference_catalog = np.loadtxt("referenceCatalog.txt")
 print("Physical black hole mass cut...")
@@ -58,7 +33,7 @@ reference_catalog = cut_from_catalog(reference_catalog, index=61, bounds=(-50, 1
 #reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(None, 8), verbose=True)
 
 print("Stellar mass cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=63, bounds=(9, 10.3), verbose=True)
+reference_catalog = cut_from_catalog(reference_catalog, index=63, bounds=(9.5, 10.4), verbose=True)
 
 print("r50 cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=59, bounds=(0, 100), verbose=True)
@@ -66,7 +41,7 @@ reference_catalog = cut_from_catalog(reference_catalog, index=59, bounds=(0, 100
 
 # redshift cut
 print("Redshift cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.05), verbose=True)
+reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.1), verbose=True)
 
 
 #print("Sigma_hl,g cut...")
@@ -82,4 +57,4 @@ if False:
     reference_catalog = np.vstack((reference_catalog.T, np.array(stellarMasses))).T
 
 
-np.savetxt("referenceCatalog_modif2.txt", reference_catalog)
+np.savetxt("referenceCatalog_modif2.txt", reference_catalog[::2])

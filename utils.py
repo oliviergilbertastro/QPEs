@@ -875,6 +875,35 @@ def recombine_arrays(data, lo, hi):
 
     return new_array
 
+def cut_from_catalog(catalog, index, bounds, verbose=False):
+    """
+    catalog: numpy array
+    index: int of index of parameter column which is under study here
+    bounds: tuple of bound which we want to keep
+
+    returns: numpy array with only remaining objects
+    """
+    catalog = np.array(catalog)
+    if bounds[0] == None:
+        good_indices_lo = catalog[:,index] == catalog[:,index]
+    else:
+        good_indices_lo = catalog[:,index] >= bounds[0]
+    if bounds[1] == None:
+        good_indices_hi = catalog[:,index] == catalog[:,index]
+    else:
+        good_indices_hi = catalog[:,index] <= bounds[1]
+    good_indices = []
+    for i in range(len(good_indices_lo)):
+        good_indices.append(good_indices_lo[i] and good_indices_hi[i])
+    cut_catalog = catalog[good_indices]
+    if verbose:
+        print(f"\x1b[31m{catalog.shape[0]-cut_catalog.shape[0]} objects cut\x1b[0m")
+        print(f"\x1b[32m{cut_catalog.shape[0]} objects remaining\x1b[0m")
+    return cut_catalog
+
+
+
+
 if __name__ == "__main__":
     data = np.loadtxt("TDE_allRelevantData_0.txt")
     lo = np.loadtxt("TDE_allRelevantData_1.txt")
