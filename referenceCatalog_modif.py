@@ -33,7 +33,7 @@ reference_catalog = cut_from_catalog(reference_catalog, index=61, bounds=(-50, 1
 #reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(None, 8), verbose=True)
 
 print("Stellar mass cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=63, bounds=(9.5, 10.4), verbose=True)
+reference_catalog = cut_from_catalog(reference_catalog, index=63, bounds=(9.2, 10.4), verbose=True)
 
 print("r50 cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=59, bounds=(0, 100), verbose=True)

@@ -15,7 +15,7 @@ from utils import cut_from_catalog
 # All parameters
 # Choose bounds for that z-M_star grid
 bounds = {"redshift": (0.01,0.1),
-          "m_star": (9.5,10.4)}
+          "m_star": (9.2,10.4)}
 resolution = 100
 smoothing_param = resolution/6
 sample_size=1000000
@@ -51,8 +51,6 @@ m_star_bins = np.linspace(bounds["m_star"][0], bounds["m_star"][1], resolution)
 QPEGalaxies["redshift_bin"] = pd.cut(QPEGalaxies["redshift"], bins=redshift_bins)
 QPEGalaxies["m_star_bin"] = pd.cut(QPEGalaxies["m_star"], bins=m_star_bins)
 
-bin_counts = QPEGalaxies.groupby(['redshift_bin', 'm_star_bin'], observed=False).size()
-
 # Sort QPEs into their bins
 QPE_grid = np.zeros((resolution,resolution))
 for i in range(len(QPEGalaxies)):
@@ -60,16 +58,18 @@ for i in range(len(QPEGalaxies)):
     for mbin in list(m_star_bins)[::-1]:
         if m_star > mbin:
             m_star_index = list(m_star_bins).index(mbin)
+            print("QPE mass:", m_star, mbin)
             break
     for zbin in list(redshift_bins)[::-1]:
         if z > zbin:
             z_index = list(redshift_bins).index(zbin)
+            print("QPE z:", z, zbin)
             break
     #print(m_star_index, z_index)
     QPE_grid[m_star_index,z_index] += 1
 
 QPE_grid = QPE_grid/np.sum(QPE_grid) # normalize
-assert np.sum(QPE_grid) == 1
+assert np.sum(QPE_grid) > 0.999999 and np.sum(QPE_grid) < 1.000001
 plt.imshow(QPE_grid, origin="lower", cmap="Greys")
 plt.xlabel("$z$ bin", fontsize=15)
 plt.ylabel("$M_\star$ bin", fontsize=15)
@@ -219,7 +219,7 @@ for z_index, m_index in tqdm(zip(sample_indices_z, sample_indices_m_star)):
     except:
         pass
     #input("...")
-goodGalaxies = np.array(goodGalaxies)[:1000,:]
+goodGalaxies = np.array(goodGalaxies)[:48000,:]
 print(goodGalaxies.shape)
 np.savetxt("referenceCatalog_final.txt", goodGalaxies)
 refCat = np.loadtxt("referenceCatalog_final.txt")

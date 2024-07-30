@@ -224,9 +224,9 @@ if __name__ == "__main__":
     TDE_mBH = np.array(TDE_mBH)
     TDE_names = np.array(TDE_names)
 
-    refCat = np.loadtxt("referenceCatalog_modif2.txt")
+    refCat = np.loadtxt("referenceCatalog_final.txt")
     fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
-    refCat = pd.read_csv("referenceCatalog_modif2.txt", delimiter=" ", header=None, names=fieldnames)
+    refCat = pd.read_csv("referenceCatalog_final.txt", delimiter=" ", header=None, names=fieldnames)
 
     makeLatexTable(np.concatenate((objects_names, TDE_names)),
                    np.concatenate((QPE_redshifts,TDE_redshifts)),

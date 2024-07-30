@@ -30,9 +30,9 @@ if __name__ == "__main__":
     TDE_fullData = TDE_fullData[:10,:,:]
 
     # load reference catalog
-    refCat = np.loadtxt("referenceCatalog_modif2.txt")
+    refCat = np.loadtxt("referenceCatalog_final.txt")
     fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
-    refCat = pd.read_csv("referenceCatalog_modif2.txt", delimiter=" ", header=None, names=fieldnames)
+    refCat = pd.read_csv("referenceCatalog_final.txt", delimiter=" ", header=None, names=fieldnames)
 
     QPE_r50s, TDE_r50s = QPE_fullData[:,5,:], TDE_fullData[:,5,:]
     QPE_sersicIndices, TDE_sersicIndices = QPE_fullData[:,1,:], TDE_fullData[:,1,:]
@@ -60,8 +60,8 @@ if __name__ == "__main__":
     redshiftMass([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=(1,63,67), save_plot="redshift_distribution", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
                         smoothness=10,
-                        extremums={"param": (0.01,0.055),
-                                   "m_star": (9,10.5),
+                        extremums={"param": (0.01,0.1),
+                                   "m_star": (9.2,10.4),
                                    }
                 )
 
