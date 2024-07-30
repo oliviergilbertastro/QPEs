@@ -16,6 +16,7 @@ my_table = Table(mpajhu[1].data)
 # Extract the names of the columns
 colnames = my_table.colnames
 mpajhu = []
+print(colnames)
 for i in tqdm(range(len(my_table[colnames[0]]))):
     try:
         SpecObjID = int(my_table["SPECOBJID"][i])
@@ -112,11 +113,12 @@ reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0
 
 # bulge g-r cut
 print("Bulge g-r cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=61, bounds=(-50, 0.51), verbose=True)
+reference_catalog = cut_from_catalog(reference_catalog, index=61, bounds=(-50, None), verbose=True)
 
 # Sigma_hl,g cut
 print("Sigma_hl,g cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=62, bounds=(2.05, None), verbose=True)
+#reference_catalog = cut_from_catalog(reference_catalog, index=62, bounds=(2.05, None), verbose=True)
+reference_catalog = cut_from_catalog(reference_catalog, index=62, bounds=(0, None), verbose=True)
 
 
 # Add a stellar mass column by fetching values from the Mendel2014 catalog
@@ -140,6 +142,7 @@ mpajhu = cut_from_catalog(mpajhu, index=2, bounds=(-90, 90), verbose=False)
 sigma_a = []
 seps = []
 #reference_catalog = reference_catalog[:100,:] # make it small so it doesn't take an hour to test
+print("Cross-matching RA&DEC...")
 for i in tqdm(range(len(reference_catalog[:,0]))):
     index, smallest_sep = get_smallest_sep_v2(reference_catalog[i,64:66], mpajhu[:,1], mpajhu[:,2])
     sigma_a.append(mpajhu[index,3])

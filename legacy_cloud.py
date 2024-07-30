@@ -4,7 +4,7 @@ Program to compare QPE hosts and TDE hosts "apples to apples" with the LEGACY DE
 import pickle
 import numpy as np
 from ned_wright_cosmology import calculate_cosmo
-from utils import print_table, myCornerPlot, toLog, myFinalPlot, myCombinedFinalPlot, recombine_arrays, add_0_uncertainties, makeLatexTable
+from utils import print_table, myCornerPlot, toLog, myFinalPlot, myCombinedFinalPlot, recombine_arrays, add_0_uncertainties, makeLatexTable, redshiftMass
 import matplotlib.pyplot as plt
 from paper_data import *
 from download_data import *
@@ -51,10 +51,25 @@ if __name__ == "__main__":
                    references="abccefddghijklmnnno"
                    )
 
+    QPE_redshifts = add_0_uncertainties(QPE_redshifts)
+    TDE_redshifts = add_0_uncertainties(TDE_redshifts)
+
+    QPE_data = np.array([QPE_redshifts, QPE_stellar_masses, QPE_mBH])
+    TDE_data = np.array([np.concatenate((TDE_redshifts, QPE_redshifts[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs]))])
+
+    redshiftMass([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=(1,63,67), save_plot="redshift_distribution", fontsize=16, markersize=10,
+                        levels=[0.5,0.7,0.9,1],
+                        smoothness=10,
+                        extremums={"param": (0.01,0.055),
+                                   "m_star": (9,10.5),
+                                   }
+                )
+
     QPE_data = np.array([QPE_sersicIndices, QPE_bulgeRatios, QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs]))])
     myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
+                        smoothness=10,
                         extremums={"n_sersic": (0,5.5),
                                    "bt_ratio": (-0.15,1.05),
                                    "ssmd": (8.2,10.6),
@@ -64,19 +79,19 @@ if __name__ == "__main__":
                         )
 
     # Make big plot
-    QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_bulgeRatios[:,0], QPE_r50s[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
-    TDE_data = np.array([TDE_mBH[:,0], TDE_stellar_masses[:,0], TDE_bulgeRatios[:,0], TDE_r50s[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])
+    QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_bulgeRatios[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
+    TDE_data = np.array([TDE_mBH[:,0], TDE_stellar_masses[:,0], TDE_bulgeRatios[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])
     double_hosts_data = QPE_data[:,QPE_and_TDEs]
     TDE_data = np.vstack((TDE_data.T, double_hosts_data.T)).T
     myCornerPlot(
         [QPE_data,TDE_data,double_hosts_data],
-        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$(B/T)_g$", "$r_{50}$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
-        units=["$[M_\odot]$", "$[M_\odot]$", " ", "$[\mathrm{kpc}]$", " ", "$[M_\odot/\mathrm{kpc}^2]$"],
+        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$(B/T)_g$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
+        units=["$[M_\odot]$", "$[M_\odot]$", " ", " ", "$[M_\odot/\mathrm{kpc}^2]$"],
         smoothness=6,
         markersize=10,
         levels=[0.5,0.7,0.9,1],
         refCat=refCat,
-        columns_compare=[67,63,12,59,60,68],
+        columns_compare=[67,63,12,60,68],
         save_plot="corner_plot",
         extremums={"$\log(M_\mathrm{BH})$": (4.5,9),
                    "$\log(M_\star)$": (9,11.25),

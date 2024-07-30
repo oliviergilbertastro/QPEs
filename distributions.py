@@ -219,14 +219,16 @@ if __name__ == "__main__":
     QPE_sersicIndices = np.array(QPE_sersicIndices)
     QPE_r50s = np.array(QPE_r50s)
     QPE_mBH = np.array(QPE_mBH)
+    QPE_redshifts = np.array(QPE_redshifts)
     TDE_sersicIndices = np.array(TDE_sersicIndices)
     TDE_r50s = np.array(TDE_r50s)
     TDE_mBH = np.array(TDE_mBH)
+    TDE_redshifts = np.array(TDE_redshifts)
 
     # Make data distributions
-    QPE_data = np.array([QPE_bulgeRatios[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0], QPE_stellar_masses[:,0], QPE_mBH[:,0]]).T
+    QPE_data = np.array([QPE_bulgeRatios[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0], QPE_stellar_masses[:,0], QPE_mBH[:,0], QPE_redshifts]).T
     QPE_mBH = QPE_mBH[:,0]
-    TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs]))[:,0], np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs]))[:,0], np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs]))[:,0], np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs]))[:,0], np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs]))]).T
+    TDE_data = np.array([np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs]))[:,0], np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs]))[:,0], np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs]))[:,0], np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs]))[:,0], np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs])), np.concatenate((TDE_redshifts, QPE_redshifts[QPE_and_TDEs]))]).T
 
     np.savetxt("QPE_distribution.txt", QPE_data)
     np.savetxt("TDE_distribution.txt", TDE_data)

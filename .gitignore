@@ -4,3 +4,4 @@ galight_fitruns/big_fits/
 data/catalogs/
 #prospector/fits_data/
 *.pyc
+referenceCatalog.txt

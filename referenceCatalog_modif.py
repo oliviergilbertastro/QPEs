@@ -1,3 +1,11 @@
+"""
+This code is QUICK to run and serves to quickly test different cuts from a larger reference catalog.
+Ideally, a complete uncut catalog would be made beforehand and cuts would only be made in here, but it
+would take days to run referenceCatalog.py, so cuts are pre-made, but I am trying to make less invasive
+cuts to continually add more and more data to the reference catalog.
+"""
+
+
 import numpy as np
 
 # Just delete unphysical BH masses and add a stellar surface density column
@@ -41,14 +49,28 @@ reference_catalog = cut_from_catalog(reference_catalog, index=68, bounds=(0, 20)
 print("Physical (B/T)g cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=12, bounds=(0, 1), verbose=True)
 
+# Stricter bulge g-r cut (changed it from 0.51 to 1 in referenceCatalog.py)
+print("Bulge g-r cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=61, bounds=(-50, 1), verbose=True)
+
 #print("Black hole mass cut...")
 #reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(5.5, 7), verbose=True)
+#reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(None, 8), verbose=True)
 
-#print("Stellar mass cut...")
-#reference_catalog = cut_from_catalog(reference_catalog, index=63, bounds=(8, None), verbose=True)
+print("Stellar mass cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=63, bounds=(9, 10.3), verbose=True)
 
 print("r50 cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=59, bounds=(0, 10), verbose=True)
+reference_catalog = cut_from_catalog(reference_catalog, index=59, bounds=(0, 100), verbose=True)
+
+
+# redshift cut
+print("Redshift cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.05), verbose=True)
+
+
+#print("Sigma_hl,g cut...")
+#reference_catalog = cut_from_catalog(reference_catalog, index=62, bounds=(2.05, None), verbose=True)
 
 if False:
     # add Stellar Masses from Mendel2014

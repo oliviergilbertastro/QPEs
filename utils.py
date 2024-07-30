@@ -254,7 +254,7 @@ if __name__ == "__main__":
                 )
     
 
-def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None, columns_compare=None, fontsize=15, smoothness=6, save_plot=None):
+def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None, columns_compare=None, fontsize=15, smoothness=6, save_plot=None, markersize=9, extremums=None, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
@@ -289,18 +289,21 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
 
     #----------Make the histograms---------
 
-    # n_sersic
+    # param
     x_min = np.min(QPE_data[0,:,0]) if np.min(TDE_data[0,:,0]) > np.min(QPE_data[0,:,0]) else np.min(TDE_data[0,:,0])
     x_max = np.max(QPE_data[0,:,0]) if np.max(TDE_data[0,:,0]) < np.max(QPE_data[0,:,0]) else np.max(TDE_data[0,:,0])
     if referenceCatalogData is not None:
         x_min = x_min if np.min(referenceCatalogData[f"col_{columns_compare[0]}"]) > x_min else np.min(referenceCatalogData[f"col_{columns_compare[0]}"])
         x_max = x_max if np.max(referenceCatalogData[f"col_{columns_compare[0]}"]) < x_max else np.max(referenceCatalogData[f"col_{columns_compare[0]}"])
+    if extremums["param"] is not None:
+        x_min, x_max = extremums["param"]
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(x_max-x_min)/smoothness
     if referenceCatalogData is not None:
         kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[0]}"])[:,np.newaxis])
         log_dens = kde.score_samples(X_plot)
-        n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+        #n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+        n_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[0,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -314,12 +317,15 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     if referenceCatalogData is not None:
         y_min = y_min if np.min(referenceCatalogData[f"col_{columns_compare[1]}"]) > y_min else np.min(referenceCatalogData[f"col_{columns_compare[1]}"])
         y_max = y_max if np.max(referenceCatalogData[f"col_{columns_compare[1]}"]) < y_max else np.max(referenceCatalogData[f"col_{columns_compare[1]}"])
+    if extremums["m_star"] is not None:
+        y_min, y_max = extremums["m_star"]
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(y_max-y_min)/smoothness
     if referenceCatalogData is not None:
         kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[1]}"])[:,np.newaxis])
         log_dens = kde.score_samples(Y_plot)
-        mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+        #mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+        mS_hist_ax.plot(np.exp(log_dens), Y_plot[:, 0], color="black", linewidth=linewidth)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[1,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -333,12 +339,15 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     if referenceCatalogData is not None:
         y_min = y_min if np.min(referenceCatalogData[f"col_{columns_compare[2]}"]) > y_min else np.min(referenceCatalogData[f"col_{columns_compare[2]}"])
         y_max = y_max if np.max(referenceCatalogData[f"col_{columns_compare[2]}"]) < y_max else np.max(referenceCatalogData[f"col_{columns_compare[2]}"])
+    if extremums["m_bh"] is not None:
+        y_min, y_max = extremums["m_bh"]
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(y_max-y_min)/smoothness
     if referenceCatalogData is not None:
         kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[2]}"])[:,np.newaxis])
         log_dens = kde.score_samples(Y_plot)
-        mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+        #mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+        mBH_hist_ax.plot(np.exp(log_dens), Y_plot[:, 0], color="black", linewidth=linewidth)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[2,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -348,19 +357,21 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
 
     #----------Make the plots---------
 
-    # n_sersic vs m_star
+    # param vs m_star
     if referenceCatalogData is not None:
-        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, levels=7, color="black", ax=mS_ax, label="Reference")
-        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=False, levels=7, linewidths=0.5, color="black", ax=mS_ax, label="Reference")
-    mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8, label="QPE")
-    mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=7, mec="white", mew=0.5, label="TDE")
+        #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, levels=levels, color="black", ax=mS_ax, label="Reference")
+        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=mS_ax, label="Reference")
+        #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=False, levels=7, linewidths=0.5, color="black", ax=mS_ax, label="Reference")
+    mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize, label="QPE")
+    mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1, mec="white", mew=0.5, label="TDE")
     mS_ax.legend(loc="lower right", fontsize=fontsize-3)
-    # n_sersic vs m_bh
+    # param vs m_bh
     if referenceCatalogData is not None:
-        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[2]}", fill=True, levels=7, color="black", ax=mBH_ax)
-        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[2]}", fill=False, levels=7, linewidths=0.5, color="black", ax=mBH_ax)
-    mBH_ax.errorbar(QPE_data[0,:,0], QPE_data[2,:,0], yerr=[QPE_data[2,:,1],QPE_data[2,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=8)
-    mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[2,:,0], yerr=[TDE_data[2,:,1],TDE_data[2,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", mec="white", mew=0.5, markersize=7)
+        #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[2]}", fill=True, levels=7, color="black", ax=mBH_ax)
+        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=mBH_ax, label="Reference")
+        #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[2]}", fill=False, levels=7, linewidths=0.5, color="black", ax=mBH_ax)
+    mBH_ax.errorbar(QPE_data[0,:,0], QPE_data[2,:,0], yerr=[QPE_data[2,:,1],QPE_data[2,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize)
+    mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[2,:,0], yerr=[TDE_data[2,:,1],TDE_data[2,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", mec="white", mew=0.5, markersize=markersize-1)
 
     #----------Make the labels---------
     mBH_ax.set_xlabel(main_property, fontsize=fontsize)
@@ -369,11 +380,121 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     mBH_ax.xaxis.set_tick_params(labelsize=fontsize-2)
     mS_ax.yaxis.set_tick_params(labelsize=fontsize-2)
     mBH_ax.yaxis.set_tick_params(labelsize=fontsize-2)
+
+    if extremums["param"] is not None:
+        n_hist_ax.set_xlim(*extremums["param"])
+    if extremums["m_star"] is not None:
+        mS_hist_ax.set_ylim(*extremums["m_star"])
+    if extremums["m_bh"] is not None:
+        mBH_hist_ax.set_ylim(*extremums["m_bh"])
+
+
     plt.subplots_adjust(left=0.15, bottom=0.15, right=0.975, top=0.975, wspace=0, hspace=0)
     if save_plot is not None:
         plt.savefig(f"{save_plot}.pdf")
     plt.show()
 
+
+def redshiftMass(data, referenceCatalogData=None, columns_compare=None, fontsize=15, smoothness=6, save_plot=None, markersize=9, extremums=None, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
+    """
+    Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
+    """
+    for i in range(len(data)-1):
+        assert len(data[i]) == len(data[i+1])
+    # data should be in the shape of [QPE data, TDE data]
+    QPE_data, TDE_data = data
+    QPE_data, TDE_data = np.array(QPE_data), np.array(TDE_data)
+
+    # QPE and TDE data should be in the shape of np.array([n_sersic, m_star, m_BH]), with each one containing their uncertainties
+
+    # Create the plot axes:
+    fig = plt.figure(figsize=(6,6))
+    gs = mpl.gridspec.GridSpec(10, 10, wspace=0.0, hspace=0.0)    
+    n_hist_ax = fig.add_subplot(gs[0:2, 0:8]) # Sérsic index histogram
+    mS_hist_ax =fig.add_subplot(gs[2:10, 8:10]) # Stellar mass histogram
+    mS_ax = fig.add_subplot(gs[2:10, 0:8], sharex=n_hist_ax, sharey=mS_hist_ax) #  n vs log(M_star)
+    # Hide some of the axes ticks
+    plt.setp(n_hist_ax.get_xticklabels(), visible=False)
+    plt.setp(mS_hist_ax.get_xticklabels(), visible=False)
+    plt.setp(n_hist_ax.get_yticklabels(), visible=False)
+    plt.setp(mS_hist_ax.get_yticklabels(), visible=False)
+
+
+
+    #----------Make the histograms---------
+
+    # param
+    x_min = np.min(QPE_data[0,:,0]) if np.min(TDE_data[0,:,0]) > np.min(QPE_data[0,:,0]) else np.min(TDE_data[0,:,0])
+    x_max = np.max(QPE_data[0,:,0]) if np.max(TDE_data[0,:,0]) < np.max(QPE_data[0,:,0]) else np.max(TDE_data[0,:,0])
+    if referenceCatalogData is not None:
+        x_min = x_min if np.min(referenceCatalogData[f"col_{columns_compare[0]}"]) > x_min else np.min(referenceCatalogData[f"col_{columns_compare[0]}"])
+        x_max = x_max if np.max(referenceCatalogData[f"col_{columns_compare[0]}"]) < x_max else np.max(referenceCatalogData[f"col_{columns_compare[0]}"])
+    if extremums["param"] is not None:
+        x_min, x_max = extremums["param"]
+    X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
+    bandwidth = np.abs(x_max-x_min)/smoothness
+    if referenceCatalogData is not None:
+        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[0]}"])[:,np.newaxis])
+        log_dens = kde.score_samples(X_plot)
+        #n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+        n_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[0,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(X_plot)
+    n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(TDE_data[0,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(X_plot)
+    n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
+
+    # m_star
+    y_min = np.min(QPE_data[1,:,0]) if np.min(TDE_data[1,:,0]) > np.min(QPE_data[1,:,0]) else np.min(TDE_data[1,:,0])
+    y_max = np.max(QPE_data[1,:,0]) if np.max(TDE_data[1,:,0]) < np.max(QPE_data[1,:,0]) else np.max(TDE_data[1,:,0])
+    if referenceCatalogData is not None:
+        y_min = y_min if np.min(referenceCatalogData[f"col_{columns_compare[1]}"]) > y_min else np.min(referenceCatalogData[f"col_{columns_compare[1]}"])
+        y_max = y_max if np.max(referenceCatalogData[f"col_{columns_compare[1]}"]) < y_max else np.max(referenceCatalogData[f"col_{columns_compare[1]}"])
+    if extremums["m_star"] is not None:
+        y_min, y_max = extremums["m_star"]
+    Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
+    bandwidth = np.abs(y_max-y_min)/smoothness
+    if referenceCatalogData is not None:
+        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[1]}"])[:,np.newaxis])
+        log_dens = kde.score_samples(Y_plot)
+        #mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+        mS_hist_ax.plot(np.exp(log_dens), Y_plot[:, 0], color="black", linewidth=linewidth)
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[1,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(Y_plot)
+    mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
+    kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(TDE_data[1,:,0][:,np.newaxis])
+    log_dens = kde.score_samples(Y_plot)
+    mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
+
+
+    #----------Make the plots---------
+
+    # param vs m_star
+    if referenceCatalogData is not None:
+        #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, levels=levels, color="black", ax=mS_ax, label="Reference")
+        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=mS_ax, label="Reference")
+        #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=False, levels=7, linewidths=0.5, color="black", ax=mS_ax, label="Reference")
+    mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize, label="QPE")
+    mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1, mec="white", mew=0.5, label="TDE")
+    mS_ax.legend(loc="lower right", fontsize=fontsize-3)
+
+    #----------Make the labels---------
+    mS_ax.set_xlabel(r"Redshift $z$", fontsize=fontsize)
+    mS_ax.set_ylabel(r"$\log(M_\star)$", fontsize=fontsize)
+    mS_ax.xaxis.set_tick_params(labelsize=fontsize-2)
+    mS_ax.yaxis.set_tick_params(labelsize=fontsize-2)
+
+    if extremums["param"] is not None:
+        n_hist_ax.set_xlim(*extremums["param"])
+    if extremums["m_star"] is not None:
+        mS_hist_ax.set_ylim(*extremums["m_star"])
+
+
+    plt.subplots_adjust(left=0.15, bottom=0.15, right=0.975, top=0.975, wspace=0, hspace=0)
+    if save_plot is not None:
+        plt.savefig(f"{save_plot}.pdf")
+    plt.show()
 
 
 def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, extremums=None, fontsize=15, markersize=8, smoothness=6, save_plot=None, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
@@ -594,7 +715,7 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, e
     #----------Make the labels---------
     n_mBH_ax.set_xlabel(r"$\text{Sérsic index } n$", fontsize=fontsize)
     bt_mBH_ax.set_xlabel(r"$(B/T)_g$", fontsize=fontsize)
-    ssmd_mBH_ax.set_xlabel(r"$\Sigma_{M_\star}$ $[M_\odot ~\mathrm{kpc}^{-2}]$", fontsize=fontsize)
+    ssmd_mBH_ax.set_xlabel(r"$\log(\Sigma_{M_\star})$ $[M_\odot ~\mathrm{kpc}^{-2}]$", fontsize=fontsize)
     n_mS_ax.set_ylabel(r"$\log(M_\star)$ $[M_\odot]$", fontsize=fontsize)
     n_mBH_ax.set_ylabel(r"$\log(M_\mathrm{BH})$ $[M_\odot]$", fontsize=fontsize)
     n_mBH_ax.xaxis.set_tick_params(labelsize=fontsize-2)
@@ -622,9 +743,9 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, e
 
 def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, M_stars, references=None, filename="latexTable.txt", verbose=False):
     """
-    columns are: NAME, REDSHIFT, R_50, N_SERSIC, BT_RATIO, SSMD
+    columns are: NAME, REDSHIFT, R_50, N_SERSIC, BT_RATIO, SSMD, M_stars
 
-    makes a .txt file
+    makes a .txt file ready to be copy&pasted into overleaf or your favorite LaTex editor near you.
     """
     total_string = ""
     each_lines = []
