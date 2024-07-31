@@ -19,6 +19,7 @@ bounds = {"redshift": (0.01,0.1),
 resolution = 100
 smoothing_param = resolution/6
 sample_size=1000000
+show_plots = True
 # ***************************************************************************
 
 
@@ -109,7 +110,7 @@ def get_sampled_element(cdf, sample_size=1):
     return indices
 
 sample_indices_z = get_sampled_element(norm_cdf, sample_size=sample_size)
-if False:
+if show_plots:
     # This is just to make sure I am sampling correctly
     #print(redshift_bins[sample_index])
     ax1 = plt.subplot(111)
@@ -129,7 +130,7 @@ def get_m_star_cdf(z_bin):
 sample_indices_m_star = []
 sampled_grid = np.zeros((resolution,resolution))
 for i in tqdm(range(len(sample_indices_z))):
-    if False:
+    if show_plots and i == 0:
         # This is just to make sure I am sampling correctly
         #print(redshift_bins[sample_index])
 
