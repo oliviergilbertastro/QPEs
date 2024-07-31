@@ -7,7 +7,7 @@ from utils import print_color
 
 QPE_distribution = np.loadtxt("QPE_distribution.txt")
 TDE_distribution = np.loadtxt("TDE_distribution.txt")
-reference_distribution = np.loadtxt("referenceCatalog_modif2.txt")
+reference_distribution = np.loadtxt("referenceCatalog_final.txt")
 reference_distribution = reference_distribution[:,[12,60,68,63,67]]
 
 def getStats(dist):

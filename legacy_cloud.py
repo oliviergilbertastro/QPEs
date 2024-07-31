@@ -4,7 +4,7 @@ Program to compare QPE hosts and TDE hosts "apples to apples" with the LEGACY DE
 import pickle
 import numpy as np
 from ned_wright_cosmology import calculate_cosmo
-from utils import print_table, myCornerPlot, toLog, myFinalPlot, myCombinedFinalPlot, recombine_arrays, add_0_uncertainties, makeLatexTable, redshiftMass
+from utils import print_table, myCornerPlot, toLog, myFinalPlot, myCombinedFinalPlot, recombine_arrays, add_0_uncertainties, makeLatexTable, redshiftMass, cut_from_catalog
 import matplotlib.pyplot as plt
 from paper_data import *
 from download_data import *
@@ -59,7 +59,10 @@ if __name__ == "__main__":
 
     redshiftMass([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=(1,63,67), save_plot="redshift_distribution", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
-                        smoothness=10,
+                        smoothness=7,
+                        referenceSmoothness=20,
+                        bins=10,
+                        kernelDensitiesReference=False,
                         extremums={"param": (0.01,0.1),
                                    "m_star": (9.2,10.4),
                                    }
@@ -70,6 +73,9 @@ if __name__ == "__main__":
     myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
                         smoothness=10,
+                        referenceSmoothness=20,
+                        bins=10,
+                        kernelDensitiesReference=False,
                         extremums={"n_sersic": (0,5.5),
                                    "bt_ratio": (-0.15,1.05),
                                    "ssmd": (8.2,10.6),

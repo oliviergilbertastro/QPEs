@@ -15,11 +15,13 @@ from utils import cut_from_catalog
 # All parameters
 # Choose bounds for that z-M_star grid
 bounds = {"redshift": (0.01,0.1),
-          "m_star": (9.2,10.4)}
+          "m_star": (9.2,10.4),
+          "m_bh": (4.5,8)}
 resolution = 100
 smoothing_param = resolution/6
 sample_size=1000000
 show_plots = True
+matching = "m_star" # choose wether to match on black hole mass or stellar mass
 # ***************************************************************************
 
 
@@ -30,11 +32,12 @@ show_plots = True
 refCat = np.loadtxt("referenceCatalog_modif2.txt")
 # Cut reference catalog to only have galaxies within selected bounds:
 refCat = cut_from_catalog(refCat, 1, bounds["redshift"], verbose=True)
-refCat = cut_from_catalog(refCat, 63, bounds["m_star"], verbose=True)
+refCat = cut_from_catalog(refCat, (63 if matching == "m_star" else 67), bounds[matching], verbose=True)
 np.savetxt("referenceCatalog_matching.txt", refCat)
 fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
 fieldnames[1] = "redshift"
 fieldnames[63] = "m_star"
+fieldnames[67] = "m_bh"
 refCat = pd.read_csv("referenceCatalog_matching.txt", delimiter=" ", header=None, names=fieldnames)
 
 # Let's load the QPE hosts:
@@ -47,15 +50,15 @@ QPEGalaxies = pd.read_csv("QPE_distribution.txt", header=None, names=fieldnames,
 
 
 redshift_bins = np.linspace(bounds["redshift"][0], bounds["redshift"][1], resolution)
-m_star_bins = np.linspace(bounds["m_star"][0], bounds["m_star"][1], resolution)
+m_star_bins = np.linspace(bounds[matching][0], bounds[matching][1], resolution)
 
 QPEGalaxies["redshift_bin"] = pd.cut(QPEGalaxies["redshift"], bins=redshift_bins)
-QPEGalaxies["m_star_bin"] = pd.cut(QPEGalaxies["m_star"], bins=m_star_bins)
+QPEGalaxies["m_star_bin"] = pd.cut(QPEGalaxies[matching], bins=m_star_bins)
 
 # Sort QPEs into their bins
 QPE_grid = np.zeros((resolution,resolution))
 for i in range(len(QPEGalaxies)):
-    m_star, z = QPEGalaxies["m_star"][i], QPEGalaxies["redshift"][i]
+    m_star, z = QPEGalaxies[matching][i], QPEGalaxies["redshift"][i]
     for mbin in list(m_star_bins)[::-1]:
         if m_star > mbin:
             m_star_index = list(m_star_bins).index(mbin)
@@ -73,7 +76,7 @@ QPE_grid = QPE_grid/np.sum(QPE_grid) # normalize
 assert np.sum(QPE_grid) > 0.999999 and np.sum(QPE_grid) < 1.000001
 plt.imshow(QPE_grid, origin="lower", cmap="Greys")
 plt.xlabel("$z$ bin", fontsize=15)
-plt.ylabel("$M_\star$ bin", fontsize=15)
+plt.ylabel("$M_\star$ bin" if matching == "m_star" else "$M_\mathrm{BH}$ bin", fontsize=15)
 plt.title("Normalized probability density", fontsize=16)
 plt.show()
 
@@ -83,7 +86,7 @@ QPE_grid = QPE_grid/np.sum(QPE_grid) # normalize
 assert np.sum(QPE_grid) > 0.999999 and np.sum(QPE_grid) < 1.000001
 plt.imshow(QPE_grid, origin="lower", cmap="Greys")
 plt.xlabel("$z$ bin", fontsize=15)
-plt.ylabel("$M_\star$ bin", fontsize=15)
+plt.ylabel("$M_\star$ bin" if matching == "m_star" else "$M_\mathrm{BH}$ bin", fontsize=15)
 plt.title("Normalized probability density", fontsize=16)
 plt.show()
 
@@ -135,11 +138,11 @@ for i in tqdm(range(len(sample_indices_z))):
         #print(redshift_bins[sample_index])
 
         m_star_CDF = get_m_star_cdf(sample_indices_z[i])
-        sample_indices_star = get_sampled_element(m_star_CDF, sample_size=10000)
+        sample_indices_star = get_sampled_element(m_star_CDF, sample_size=1000000)
         ax1 = plt.subplot(111)
         ax1.plot(m_star_bins, QPE_grid[:,sample_indices_z[i]]/np.sum(QPE_grid[:,sample_indices_z[i]]), linewidth=2, label="PDF")
         #ax1.plot(m_star_bins, m_star_CDF, linewidth=2, label="CDF")
-        ax1.set_xlabel("$M_\star$", fontsize=15)
+        ax1.set_xlabel("$M_\star$" if matching == "m_star" else "$M_\mathrm{BH}$", fontsize=15)
         ax1.set_ylabel("Probability density", fontsize=15)
         counts2, bins2 = np.histogram(m_star_bins[sample_indices_star], bins=len(redshift_bins))
         ax1.stairs(counts2/len(sample_indices_star), bins2, fill=True, label="Sampled from CDF")
@@ -160,12 +163,12 @@ fig.set_size_inches((8,4.5))
 ax1, ax2 = plt.subplot(121), plt.subplot(122)
 ax1.imshow(QPE_grid, origin="lower", cmap="Greys")
 ax1.set_xlabel("$z$ bin", fontsize=15)
-ax1.set_ylabel("$M_\star$ bin", fontsize=15)
+ax1.set_ylabel("$M_\star$ bin" if matching == "m_star" else "$M_\mathrm{BH}$ bin", fontsize=15)
 ax1.set_title("QPE sample probability density", fontsize=16)
 
 ax2.imshow(sampled_grid, origin="lower", cmap="Greys")
 ax2.set_xlabel("$z$ bin", fontsize=15)
-ax2.set_ylabel("$M_\star$ bin", fontsize=15)
+ax2.set_ylabel("$M_\star$ bin" if matching == "m_star" else "$M_\mathrm{BH}$ bin", fontsize=15)
 ax2.set_title("Resampled probability density", fontsize=16)
 plt.subplots_adjust(wspace=0.35)
 plt.show()
@@ -178,7 +181,7 @@ plt.show()
 ref_grid = np.zeros((resolution,resolution))
 ref_grid_list = [[[] for i in range(resolution)] for i in range(resolution)]
 for i in tqdm(range(len(refCat))):
-    m_star, z = refCat["m_star"][i], refCat["redshift"][i]
+    m_star, z = refCat[matching][i], refCat["redshift"][i]
     for mbin in list(m_star_bins)[::-1]:
         if m_star > mbin:
             m_star_index = list(m_star_bins).index(mbin)
@@ -199,12 +202,12 @@ fig.set_size_inches((9.4,4.5))
 ax1, ax2 = plt.subplot(121), plt.subplot(122)
 ax1.imshow(QPE_grid, origin="lower", cmap="Greys")
 ax1.set_xlabel("$z$ bin", fontsize=15)
-ax1.set_ylabel("$M_\star$ bin", fontsize=15)
+ax1.set_ylabel("$M_\star$ bin" if matching == "m_star" else "$M_\mathrm{BH}$ bin", fontsize=15)
 ax1.set_title("QPE sample probability density", fontsize=16)
 
 ax2.imshow(ref_grid, origin="lower", cmap="Greys")
 ax2.set_xlabel("$z$ bin", fontsize=15)
-ax2.set_ylabel("$M_\star$ bin", fontsize=15)
+ax2.set_ylabel("$M_\star$ bin" if matching == "m_star" else "$M_\mathrm{BH}$ bin", fontsize=15)
 ax2.set_title("Comparison sample probability density", fontsize=16)
 plt.subplots_adjust(wspace=0.35)
 plt.show()
@@ -227,11 +230,12 @@ refCat = np.loadtxt("referenceCatalog_final.txt")
 fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
 fieldnames[1] = "redshift"
 fieldnames[63] = "m_star"
+fieldnames[67] = "m_bh"
 refCat = pd.read_csv("referenceCatalog_final.txt", delimiter=" ", header=None, names=fieldnames)
 
 ref_grid = np.zeros((resolution,resolution))
 for i in tqdm(range(len(refCat))):
-    m_star, z = refCat["m_star"][i], refCat["redshift"][i]
+    m_star, z = refCat[matching][i], refCat["redshift"][i]
     for mbin in list(m_star_bins)[::-1]:
         if m_star > mbin:
             m_star_index = list(m_star_bins).index(mbin)
@@ -252,12 +256,12 @@ fig.set_size_inches((10,4.5))
 ax1, ax2 = plt.subplot(121), plt.subplot(122)
 ax1.imshow(QPE_grid, origin="lower", cmap="Greys")
 ax1.set_xlabel("$z$ bin", fontsize=15)
-ax1.set_ylabel("$M_\star$ bin", fontsize=15)
+ax1.set_ylabel("$M_\star$ bin" if matching == "m_star" else "$M_\mathrm{BH}$ bin", fontsize=15)
 ax1.set_title("QPE sample probability density", fontsize=16)
 
 ax2.imshow(ref_grid, origin="lower", cmap="Greys")
 ax2.set_xlabel("$z$ bin", fontsize=15)
-ax2.set_ylabel("$M_\star$ bin", fontsize=15)
+ax2.set_ylabel("$M_\star$ bin" if matching == "m_star" else "$M_\mathrm{BH}$ bin", fontsize=15)
 ax2.set_title("Resampled comparison sample probability density", fontsize=16)
 plt.subplots_adjust(wspace=0.35)
 plt.show()

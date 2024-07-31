@@ -395,7 +395,7 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     plt.show()
 
 
-def redshiftMass(data, referenceCatalogData=None, columns_compare=None, fontsize=15, smoothness=6, save_plot=None, markersize=9, extremums=None, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
+def redshiftMass(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, fontsize=15, smoothness=6, referenceSmoothness=12, save_plot=None, markersize=9, extremums=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
@@ -434,10 +434,14 @@ def redshiftMass(data, referenceCatalogData=None, columns_compare=None, fontsize
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(x_max-x_min)/smoothness
     if referenceCatalogData is not None:
-        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[0]}"])[:,np.newaxis])
-        log_dens = kde.score_samples(X_plot)
-        #n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
-        n_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+        if kernelDensitiesReference:
+            kde = KernelDensity(kernel="gaussian", bandwidth=referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[0]}"])[:,np.newaxis])
+            log_dens = kde.score_samples(X_plot)
+            #n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+            n_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+        else:
+            heights, bin = np.histogram(referenceCatalogData[f"col_{columns_compare[0]}"], bins=bins, range=(x_min,x_max), density=True)
+            n_hist_ax.plot(np.linspace(x_min,x_max,bins), heights, color="black", linewidth=2)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[0,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -456,10 +460,15 @@ def redshiftMass(data, referenceCatalogData=None, columns_compare=None, fontsize
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(y_max-y_min)/smoothness
     if referenceCatalogData is not None:
-        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[1]}"])[:,np.newaxis])
-        log_dens = kde.score_samples(Y_plot)
-        #mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
-        mS_hist_ax.plot(np.exp(log_dens), Y_plot[:, 0], color="black", linewidth=linewidth)
+        if kernelDensitiesReference:
+            kde = KernelDensity(kernel="gaussian", bandwidth=np.abs(y_max-y_min)/referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[1]}"])[:,np.newaxis])
+            log_dens = kde.score_samples(Y_plot)
+            #mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+            mS_hist_ax.plot(np.exp(log_dens), Y_plot[:, 0], color="black", linewidth=linewidth)
+            # We don't want to smooth twice:
+        else:
+            heights, bin = np.histogram(referenceCatalogData[f"col_{columns_compare[1]}"], bins=bins, range=(y_min,y_max), density=True)
+            mS_hist_ax.plot(heights, np.linspace(y_min,y_max,bins), color="black", linewidth=2)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[1,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -497,7 +506,7 @@ def redshiftMass(data, referenceCatalogData=None, columns_compare=None, fontsize
     plt.show()
 
 
-def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, extremums=None, fontsize=15, markersize=8, smoothness=6, save_plot=None, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
+def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, extremums=None, fontsize=15, markersize=8, smoothness=6, referenceSmoothness=12, save_plot=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
@@ -563,10 +572,14 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, e
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(x_max-x_min)/smoothness
     if referenceCatalogData is not None:
-        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[0][0]}"])[:,np.newaxis])
-        log_dens = kde.score_samples(X_plot)
-        #n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
-        n_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+        if kernelDensitiesReference:
+            kde = KernelDensity(kernel="gaussian", bandwidth=np.abs(x_max-x_min)/referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[0][0]}"])[:,np.newaxis])
+            log_dens = kde.score_samples(X_plot)
+            #n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+            n_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+        else:
+            heights, bin = np.histogram(referenceCatalogData[f"col_{columns_compare[0][0]}"], bins=bins, range=(x_min, x_max), density=True)
+            n_hist_ax.plot(np.linspace(x_min,x_max,bins), heights, color="black", linewidth=2)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[0,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -585,10 +598,14 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, e
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(x_max-x_min)/smoothness
     if referenceCatalogData is not None:
-        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[0][1]}"])[:,np.newaxis])
-        log_dens = kde.score_samples(X_plot)
-        #bt_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
-        bt_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+        if kernelDensitiesReference:
+            kde = KernelDensity(kernel="gaussian", bandwidth=np.abs(x_max-x_min)/referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[0][1]}"])[:,np.newaxis])
+            log_dens = kde.score_samples(X_plot)
+            #bt_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+            bt_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+        else:
+            heights, bin = np.histogram(referenceCatalogData[f"col_{columns_compare[0][1]}"], bins=bins, range=(x_min, x_max), density=True)
+            bt_hist_ax.plot(np.linspace(x_min,x_max,bins), heights, color="black", linewidth=2)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[1,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     bt_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -607,10 +624,14 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, e
     X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(x_max-x_min)/smoothness
     if referenceCatalogData is not None:
-        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[0][2]}"])[:,np.newaxis])
-        log_dens = kde.score_samples(X_plot)
-        #ssmd_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
-        ssmd_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+        if kernelDensitiesReference:
+            kde = KernelDensity(kernel="gaussian", bandwidth=np.abs(x_max-x_min)/referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[0][2]}"])[:,np.newaxis])
+            log_dens = kde.score_samples(X_plot)
+            #ssmd_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+            ssmd_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+        else:
+            heights, bin = np.histogram(referenceCatalogData[f"col_{columns_compare[0][2]}"], bins=bins, range=(x_min, x_max), density=True)
+            ssmd_hist_ax.plot(np.linspace(x_min,x_max,bins), heights, color="black", linewidth=2)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[2,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     ssmd_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -629,10 +650,14 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, e
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(y_max-y_min)/smoothness
     if referenceCatalogData is not None:
-        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[1]}"])[:,np.newaxis])
-        log_dens = kde.score_samples(Y_plot)
-        #mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
-        mS_hist_ax.plot(np.exp(log_dens), Y_plot[:, 0], color="black", linewidth=linewidth)
+        if kernelDensitiesReference:
+            kde = KernelDensity(kernel="gaussian", bandwidth=np.abs(y_max-y_min)/referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[1]}"])[:,np.newaxis])
+            log_dens = kde.score_samples(Y_plot)
+            #mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+            mS_hist_ax.plot(np.exp(log_dens), Y_plot[:, 0], color="black", linewidth=linewidth)
+        else:
+            heights, bin = np.histogram(referenceCatalogData[f"col_{columns_compare[1]}"], bins=bins, range=(y_min, y_max), density=True)
+            mS_hist_ax.plot(heights, np.linspace(y_min,y_max,bins), color="black", linewidth=2)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[3,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mS_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
@@ -651,10 +676,14 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, e
     Y_plot = np.linspace(y_min, y_max, 1000)[:,np.newaxis]
     bandwidth = np.abs(y_max-y_min)/smoothness
     if referenceCatalogData is not None:
-        kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(np.array(referenceCatalogData[f"col_{columns_compare[2]}"])[:,np.newaxis])
-        log_dens = kde.score_samples(Y_plot)
-        #mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
-        mBH_hist_ax.plot(np.exp(log_dens), Y_plot[:, 0], color="black", linewidth=linewidth)
+        if kernelDensitiesReference:
+            kde = KernelDensity(kernel="gaussian", bandwidth=np.abs(y_max-y_min)/referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[2]}"])[:,np.newaxis])
+            log_dens = kde.score_samples(Y_plot)
+            #mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+            mBH_hist_ax.plot(np.exp(log_dens), Y_plot[:, 0], color="black", linewidth=linewidth)
+        else:
+            heights, bin = np.histogram(referenceCatalogData[f"col_{columns_compare[2]}"], bins=bins, range=(y_min, y_max), density=True)
+            mBH_hist_ax.plot(heights, np.linspace(y_min,y_max,bins), color="black", linewidth=2)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[4,:,0][:,np.newaxis])
     log_dens = kde.score_samples(Y_plot)
     mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)

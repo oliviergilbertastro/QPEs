@@ -30,7 +30,7 @@ reference_catalog = cut_from_catalog(reference_catalog, index=61, bounds=(-50, 1
 
 #print("Black hole mass cut...")
 #reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(5.5, 7), verbose=True)
-#reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(None, 8), verbose=True)
+#reference_catalog = cut_from_catalog(reference_catalog, index=67, bounds=(None, 7), verbose=True)
 
 print("Stellar mass cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=63, bounds=(9.2, 10.4), verbose=True)
