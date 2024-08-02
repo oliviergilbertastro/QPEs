@@ -74,6 +74,62 @@ TDE_coords = [
                 (180.4001167, 30.0515333),                              #SDSS J1201
 ]
 
+# HAMMERSTEIN 2022
+hammerstein_TDE_names = [
+    "AT2018zr",
+    "AT2018bsi",
+    "AT2018hco",
+    "AT2018iih",
+    "AT2018hyz",
+    "AT2018lni",
+    "AT2018lna",
+    "AT2018jbv",
+    "AT2019cho",
+    "AT2019bhf",
+    "AT2019azh",
+    "AT2019dsg",
+    "AT2019ehz",
+    "AT2019mha",
+    "AT2019meg",
+    "AT2019lwu",
+    "AT2019qiz",
+    "AT2019teq",
+    "AT2020pj",
+    "AT2019vcb",
+    "AT2020ddv",
+    "AT2020ocn",
+    "AT2020opy",
+    "AT2020mot",
+    "AT2020mbq",
+    "AT2020qhs",
+    "AT2020riz",
+    "AT2020wey",
+    "AT2020zso",
+    "AT2020ysg",
+]
+
+hammerstein_TDE_coords = [
+                (119.22723844, 34.2621136415),
+                (123.860919, 45.592208),
+                (16.8901468, 23.4761884),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+                (),
+]
+
 TDE_types = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None"]
 TDE_types = ["Bulge", "Bulge", "Bulge", "Bulge", "Bulge", "Bulge", "AGN", "Bulge", "AGN", "AGN"]
 
