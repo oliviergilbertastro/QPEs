@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from utils import print_color
+import sys
 
 # Distributions should be [bt_ratio, n_sersic, surface_mass_density, mStar, mBH]
 # The program distributions.py creates the txt files of the QPE and TDE distributions
@@ -8,8 +9,8 @@ from utils import print_color
 QPE_distribution = np.loadtxt("QPE_distribution.txt")
 TDE_distribution = np.loadtxt("TDE_distribution.txt")
 reference_distribution = np.loadtxt("referenceCatalog_final.txt")
-reference_distribution = reference_distribution[:,[12,60,68,63,67]]
-
+reference_distribution = reference_distribution[:,[12,60,68,63,67,1]]
+different_params = ["B/T ratio", "n_sersic", "SMSD", "M_star", "M_BH", "z"]
 def getStats(dist):
     n_data = dist.shape[0] # number of data points
     means = np.mean(dist, axis=0)
@@ -50,8 +51,7 @@ N_tde, mu_tde, std_tde = getStats(TDE_distribution)
 N_ref, mu_ref, std_ref = getStats(reference_distribution)
 
 
-if __name__ == "__main__":
-    different_params = ["B/T ratio", "n_sersic", "SMSD", "M_star", "M_BH"]
+if __name__ == "WRONG":
     print_color("Z-STATISTIC", color="blue")
     for i in range(len(different_params)):
         print(f"\x1b[33m{different_params[i]}:\x1b[0m")
@@ -65,6 +65,60 @@ if __name__ == "__main__":
         string = '\x1b[32mSame\x1b[0m' if z < 2.33 else '\x1b[31mDifferent\x1b[0m'
         print(f"TDE = ref : {string} ({z})")
 
+def compareSamples(sample1, sample2, threshold):
+    aboveThreshold1 = sample1[sample1>threshold]
+    aboveThreshold2 = sample2[sample2>threshold]
+    percentage1, percentage2 = len(list(aboveThreshold1))/len(list(sample1)), len(list(aboveThreshold2))/len(list(sample2))
+    return np.around((percentage1, percentage2), decimals=2)
+
+if __name__ == "__main__":
+    thresholds = [0.35, 2, 9.5, 10, 10, 0.05]
+    print_color("OUR COMPARISON TEST", color="blue")
+    for i in range(len(different_params)):
+        print(f"\x1b[33m{different_params[i]} > {thresholds[i]}:\x1b[0m")
+        pc1, pc2 = compareSamples(QPE_distribution[:,i], reference_distribution[:,i], threshold=thresholds[i])
+        print(f"QPE vs ref : {pc1} vs {pc2}")
+
+
+def compare_2samp(scipyFunc, name, QPE_samp, TDE_samp, REF_samp):
+    """Shows the p-values of the tests"""
+    print_color(name, color="blue")
+    for i in range(len(different_params)):
+        print(f"\x1b[33m{different_params[i]}:\x1b[0m")
+        if name == "anderson_ksamp":
+            ref_res = scipyFunc((QPE_samp[:,i], REF_samp[:,i]), method=PermutationMethod())
+            tde_res = scipyFunc((QPE_samp[:,i], TDE_samp[:,i]), method=PermutationMethod())
+        else:
+            ref_res = scipyFunc(QPE_samp[:,i], REF_samp[:,i])
+            tde_res = scipyFunc(QPE_samp[:,i], TDE_samp[:,i])
+        print(f"QPE vs ref : {np.around(ref_res.pvalue, decimals=3)}")
+        print(f"QPE vs TDE : {np.around(tde_res.pvalue, decimals=3)}")
+    print()
+
+
+
+# ALL P-VALUE TESTS
+
+from scipy.stats import median_test, mannwhitneyu, cramervonmises_2samp, ttest_ind, ks_2samp, ranksums, anderson_ksamp, PermutationMethod
+test_funcs = [median_test, mannwhitneyu, cramervonmises_2samp, ttest_ind, ks_2samp, ranksums, #anderson_ksamp,
+              ]
+
+for func in test_funcs:
+    compare_2samp(func, func.__name__, QPE_distribution, TDE_distribution, reference_distribution)
+
+#sys.exit()
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -73,16 +127,14 @@ def checkReject_kSamp(stat, crit_vals, p_level):
     values = [0.25,0.10,0.05,0.025,0.01,0.005,0.001]
     p_level = round(p_level, 3)
     current = f"Cannot reject - \x1b[32mSimilar\x1b[0m - pvalue={p_level}"
+    if p_level < 0.05:
+        current = f"Can reject - \x1b[31mDifferent\x1b[0m - pvalue={p_level}"
+    return current
     for i in range(len(values)):
         if stat < crit_vals[i]:
             return current
         current = f"Can reject at a confidence level of {(1-values[i])*100}% - pvalue={p_level}"
     return current
-
-
-
-
-
 
 def c(alpha):
     return np.sqrt(-np.log(alpha/2)/2)

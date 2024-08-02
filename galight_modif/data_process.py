@@ -526,12 +526,15 @@ class DataProcess(object):
     def use_custom_psf(self, psf_image, if_plot=True, **kargs):
         self.PSF_list = []
         self.PSF_list.append(psf_image)
+        _fwhms = measure_FWHM(psf_image , radius = int(30/5))
+        #print("FWHM:", np.around(np.mean(_fwhms)*0.262, decimals=3), '"')
         if if_plot:
             plt.imshow(psf_image)
             plt.title("PSF image")
             plt.show()
             self.profiles_compare(norm_pix = 5, if_annuli=False, y_log = False,
                             prf_name_list = (['target'] + ['PSF{0}'.format(i) for i in range(len(self.PSF_list))]) )
+        return np.mean(_fwhms)
 
     def checkout(self):
         """

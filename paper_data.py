@@ -22,7 +22,7 @@ TDE_bt_ratio_litterature = [0.5505584522139586, 0.9102572585554349, 0.4201889738
 
 
 TDE_mBH_litterature[9] = 7.18 # French2020 review article
-TDE_mBH = TDE_mBH_litterature
+TDE_mBH = 10**np.array(TDE_mBH_litterature)
 
 if False:
     #TDE sersic indices from Review Paper (https://arxiv.org/pdf/2003.02863)

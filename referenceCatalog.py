@@ -84,7 +84,7 @@ reference_catalog = np.vstack((reference_catalog.T, np.array(Sigma_hlg))).T
 
 # redshift cut
 print("Redshift cut...")
-reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.2), verbose=True)
+reference_catalog = cut_from_catalog(reference_catalog, index=1, bounds=(0.01, 0.1), verbose=True)
 
 # bulge g-r cut
 print("Bulge g-r cut...")

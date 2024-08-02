@@ -212,6 +212,8 @@ ax2.set_title("Comparison sample probability density", fontsize=16)
 plt.subplots_adjust(wspace=0.35)
 plt.show()
 
+old_skips = 0
+new_skips = 0
 goodGalaxies = []
 refCat = np.loadtxt("referenceCatalog_matching.txt")
 # Resample the reference catalog galaxies so they look gut.
@@ -221,7 +223,22 @@ for z_index, m_index in tqdm(zip(sample_indices_z, sample_indices_m_star)):
         random_galaxy = ref_grid_list[m_index][z_index][random_index_in_bin]
         goodGalaxies.append(refCat[random_galaxy,:])
     except:
+        done = False
+        old_skips += 1
+        for x in [-1,1]:
+            for y in [-1,1]:
+                if not done:
+                    try:
+                        random_index_in_bin = np.random.randint(len(ref_grid_list[m_index][z_index]))
+                        random_galaxy = ref_grid_list[m_index+x][z_index+y][random_index_in_bin]
+                        goodGalaxies.append(refCat[random_galaxy,:])
+                        done = True
+                    except:
+                        pass
+        new_skips += 1
         pass
+print("Old skip percentage:", old_skips/sample_size)
+print("New skip percentage:", new_skips/sample_size)
     #input("...")
 goodGalaxies = np.array(goodGalaxies)[:48000,:]
 print(goodGalaxies.shape)

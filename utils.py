@@ -435,19 +435,22 @@ def redshiftMass(data, referenceCatalogData=None, columns_compare=None, kernelDe
     bandwidth = np.abs(x_max-x_min)/smoothness
     if referenceCatalogData is not None:
         if kernelDensitiesReference:
-            kde = KernelDensity(kernel="gaussian", bandwidth=referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[0]}"])[:,np.newaxis])
+            kde = KernelDensity(kernel="gaussian", bandwidth=np.abs(x_max-x_min)/referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[0]}"])[:,np.newaxis])
             log_dens = kde.score_samples(X_plot)
             #n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
             n_hist_ax.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=linewidth)
+            print(np.sum(np.exp(log_dens)))
         else:
             heights, bin = np.histogram(referenceCatalogData[f"col_{columns_compare[0]}"], bins=bins, range=(x_min,x_max), density=True)
             n_hist_ax.plot(np.linspace(x_min,x_max,bins), heights, color="black", linewidth=2)
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[0,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
+    print(np.sum(np.exp(log_dens)))
     kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(TDE_data[0,:,0][:,np.newaxis])
     log_dens = kde.score_samples(X_plot)
     n_hist_ax.fill_between(X_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
+    print(np.sum(np.exp(log_dens)))
 
     # m_star
     y_min = np.min(QPE_data[1,:,0]) if np.min(TDE_data[1,:,0]) > np.min(QPE_data[1,:,0]) else np.min(TDE_data[1,:,0])

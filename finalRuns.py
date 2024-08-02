@@ -134,7 +134,8 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
         data_process.psf_id_for_fitting = int(input('Use which PSF? Input a number.\n'))
     else:
         psf_img = pyfits.open(psf_path)[0].data
-        data_process.use_custom_psf(psf_img, if_plot=False)
+        fwhm = data_process.use_custom_psf(psf_img, if_plot=False)
+        print(f'FWHM = {np.around(fwhm*pixel_scale, decimals=3)}"')
 
     #Check if all the materials is given, if so to pass to the next step.
     data_process.checkout()
@@ -336,9 +337,10 @@ import time
 
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
-    fit_single_object("QPE", 2, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[1,1]])
-    fit_single_object("TDE", 0, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[0,4]])
-    fit_single_object("TDE", 5, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[0,4]])
+    if False:
+        fit_single_object("QPE", 2, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[1,1]])
+        fit_single_object("TDE", 0, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[0,4]])
+        fit_single_object("TDE", 5, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[0,4]])
 
 
 

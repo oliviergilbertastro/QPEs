@@ -60,9 +60,9 @@ if __name__ == "__main__":
     redshiftMass([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=(1,63,67), save_plot="redshift_distribution", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
                         smoothness=7,
-                        referenceSmoothness=20,
+                        referenceSmoothness=7,
                         bins=10,
-                        kernelDensitiesReference=False,
+                        kernelDensitiesReference=True,
                         extremums={"param": (0.01,0.1),
                                    "m_star": (9.2,10.4),
                                    }
@@ -72,7 +72,7 @@ if __name__ == "__main__":
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs]))])
     myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
-                        smoothness=10,
+                        smoothness=12,
                         referenceSmoothness=20,
                         bins=10,
                         kernelDensitiesReference=False,
