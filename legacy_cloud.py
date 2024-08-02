@@ -62,7 +62,7 @@ if __name__ == "__main__":
                         smoothness=7,
                         referenceSmoothness=7,
                         bins=10,
-                        kernelDensitiesReference=True,
+                        kernelDensitiesReference=False,
                         extremums={"param": (0.01,0.1),
                                    "m_star": (9.2,10.4),
                                    }
