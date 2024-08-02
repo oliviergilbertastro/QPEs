@@ -170,6 +170,11 @@ if __name__ == "__main__":
             url = f'https://www.legacysurvey.org/viewer/jpeg-cutout?ra={str(ra)}&dec={str(dec)}&size={256}&layer=ls-dr10&pixscale={0.262}&bands={"griz"}&invvar'
             r = requests.get(url)
             open(r'data/images/'+f'{TDE_names[i]}'+r'.jpeg' , 'wb').write(r.content)
+    elif input("Download 1024x1024 of all Hammerstein TDEs? [y/n]") == "y":
+        band = input("Which band do you want to download? ['griz']")
+        for i in tqdm(range(len(hammerstein_TDE_names))):
+            for b in band:
+                get_file(hammerstein_TDE_coords[i], i, size=512*2, pixscale=0.262, band=b, name="ham_tde")
     elif input("Download 1024x1024 of all QPEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
         for i in tqdm(range(len(objects_names))):
