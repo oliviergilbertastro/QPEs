@@ -220,9 +220,15 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     print('S =', morph.smoothness)
 
 
-from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types
+from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types, hammerstein_TDE_coords, hammerstein_TDE_names
 
-if input("Load FINAL2 BULGE QPE host? [y/n]") == "y":
+if input("Load Hammerstein TDE host single-sersic fit? [y/n]") == "y":
+    for i, name in enumerate(hammerstein_TDE_names):
+        print(i,":",name)
+    objID = int(input(f"Enter the object ID you want to load [0-{len(hammerstein_TDE_names)-1}]:\n"))
+    loadRun(hammerstein_TDE_coords[objID], type="None", band="r", picklename=f"{hammerstein_TDE_names[objID]}_{'r'}-band_{'None'}_DESI_PSF.pkl")
+
+elif input("Load FINAL2 BULGE QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))
     band = input("Enter the filter band you want to load [g,r,i,z]:\n")
     loadRun(objects[objID], type="None", band="g", picklename=f"{objects_names[objID]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")

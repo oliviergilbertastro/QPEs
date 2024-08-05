@@ -225,6 +225,7 @@ def fit_bunch_of_sersics(bands="r", type="None"):
     for band in bands:
         for objID in range(len(names)):
             try:
+                print(f"\x1b[34m{names[objID]}\x1b[0m")
                 img_path = f"data/images/{path_section}{objID}_{band}.fits"
                 oow_path = f"data/images/{path_section}{objID}_{band}.fits"
                 #Use the co-add PSF model from the survey
