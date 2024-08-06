@@ -33,6 +33,11 @@ import pickle
 
 SUBTRACT_NOISE = False
 
+def error_message_to_file(message):
+    with open("galight_fitruns_errors.txt", mode="a") as f:
+        f.write(message+"\n")
+
+
 def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5, fitting_level="deep", fixed_n_list=None):
     
     
@@ -185,7 +190,7 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
     fit_sepc.prepare_fitting_seq(point_source_num = number_of_ps,
                                 fix_Re_list=None,
                                 fix_n_list=fixed_n_list, #To fix the Sérsic index at 2.09: [[0,2.09]]
-                                fix_center = None,
+                                fix_center = None,#[0,0],
                                 fix_ellipticity = None,
                                 manual_bounds = None, #{'lower':{'e1': -0.5, 'e2': -0.5, 'R_sersic': 0.01, 'n_sersic': 2., 'center_x': 0, 'center_y': 0},
                                                 #'upper':{'e1': 0.5, 'e2': 0.5, 'R_sersic': 5, 'n_sersic': 9., 'center_x': 0, 'center_y': 0}},
@@ -256,13 +261,14 @@ def fit_bunch_of_sersics(bands="r", type="None", objIDs=range(len(hammerstein_TD
                 print("\x1b[31mThis one didn't work\x1b[0m")
 
 
-def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None, fixed_n_list=None):
+def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None, fixed_n_list=None, exp_size=1, nsigma=15):
     coords = hammerstein_TDE_coords
     path_section = "ham_tde"
     names = hammerstein_TDE_names
 
     for band in bands:
         for objID in objIDs:
+            print(f"\x1b[34m{names[objID]}\x1b[0m")
             picklename = f"{names[objID]}_r-band_None_DESI_PSF.pkl"
             try:
                 fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
@@ -270,7 +276,6 @@ def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_name
                 print("\x1b[31mThis one didn't have a pickled Sérsic fit\x1b[0m")
                 continue
             n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
-            print(f"\x1b[34m{names[objID]}\x1b[0m")
             print(f"\x1b[33m{n}\x1b[0m")
             if fixed_n_list is None:
                 if n < 1.5:
@@ -297,9 +302,9 @@ def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_name
                     0.262,
                     None,
                     band,
-                    15,
+                    nsigma,
                     60,
-                    1,
+                    exp_size,
                     5,
                     "COADDED_DESI",
                     f"{names[objID]}_{band}-band_{type}_DESI_PSF_FINAL2",
@@ -307,7 +312,9 @@ def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_name
                     "mega_deep",
                     fixed_n_list,
                     )
-            except:
+            except BaseException as e:
+                error_message_to_file(f"{objID} {names[objID]} {band}")
+                print(e)
                 print("\x1b[31mThis one didn't work\x1b[0m")
                 #psf_bands = "griz"
                 #fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(band)+1)%len(psf_bands)])
@@ -319,8 +326,15 @@ import time
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
-    fit_bulge_disk(bands="g", type="Bulge", objIDs=range(5, len(hammerstein_TDE_names)))
+    fit_bulge_disk(bands="g", type="Bulge", objIDs=[3], exp_size=1.5, nsigma=3)
+    #fit_bulge_disk(bands="g", type="Bulge", objIDs=[7], exp_size=1.5, nsigma=3)
+    #fit_bulge_disk(bands="g", type="Bulge", objIDs=[8,26])
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+
+    if False:
+        # case by case:
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[18,19], psf_band="z")
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[2], exp_size=1.5)
 
     if False:
         # first bulge+disk decomposition run
