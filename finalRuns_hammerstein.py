@@ -256,83 +256,31 @@ def fit_bunch_of_sersics(bands="r", type="None", objIDs=range(len(hammerstein_TD
                 print("\x1b[31mThis one didn't work\x1b[0m")
 
 
-def fit_bunch_of_objects(bands="r", types=["None"]):
+def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None):
     coords = hammerstein_TDE_coords
     path_section = "ham_tde"
     names = hammerstein_TDE_names
 
-    objIDs = range(len(coords))
-    for current_type in types:
-        for band in bands:
-            for objID in objIDs:
-                picklename = f"{names[objID]}_r-band_None_DESI_PSF.pkl"
-                fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
-                n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
-                print(f"\x1b[34m{names[objID]}\x1b[0m")
-                print(f"\x1b[33m{n}\x1b[0m")
-                if n < 1.5:
-                    fixed_n_list = [[0,4]]
-                elif n > 3:
-                    fixed_n_list = [[1,1]]
-                else:
-                    fixed_n_list = None
-
-                img_path = f"data/images/{path_section}{objID}_{band}.fits"
-                oow_path = f"data/images/{path_section}{objID}_{band}.fits"
-                #Use the co-add PSF model from the survey
-                psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
-                try:
-                    galight_fit_short(
-                        coords[objID],
-                        img_path,
-                        oow_path,
-                        None,
-                        psf_path,
-                        current_type,
-                        0.262,
-                        None,
-                        band,
-                        15,
-                        60,
-                        1,
-                        5,
-                        "COADDED_DESI",
-                        f"{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
-                        5,
-                        "mega_deep",
-                        fixed_n_list,
-                        )
-                except:
-                    print("\x1b[31mThis one didn't work\x1b[0m")
-                    #psf_bands = "griz"
-                    #fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(band)+1)%len(psf_bands)])
-
-
-def fit_single_object(objID=0, bands="r", types=["None"], psf_band="r", fixed_n_list=None):
-    coords = hammerstein_TDE_coords
-    path_section = "ham_tde"
-    names = hammerstein_TDE_names
-
-    for current_type in types:
-        for band in bands:
+    for band in bands:
+        for objID in objIDs:
             picklename = f"{names[objID]}_r-band_None_DESI_PSF.pkl"
             fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
             n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
             print(f"\x1b[34m{names[objID]}\x1b[0m")
             print(f"\x1b[33m{n}\x1b[0m")
-
-            if fixed_n_list is None:
-                if n < 1.5:
-                    fixed_n_list = [[0,4]]
-                elif n > 3:
-                    fixed_n_list = [[1,1]]
-                else:
-                    fixed_n_list = None
+            if n < 1.5:
+                fixed_n_list = [[0,4]]
+            elif n > 3:
+                fixed_n_list = [[1,1]]
+            else:
+                fixed_n_list = None
 
             img_path = f"data/images/{path_section}{objID}_{band}.fits"
             oow_path = f"data/images/{path_section}{objID}_{band}.fits"
             #Use the co-add PSF model from the survey
-            psf_path = f"data/images/{path_section}{objID}_{psf_band}_PSF.fits"
+            psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
+            if psf_band is not None:
+                psf_path = f"data/images/{path_section}{objID}_{psf_band}_PSF.fits"
             try:
                 galight_fit_short(
                     coords[objID],
@@ -340,7 +288,7 @@ def fit_single_object(objID=0, bands="r", types=["None"], psf_band="r", fixed_n_
                     oow_path,
                     None,
                     psf_path,
-                    current_type,
+                    type,
                     0.262,
                     None,
                     band,
@@ -349,16 +297,15 @@ def fit_single_object(objID=0, bands="r", types=["None"], psf_band="r", fixed_n_
                     1,
                     5,
                     "COADDED_DESI",
-                    f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
+                    f"{names[objID]}_{band}-band_{type}_DESI_PSF_FINAL2",
                     5,
                     "mega_deep",
                     fixed_n_list,
                     )
-                print("\x1b[32mThis one did work\x1b[0m")
             except:
                 print("\x1b[31mThis one didn't work\x1b[0m")
                 #psf_bands = "griz"
-                #fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(psf_band)+1)%len(psf_bands)])
+                #fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(band)+1)%len(psf_bands)])
 
 
 
@@ -367,13 +314,14 @@ import time
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
-    fit_bunch_of_sersics(objIDs=[7])
+    fit_bulge_disk(bands="g", types="None")
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
     if False:
         # case by case, check notebook for details
         fit_bunch_of_sersics(objIDs=[18], psf_band="z") # 139.00 seconds
         fit_bunch_of_sersics(objIDs=[3]) # 142.21 seconds
+        fit_bunch_of_sersics(objIDs=[7]) # 118.46 seconds
 
     if False:
         # initial run
