@@ -52,6 +52,7 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
         pixel_scale = 0.262 #Default value for almost all of the runs anyway
         print("No informations on the original fitting parameters used was stored! Running the fit again will solve this.")
     if len(fitting_run_result.image_host_list) == 2:
+        print(fitting_run_result.final_result_galaxy[0]["n_sersic"], "vs", fitting_run_result.final_result_galaxy[1]["n_sersic"])
         if fitting_run_result.final_result_galaxy[0]["n_sersic"] < fitting_run_result.final_result_galaxy[1]["n_sersic"]:
             placeholder = copy.deepcopy(fitting_run_result.final_result_galaxy[0])
             fitting_run_result.final_result_galaxy[0] = copy.deepcopy(fitting_run_result.final_result_galaxy[1])
@@ -59,7 +60,7 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
             placeholder2 = copy.deepcopy(fitting_run_result.image_host_list[0])
             fitting_run_result.image_host_list[0] = copy.deepcopy(fitting_run_result.image_host_list[1])
             fitting_run_result.image_host_list[1] = placeholder2
-
+        print(fitting_run_result.final_result_galaxy[0]["n_sersic"], "vs", fitting_run_result.final_result_galaxy[1]["n_sersic"])
     print(fitting_run_result.final_result_galaxy[0])
     print("Flux of galaxy:", fitting_run_result.final_result_galaxy[0]['flux_sersic_model'])
     flux_density = copy.copy(fitting_run_result.final_result_galaxy[0]['flux_sersic_model']) #erg/s/cm2/Hz
@@ -222,7 +223,13 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
 
 from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types, hammerstein_TDE_coords, hammerstein_TDE_names
 
-if input("Load Hammerstein TDE host single-sersic fit? [y/n]") == "y":
+if input("Load Hammerstein TDE host bulge+disk fit? [y/n]") == "y":
+    for i, name in enumerate(hammerstein_TDE_names):
+        print(i,":",name)
+    objID = int(input(f"Enter the object ID you want to load [0-{len(hammerstein_TDE_names)-1}]:\n"))
+    loadRun(hammerstein_TDE_coords[objID], type="Bulge", band="g", picklename=f"{hammerstein_TDE_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
+
+elif input("Load Hammerstein TDE host single-sersic fit? [y/n]") == "y":
     for i, name in enumerate(hammerstein_TDE_names):
         print(i,":",name)
     objID = int(input(f"Enter the object ID you want to load [0-{len(hammerstein_TDE_names)-1}]:\n"))

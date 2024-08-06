@@ -256,7 +256,7 @@ def fit_bunch_of_sersics(bands="r", type="None", objIDs=range(len(hammerstein_TD
                 print("\x1b[31mThis one didn't work\x1b[0m")
 
 
-def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None):
+def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None, fixed_n_list=None):
     coords = hammerstein_TDE_coords
     path_section = "ham_tde"
     names = hammerstein_TDE_names
@@ -264,16 +264,21 @@ def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_name
     for band in bands:
         for objID in objIDs:
             picklename = f"{names[objID]}_r-band_None_DESI_PSF.pkl"
-            fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
+            try:
+                fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))
+            except:
+                print("\x1b[31mThis one didn't have a pickled Sérsic fit\x1b[0m")
+                continue
             n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
             print(f"\x1b[34m{names[objID]}\x1b[0m")
             print(f"\x1b[33m{n}\x1b[0m")
-            if n < 1.5:
-                fixed_n_list = [[0,4]]
-            elif n > 3:
-                fixed_n_list = [[1,1]]
-            else:
-                fixed_n_list = None
+            if fixed_n_list is None:
+                if n < 1.5:
+                    fixed_n_list = [[0,4]]
+                elif n > 3:
+                    fixed_n_list = [[1,1]]
+                else:
+                    fixed_n_list = None
 
             img_path = f"data/images/{path_section}{objID}_{band}.fits"
             oow_path = f"data/images/{path_section}{objID}_{band}.fits"
@@ -314,8 +319,12 @@ import time
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
-    fit_bulge_disk(bands="g", types="None")
+    fit_bulge_disk(bands="g", type="Bulge", objIDs=range(5, len(hammerstein_TDE_names)))
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+
+    if False:
+        # first bulge+disk decomposition run
+        fit_bulge_disk(bands="g", type="Bulge")
 
     if False:
         # case by case, check notebook for details
