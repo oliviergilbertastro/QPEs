@@ -313,7 +313,7 @@ def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_name
                     fixed_n_list,
                     )
             except BaseException as e:
-                error_message_to_file(f"{objID} {names[objID]} {band}")
+                error_message_to_file(f"{objID} {names[objID]} {band} : {e}")
                 print(e)
                 print("\x1b[31mThis one didn't work\x1b[0m")
                 #psf_bands = "griz"
@@ -326,13 +326,17 @@ import time
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
-    fit_bulge_disk(bands="g", type="Bulge", objIDs=[3], exp_size=1.5, nsigma=3)
-    #fit_bulge_disk(bands="g", type="Bulge", objIDs=[7], exp_size=1.5, nsigma=3)
-    #fit_bulge_disk(bands="g", type="Bulge", objIDs=[8,26])
+    fit_bulge_disk(bands="riz", type="Bulge", nsigma=5)
+    #
+    #fit_bulge_disk(bands="g", type="Bulge", objIDs=[8,26], nsigma=3)
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
     if False:
         # case by case:
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[8], nsigma=3, fixed_n_list=[[0,4], [1,1]], exp_size=5)
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[26], nsigma=3, fixed_n_list=[[1,1]])
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[7], exp_size=1.5, nsigma=3)
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[3], exp_size=1.5, nsigma=3)
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[18,19], psf_band="z")
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[2], exp_size=1.5)
 
