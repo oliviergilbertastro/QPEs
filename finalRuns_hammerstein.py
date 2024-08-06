@@ -218,18 +218,20 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
     fit_run.dump_result()
 
 
-def fit_bunch_of_sersics(bands="r", type="None"):
+def fit_bunch_of_sersics(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None):
     coords = hammerstein_TDE_coords
     path_section = "ham_tde"
     names = hammerstein_TDE_names
     for band in bands:
-        for objID in range(len(names)):
+        for objID in objIDs:
             try:
                 print(f"\x1b[34m{names[objID]}\x1b[0m")
                 img_path = f"data/images/{path_section}{objID}_{band}.fits"
                 oow_path = f"data/images/{path_section}{objID}_{band}.fits"
                 #Use the co-add PSF model from the survey
                 psf_path = f"data/images/{path_section}{objID}_{band}_PSF.fits"
+                if psf_band is not None:
+                    psf_path = f"data/images/{path_section}{objID}_{psf_band}_PSF.fits"
                 galight_fit_short(
                     coords[objID],
                     img_path,
@@ -240,12 +242,12 @@ def fit_bunch_of_sersics(bands="r", type="None"):
                     0.262,
                     None,
                     band,
-                    15,
+                    5,
                     60,
-                    1,
+                    2,
                     5,
                     "COADDED_DESI",
-                    f"big_fits/{names[objID]}_{band}-band_{type}_DESI_PSF",
+                    f"{names[objID]}_{band}-band_{type}_DESI_PSF",
                     5,
                     "mega_deep",
                     None,
@@ -295,7 +297,7 @@ def fit_bunch_of_objects(bands="r", types=["None"]):
                         1,
                         5,
                         "COADDED_DESI",
-                        f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
+                        f"{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
                         5,
                         "mega_deep",
                         fixed_n_list,
@@ -347,7 +349,7 @@ def fit_single_object(objID=0, bands="r", types=["None"], psf_band="r", fixed_n_
                     1,
                     5,
                     "COADDED_DESI",
-                    f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
+                    f"{names[objID]}_{band}-band_{current_type}_DESI_PSF",
                     5,
                     "mega_deep",
                     fixed_n_list,
@@ -365,6 +367,16 @@ import time
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
-    fit_bunch_of_sersics(bands="r", type="None")
+    fit_bunch_of_sersics(objIDs=[7])
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+
+    if False:
+        # case by case, check notebook for details
+        fit_bunch_of_sersics(objIDs=[18], psf_band="z") # 139.00 seconds
+        fit_bunch_of_sersics(objIDs=[3]) # 142.21 seconds
+
+    if False:
+        # initial run
+        fit_bunch_of_sersics(bands="r", type="None") # 2802.38 seconds
+
     pass
