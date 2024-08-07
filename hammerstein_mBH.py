@@ -7,7 +7,7 @@ from astropy.io import fits
 import numpy as np
 from tqdm import tqdm
 from utils import cut_from_catalog, get_smallest_sep_v2
-from paper_data import hammerstein_TDE_redshifts
+from paper_data import hammerstein_TDE_redshifts, hammerstein_TDE_mBH
 from ned_wright_cosmology import calculate_cosmo
 
 mpajhu = fits.open("data/catalogs/MPA_JHU/galSpecInfo-dr8.fits")
@@ -69,11 +69,11 @@ our_galaxies = cut_from_catalog(our_galaxies, index=-1, bounds=(None, 3), verbos
 # Calculate the black hole mass
 R_e = (our_galaxies[:,4]/our_galaxies[:,5])
 log_ratio_sigmas = -0.065*np.log10(1.5/R_e)-0.013*(np.log10(1.5/R_e))**2
-sigma_e = our_galaxies[:,3]/(10**(log_ratio_sigmas)) # in km/s
+sigma_e = our_galaxies[:,6]/(10**(log_ratio_sigmas)) # in km/s
 mBH = np.log10(10**9*(0.309)*(sigma_e/200)**4.38) # in solar masses
-our_galaxies = np.vstack((our_galaxies.T, mBH)).T
+our_galaxies = np.vstack((our_galaxies.T, mBH)).T # velocity dispersion: 8
 
 
 print(our_galaxies)
-for i in our_galaxies[:,0]:
-    print(hammerstein_TDE_names[int(i)], our_galaxies[int(i)])
+for i, index in enumerate(our_galaxies[:,0]):
+    print(hammerstein_TDE_names[int(index)], our_galaxies[i,8], hammerstein_TDE_mBH[int(index)])
