@@ -1,0 +1,24 @@
+18 AT2020pj r : No SIMPLE card found, this file does not appear to be a valid FITS file. If this is really a FITS file, try with ignore_missing_simple=True
+19 AT2019vcb r : No SIMPLE card found, this file does not appear to be a valid FITS file. If this is really a FITS file, try with ignore_missing_simple=True
+0 AT2018zr i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+1 AT2018bsi i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+2 AT2018hco i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+3 AT2018iih i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+8 AT2019cho i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+9 AT2019bhf i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+12 AT2019ehz i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+13 AT2019mha i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+14 AT2019meg i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+17 AT2019teq i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+18 AT2020pj i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+19 AT2019vcb i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+20 AT2020ddv i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+21 AT2020ocn i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+22 AT2020opy i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+24 AT2020mbq i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+26 AT2020riz i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+27 AT2020wey i : All boxes contain > 62.5 (10.0 percent per box) masked pixels (or all are completely masked). Please check your data or increase "exclude_percentile" to allow more boxes to be included.
+29 AT2020ysg i : SVD did not converge
+2 AT2018hco z : Probability function returned NaN
+16 AT2019qiz z : SVD did not converge
+18 AT2020pj z : SVD did not converge

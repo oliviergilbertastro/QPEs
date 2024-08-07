@@ -125,6 +125,17 @@ if input("Save FINAL Hammerstein TDE hosts? [y/n]") == "y":
             except:
                 pass
 
+elif input("Save Hammerstein Sérsic TDE hosts? [y/n]") == "y":
+    time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
+    os.mkdir(f"{save_folder}/{time_dir}")
+    for band in "r":
+        for i in range(len(hammerstein_TDE_names)):
+            picklename=f"{hammerstein_TDE_names[i]}_{band}-band_{'None'}_DESI_PSF.pkl"
+            try:
+                saveFit(picklename, savename=f"{time_dir}/sersicfit_{hammerstein_TDE_names[i]}")
+            except:
+                pass
+
 elif input("Save FINAL QPE hosts? [y/n]") == "y":
     time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
     os.mkdir(f"{save_folder}/{time_dir}")

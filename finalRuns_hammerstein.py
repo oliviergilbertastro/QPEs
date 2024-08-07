@@ -326,10 +326,14 @@ import time
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
-    fit_bulge_disk(bands="riz", type="Bulge", nsigma=5)
+    
     #
     #fit_bulge_disk(bands="g", type="Bulge", objIDs=[8,26], nsigma=3)
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+
+    if False:
+        # other bands first bulge+disk fit
+        fit_bulge_disk(bands="riz", type="Bulge", nsigma=5) # 78937.10 seconds
 
     if False:
         # case by case:
