@@ -38,7 +38,7 @@ def error_message_to_file(message):
         f.write(message+"\n")
 
 
-def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5, fitting_level="deep", fixed_n_list=None):
+def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=None, type="AGN", pixel_scale=0.262, PSF_pos_list=None, band="i", nsigma=15, radius=60, exp_sz_multiplier=1, npixels=5, survey="DESI", savename=None, threshold=5, fitting_level="deep", fixed_n_list=None, fixed_center=None):
     
     
     if type in ["AGN", "agn", "Agn"]:
@@ -190,7 +190,7 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
     fit_sepc.prepare_fitting_seq(point_source_num = number_of_ps,
                                 fix_Re_list=None,
                                 fix_n_list=fixed_n_list, #To fix the Sérsic index at 2.09: [[0,2.09]]
-                                fix_center = None,#[0,0],
+                                fix_center = fixed_center,#[0,0],
                                 fix_ellipticity = None,
                                 manual_bounds = None, #{'lower':{'e1': -0.5, 'e2': -0.5, 'R_sersic': 0.01, 'n_sersic': 2., 'center_x': 0, 'center_y': 0},
                                                 #'upper':{'e1': 0.5, 'e2': 0.5, 'R_sersic': 5, 'n_sersic': 9., 'center_x': 0, 'center_y': 0}},
@@ -261,7 +261,7 @@ def fit_bunch_of_sersics(bands="r", type="None", objIDs=range(len(hammerstein_TD
                 print("\x1b[31mThis one didn't work\x1b[0m")
 
 
-def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None, fixed_n_list=None, exp_size=1, nsigma=15):
+def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None, fixed_n_list=None, fixed_center=None, exp_size=1, nsigma=15, radius=60, fitting_level="mega_deep", writeError=False):
     coords = hammerstein_TDE_coords
     path_section = "ham_tde"
     names = hammerstein_TDE_names
@@ -303,17 +303,19 @@ def fit_bulge_disk(bands="r", type="None", objIDs=range(len(hammerstein_TDE_name
                     None,
                     band,
                     nsigma,
-                    60,
+                    radius,
                     exp_size,
                     5,
                     "COADDED_DESI",
                     f"{names[objID]}_{band}-band_{type}_DESI_PSF_FINAL2",
                     5,
-                    "mega_deep",
+                    fitting_level,
                     fixed_n_list,
+                    fixed_center,
                     )
             except BaseException as e:
-                error_message_to_file(f"{objID} {names[objID]} {band} : {e}")
+                if writeError:
+                    error_message_to_file(f"{objID} {names[objID]} {band} : {e}")
                 print(e)
                 print("\x1b[31mThis one didn't work\x1b[0m")
                 #psf_bands = "griz"
@@ -328,7 +330,8 @@ if __name__ == "__main__":
     start_time = time.time()
     
     #
-    #fit_bulge_disk(bands="g", type="Bulge", objIDs=[8,26], nsigma=3)
+    #fit_bulge_disk(bands="g", type="Bulge", objIDs=[22])
+    fit_bulge_disk(bands="g", type="Bulge", objIDs=[22], nsigma=3)
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
     if False:
@@ -337,6 +340,8 @@ if __name__ == "__main__":
 
     if False:
         # case by case:
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[13], nsigma=3, exp_size=1.5)
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[7], nsigma=1, exp_size=2.2, fixed_center=[0,0], radius=60)
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[8], nsigma=3, fixed_n_list=[[0,4], [1,1]], exp_size=5)
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[26], nsigma=3, fixed_n_list=[[1,1]])
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[7], exp_size=1.5, nsigma=3)

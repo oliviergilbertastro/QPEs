@@ -237,6 +237,13 @@ if input("Load Hammerstein TDE host bulge+disk fit? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(hammerstein_TDE_names)-1}]:\n"))
     loadRun(hammerstein_TDE_coords[objID], type="Bulge", band="g", picklename=f"{hammerstein_TDE_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
 
+if input("Load Hammerstein TDE host bulge+disk fit other bands? [y/n]") == "y":
+    for i, name in enumerate(hammerstein_TDE_names):
+        print(i,":",name)
+    objID = int(input(f"Enter the object ID you want to load [0-{len(hammerstein_TDE_names)-1}]:\n"))
+    band = input("which band? [griz]")
+    loadRun(hammerstein_TDE_coords[objID], type="Bulge", band=band, picklename=f"{hammerstein_TDE_names[objID]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
+
 elif input("Load Hammerstein TDE host single-sersic fit? [y/n]") == "y":
     for i, name in enumerate(hammerstein_TDE_names):
         print(i,":",name)
