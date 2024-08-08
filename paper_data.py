@@ -118,6 +118,35 @@ hammerstein_TDE_redshifts = [
                 0.057,
                 0.277,
 ]
+
+remaining_hammerstein_TDE_redshifts = [
+                0.075,
+                0.051,
+                0.088,
+                0.212,
+                0.046,
+                0.340,
+                0.193,
+                0.121,
+                0.022,
+                0.074,
+                0.148,
+                0.152,
+                0.117,
+                0.015,
+                0.087,
+                0.068,
+                0.088,
+                0.160,
+                0.070,
+                0.159,
+                0.093,
+                0.345,
+                0.435,
+                0.027,
+                0.057,
+                0.277,
+]
 # black hole masses from litterature in log M_sun from MOSFit https://arxiv.org/pdf/2203.01461
 hammerstein_TDE_mBH = [
                 6.53,
