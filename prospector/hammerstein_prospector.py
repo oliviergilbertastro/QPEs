@@ -30,6 +30,7 @@ from prospect.io import read_results as reader
 import matplotlib.pyplot as plt
 from prospect.plotting import corner
 from prospect.plotting.utils import best_sample
+import time
 
 def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, extension=""):
     """
@@ -285,7 +286,11 @@ if __name__ == "__main__":
 
     if input("Fit hammerstein TDEs? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to fit [0-{len(remaining_hammerstein_TDE_names)-1}]:\n"))
+        start_time = time.time()
+
         fit_SED(objID, bands="griz", redshift=remaining_hammerstein_TDE_redshifts[objID], magnitudes_dict=hammerstein_TDE_magnitudes_dicts[objID], extension="FINAL")
+
+        print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
     elif input("Read hammerstein TDE? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to read [0-{len(remaining_hammerstein_TDE_names)-1}]:\n"))
