@@ -36,7 +36,7 @@ hammerstein_properties = np.loadtxt("hammerstein_TDE_distribution.txt")
 our_galaxies = np.array(hammerstein_TDE_coords) # coordinates ra: 1, dec: 2
 our_galaxies = np.vstack((range(len(hammerstein_TDE_coords)), our_galaxies.T)).T # index: 0
 our_galaxies = np.vstack((our_galaxies.T, hammerstein_TDE_redshifts)).T # redshifts: 3
-for i in [5,6,11,23]:
+for i in [23,11,6,5]:
     our_galaxies = np.vstack((our_galaxies[:i],our_galaxies[i+1:]))
 our_galaxies = np.vstack((our_galaxies.T, hammerstein_properties[:,0])).T # sersic indices: 4
 scales = []

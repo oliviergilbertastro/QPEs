@@ -6,6 +6,13 @@ from utils import myCombinedFinalPlot
 import pandas as pd
 
 hammerstein_TDE_data = np.loadtxt("hammerstein_TDE_distribution.txt")
+if input("2021 version? [y/n]") == "y":
+    hammerstein_TDE_data = np.loadtxt("hammerstein2021_TDE_distribution.txt")
+else:
+    if input("Include featurless TDEs? [y/n]") == "y":
+        pass
+    else:
+        hammerstein_TDE_data = np.loadtxt("hammerstein_without_featureless_TDE_distribution.txt")
 QPE_data = np.loadtxt("QPE_distribution.txt")
 refCat = np.loadtxt("referenceCatalog_final.txt")
 fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]

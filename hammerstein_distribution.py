@@ -10,8 +10,9 @@ from paper_data import *
 from download_data import *
 import sys
 import pandas as pd
+import copy
 
-hammerstein_not_in_survey = [5,6,11,23]
+hammerstein_not_in_survey = [23,11,6,5]
 
 
 def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0):
@@ -179,12 +180,13 @@ if __name__ == "__main__":
 
     # Convert the stellar masses, black hole masses and the SSMDs to logbase and numpy arrays:
     hammerstein_TDE_mBH = hammerstein_TDE_mBH
-
+    hammerstein_names = hammerstein_TDE_names
 
     # Get rid of galaxies not in the LEGACY survey
     for i in hammerstein_not_in_survey:
         hammerstein_TDE_redshifts.pop(i)
         hammerstein_TDE_mBH.pop(i)
+        hammerstein_names.pop(i)
 
     #Transform lists into arrays
     hammerstein_TDE_sersicIndices = np.array(hammerstein_TDE_sersicIndices)
@@ -199,3 +201,31 @@ if __name__ == "__main__":
     hammerstein_TDE_data = np.array([hammerstein_TDE_sersicIndices[:,0], hammerstein_TDE_mBH, hammerstein_TDE_redshifts]).T
 
     np.savetxt("hammerstein_TDE_distribution.txt", hammerstein_TDE_data)
+
+    # make that 2021 hammerstein distribution
+    hammerstein2021_TDE_data = None
+    print(hammerstein_names)
+    for i in range(len(hammerstein2021_TDE_names)):
+        try:
+            index = hammerstein_names.index(hammerstein2021_TDE_names[i])
+            if hammerstein2021_TDE_data is None:
+                hammerstein2021_TDE_data = np.array(hammerstein_TDE_data[index])
+            else:
+                hammerstein2021_TDE_data = np.vstack((hammerstein2021_TDE_data, hammerstein_TDE_data[index]))
+        except BaseException as e:
+            print(i, e)
+            pass
+    np.savetxt("hammerstein2021_TDE_distribution.txt", hammerstein2021_TDE_data)
+
+
+    # Make the featureless-less distribution:
+    hammerstein_without_featureless_TDE_data = None
+    for i in range(len(hammerstein_TDE_names)):
+        if hammerstein_TDE_names[i] not in ["AT2018jbv", "AT2020qhs", "AT2020riz", "AT2020ysg"]:
+            if hammerstein_without_featureless_TDE_data is None:
+                hammerstein_without_featureless_TDE_data = np.array(hammerstein_TDE_data[i])
+            else:
+                hammerstein_without_featureless_TDE_data = np.vstack((hammerstein_without_featureless_TDE_data, hammerstein_TDE_data[i]))
+        else:
+            print(f"{hammerstein_TDE_names[i]} is featureless")
+np.savetxt("hammerstein_without_featureless_TDE_distribution.txt", hammerstein_without_featureless_TDE_data)

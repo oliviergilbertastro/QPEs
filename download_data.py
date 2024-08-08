@@ -74,6 +74,29 @@ TDE_coords = [
                 (180.4001167, 30.0515333),                              #SDSS J1201
 ]
 
+# HAMMERSTEIN 2021
+hammerstein2021_TDE_names = [
+    "AT2018zr",
+    "AT2018bsi",
+    "AT2018hco",
+    "AT2018iih",
+    "AT2018hyz",
+    "AT2018lni",
+    "AT2018lna",
+    "AT2019cho",
+    "AT2019bhf",
+    "AT2019azh",
+    "AT2019dsg",
+    "AT2019ehz",
+    "AT2019mha",
+    "AT2019meg",
+    "AT2019lwu",
+    "AT2019qiz",
+    "AT2020pj",
+    "AT2019teq",
+    "AT2020ocn",
+]
+
 # HAMMERSTEIN 2022
 hammerstein_TDE_names = [
     "AT2018zr",
