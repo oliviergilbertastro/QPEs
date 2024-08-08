@@ -329,9 +329,9 @@ if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
     
-    #
+    fit_bulge_disk(bands="g", type="Bulge", objIDs=[0], nsigma=3)
+    fit_bulge_disk(bands="riz", type="Bulge", objIDs=[18,19], nsigma=5, psf_band="z")
     #fit_bulge_disk(bands="g", type="Bulge", objIDs=[22])
-    fit_bulge_disk(bands="g", type="Bulge", objIDs=[22], nsigma=3)
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
     if False:
@@ -340,6 +340,8 @@ if __name__ == "__main__":
 
     if False:
         # case by case:
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[29], nsigma=3, fixed_center=[0,0])
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[22], nsigma=3)
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[13], nsigma=3, exp_size=1.5)
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[7], nsigma=1, exp_size=2.2, fixed_center=[0,0], radius=60)
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[8], nsigma=3, fixed_n_list=[[0,4], [1,1]], exp_size=5)
