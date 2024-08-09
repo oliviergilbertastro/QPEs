@@ -181,6 +181,35 @@ hammerstein_TDE_mBH = [
                 7.02,
 ]
 
+remaining_hammerstein_TDE_mBH = [
+                6.53,
+                6.65,
+                6.50,
+                6.34,
+                6.58,
+                7.55,
+                6.41,
+                6.80,
+                7.43,
+                6.78,
+                6.64,
+                6.68,
+                6.37,
+                6.18,
+                6.05,
+                7.98,
+                np.log10(6.5E6),
+                7.93,
+                7.06,
+                6.85,
+                6.82,
+                7.22,
+                7.37,
+                7.36,
+                6.25,
+                7.02,
+]
+
 TDE_r50s = [          #in kpc       (https://iopscience.iop.org/article/10.3847/1538-4357/aaa3fd/pdf)    
                 1.3,            #ASASSN-14ae
                 0.4,            #ASASSN-14li
