@@ -65,8 +65,7 @@ hammerstein_in_Simard = cut_from_catalog(hammerstein_in_Simard, index=-1, bounds
 
 print(hammerstein_in_Simard)
 print(sim_remaining_hammerstein_TDE_names)
-import sys
-sys.exit()
+
 
 # Extract the data in an astropy table
 from astropy.table import Table, Column
