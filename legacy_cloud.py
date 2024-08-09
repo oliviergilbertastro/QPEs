@@ -84,7 +84,29 @@ if __name__ == "__main__":
                                    "m_bh": (4.5,9),
                                    }
                         )
-
+    # Make big plot
+    QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_redshifts[:,0], QPE_r50s[:,0], QPE_bulgeRatios[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
+    TDE_data = np.array([TDE_mBH[:,0], TDE_stellar_masses[:,0], TDE_redshifts[:,0], TDE_r50s[:,0], TDE_bulgeRatios[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])
+    double_hosts_data = QPE_data[:,QPE_and_TDEs]
+    TDE_data = np.vstack((TDE_data.T, double_hosts_data.T)).T
+    myCornerPlot(
+        [QPE_data,TDE_data,double_hosts_data],
+        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$z$", "$r_{50}$", "$(B/T)_g$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
+        units=["$[M_\odot]$", "$[M_\odot]$", " ", "$[\mathrm{kpc}]$", " ", " ", "$[M_\odot/\mathrm{kpc}^2]$"],
+        smoothness=6,
+        markersize=10,
+        levels=[0.5,0.7,0.9,1],
+        refCat=refCat,
+        columns_compare=[67,63,1,59,12,60,68],
+        save_plot="ham_corner_plot",
+        extremums={"$\log(M_\mathrm{BH})$": (4.5,9),
+                   "$\log(M_\star)$": (9,11.25),
+                   "$(B/T)_g$": (-0.15,1.05),
+                   "$r_{50}$": (0,10.5),
+                   "$n_\mathrm{Sérsic}$": (0,5.5),
+                   "$\log(\Sigma_{M_\star})$": (8.2,10.6) 
+                   }
+        )
     # Make big plot
     QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_bulgeRatios[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
     TDE_data = np.array([TDE_mBH[:,0], TDE_stellar_masses[:,0], TDE_bulgeRatios[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])

@@ -328,7 +328,7 @@ import time
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
-    fit_bunch_of_sersics(objIDs=[14], radius=20, nsigma=5, exp_size=2)
+    fit_bulge_disk(objIDs=[15], bands="g", type="Bulge", radius=60, nsigma=5, exp_size=1, fixed_n_list=[[0,4],[1,1]])
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
         

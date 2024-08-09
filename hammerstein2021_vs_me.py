@@ -36,17 +36,24 @@ if input("Hammerstein2021 vs Me? [y/n]") == "y":
 
 
 elif input("Simard2011 vs Me? [y/n]") == "y":
+    my_n_sersic = np.loadtxt("hammerstein_TDE_allRelevantData_0.txt")[:,1]
     # Simard2011 vs Mine
     simard_names = ['AT2018zr', 'AT2018bsi', 'AT2018hyz', 'AT2019azh', 'AT2020pj', 'AT2020ocn', 'AT2020wey']
-    simard_n_sersics = [1.6704634721131186, 3.3895522388059702, 3.4369206598586017, 3.4837391987431263, 1.8858601728201099, 2.287824037706206, 1.7633150039277297, 2.4139827179890023, 1.7309505106048704, 7.083346425765907, 4.3969363707776905, 4.421288295365279, 1.9984289080911233, 7.485624509033778, 3.287352710133543, 0.48774548311076205, 3.0940298507462685, 0.5113904163393559, 3.578790259230165]
-
+    simard_n_sersics = [0.99, 2.85, 2.54, 6.63, 1.11, 0.50, 4.29]
     my_n_sersics = []
     for i in range(len(simard_names)):
         try:
             index = remaining_hammerstein_TDE_names.index(simard_names[i])
+            print(index, len(my_n_sersic))
             my_n_sersics.append(my_n_sersic[index])
         except:
             print(simard_names[i])
             pass
 
     print(my_n_sersics)
+    plt.plot(my_n_sersics, simard_n_sersics, "o")
+    x_plot = np.linspace(np.min(np.concatenate((my_n_sersics, simard_n_sersics))),np.max(np.concatenate((my_n_sersics, simard_n_sersics))),100)
+    plt.plot(x_plot, x_plot, "--", color="red")
+    plt.xlabel("My $n$")
+    plt.ylabel("Hammerstein 2021 $n$")
+    plt.show()

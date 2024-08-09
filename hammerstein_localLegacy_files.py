@@ -187,8 +187,18 @@ if __name__ == "__main__":
     for i in [hammerstein_TDE_bulgeRatios, hammerstein_TDE_sersicIndices, hammerstein_TDE_SMSDs, hammerstein_TDE_stellar_masses, hammerstein_TDE_mBH, hammerstein_TDE_r50s]:
         print(i.shape)
     hammerstein_TDE_data = np.array([hammerstein_TDE_bulgeRatios, hammerstein_TDE_sersicIndices, hammerstein_TDE_SMSDs, hammerstein_TDE_stellar_masses, hammerstein_TDE_mBH, hammerstein_TDE_r50s]).T
-
+    print(hammerstein_TDE_data.shape)
 
     # Need to save it in 3 separate files because "no 3D arrays" :(
     for i in range(3):
         np.savetxt(f"hammerstein_TDE_allRelevantData_{i}.txt", hammerstein_TDE_data[i,:,:])
+
+    redshift_cut = [remaining_hammerstein_TDE_redshifts[i] < np.max(QPE_redshifts) for i in range(len(remaining_hammerstein_TDE_redshifts))]
+    print(redshift_cut)
+    print(remaining_hammerstein_TDE_redshifts)
+
+    from utils import cut_from_catalog
+    hammerstein_TDE_data = hammerstein_TDE_data[:,redshift_cut,:]
+    print(hammerstein_TDE_data.shape)
+    for i in range(3):
+        np.savetxt(f"zcut_hammerstein_TDE_allRelevantData_{i}.txt", hammerstein_TDE_data[i,:,:])

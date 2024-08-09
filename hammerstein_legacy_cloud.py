@@ -23,13 +23,27 @@ if __name__ == "__main__":
     qpe_load_2 = np.loadtxt("QPE_allRelevantData_2.txt")
     QPE_fullData = recombine_arrays(qpe_load_0,qpe_load_1,qpe_load_2)
 
+    included = ""
+    if input("Make redshift cut for hammerstein TDEs? [y/n]") == "y":
+        included = "zcut_"
+        goodGal = [True, True, False, False, True, False, False, False, True, True, False, False, False, True, True, True, False, False, True, False, False, False, False, True, True, False]
+        remaining_hammerstein_TDE_names = np.array(remaining_hammerstein_TDE_names)[goodGal]
+        remaining_hammerstein_TDE_redshifts = np.array(remaining_hammerstein_TDE_redshifts)[goodGal]
 
-    tde_load_0 = np.loadtxt("hammerstein_TDE_allRelevantData_0.txt")
-    tde_load_1 = np.loadtxt("hammerstein_TDE_allRelevantData_1.txt")
-    tde_load_2 = np.loadtxt("hammerstein_TDE_allRelevantData_2.txt")
+    tde_load_0 = np.loadtxt(f"{included}hammerstein_TDE_allRelevantData_0.txt")
+    tde_load_1 = np.loadtxt(f"{included}hammerstein_TDE_allRelevantData_1.txt")
+    tde_load_2 = np.loadtxt(f"{included}hammerstein_TDE_allRelevantData_2.txt")
     TDE_fullData = recombine_arrays(tde_load_0,tde_load_1,tde_load_2)
     TDE_fullData = TDE_fullData[:26,:,:]
-
+    if input("Only use the hammerstein2021 TDEs? [y/n]") == "y":
+        indices_2021 = []
+        for name in hammerstein2021_TDE_names:
+            try:
+                indices_2021.append(remaining_hammerstein_TDE_names.index(name))
+            except:
+                pass
+        print(indices_2021)
+        #TDE_fullData = TDE_fullData[[],:,:]
     # load reference catalog
     refCat = np.loadtxt("referenceCatalog_final.txt")
     fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
@@ -49,7 +63,7 @@ if __name__ == "__main__":
                    np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
                    np.concatenate((QPE_SMSDs,TDE_SMSDs)),
                    np.concatenate((QPE_stellar_masses,TDE_stellar_masses)),
-                   references="abccefddghijklmnnno????????????????",
+                   references="abccefddghijklmnnno",
                    filename="hammerstein_latexTable.txt"
                    )
 
@@ -87,19 +101,19 @@ if __name__ == "__main__":
                         )
 
     # Make big plot
-    QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_bulgeRatios[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
-    TDE_data = np.array([TDE_mBH[:,0], TDE_stellar_masses[:,0], TDE_bulgeRatios[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])
+    QPE_data  = np.array([QPE_mBH[:,0], QPE_stellar_masses[:,0], QPE_redshifts[:,0], QPE_r50s[:,0], QPE_bulgeRatios[:,0], QPE_sersicIndices[:,0], QPE_SMSDs[:,0]])
+    TDE_data = np.array([TDE_mBH[:,0], TDE_stellar_masses[:,0], remaining_hammerstein_TDE_redshifts[:,0], TDE_r50s[:,0], TDE_bulgeRatios[:,0], TDE_sersicIndices[:,0], TDE_SMSDs[:,0]])
     double_hosts_data = QPE_data[:,QPE_and_TDEs]
     TDE_data = np.vstack((TDE_data.T, double_hosts_data.T)).T
     myCornerPlot(
         [QPE_data,TDE_data,double_hosts_data],
-        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$(B/T)_g$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
-        units=["$[M_\odot]$", "$[M_\odot]$", " ", " ", "$[M_\odot/\mathrm{kpc}^2]$"],
+        labels=["$\log(M_\mathrm{BH})$", "$\log(M_\star)$", "$z$", "$r_{50}$", "$(B/T)_g$", "$n_\mathrm{Sérsic}$", "$\log(\Sigma_{M_\star})$"],
+        units=["$[M_\odot]$", "$[M_\odot]$", " ", "$[\mathrm{kpc}]$", " ", " ", "$[M_\odot/\mathrm{kpc}^2]$"],
         smoothness=6,
         markersize=10,
         levels=[0.5,0.7,0.9,1],
         refCat=refCat,
-        columns_compare=[67,63,12,60,68],
+        columns_compare=[67,63,1,59,12,60,68],
         save_plot="ham_corner_plot",
         extremums={"$\log(M_\mathrm{BH})$": (4.5,9),
                    "$\log(M_\star)$": (9,11.25),
