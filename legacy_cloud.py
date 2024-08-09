@@ -27,6 +27,7 @@ if __name__ == "__main__":
     tde_load_1 = np.loadtxt("TDE_allRelevantData_1.txt")
     tde_load_2 = np.loadtxt("TDE_allRelevantData_2.txt")
     TDE_fullData = recombine_arrays(tde_load_0,tde_load_1,tde_load_2)
+    print(TDE_fullData.shape)
     TDE_fullData = TDE_fullData[:10,:,:]
 
     # load reference catalog

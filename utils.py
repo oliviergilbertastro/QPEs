@@ -783,7 +783,7 @@ def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, M_stars,
     each_lines = []
     if references is None:
         references = ["" for i in range(len(names))]
-
+    print(len(names),len(redshifts), len(r50s[:,0]), len(n_sersics[:,0]), len(bt_ratios[:,0]), len(ssmds[:,0]), len(M_stars[:,0]), len(references))
     assert len(names) == len(redshifts) == len(r50s[:,0]) == len(n_sersics[:,0]) == len(bt_ratios[:,0]) == len(ssmds[:,0]) == len(M_stars[:,0]) == len(references)
     length = len(names)
 

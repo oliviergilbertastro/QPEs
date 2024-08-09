@@ -32,12 +32,41 @@ for i in tqdm(range(len(my_table[colnames[0]]))):
 simard_ra_decs = np.array(simard_ra_decs)
 
 superSimard = np.vstack((simard2011a.T, simard2011c.T)).T
+print("This shape:", superSimard.shape)
 superSimard = np.vstack((superSimard.T, simard_ra_decs.T)).T
 print(superSimard.shape)
 #1123718 lines by 98 columns, the last two are ra and dec, some columns are repeated (e.g. SPECOBJID), but I don't care
 
 # Find the sersic indices of the hammerstein galaxies
+import copy
+remaining_hammerstein_TDE_coords = copy.deepcopy(hammerstein_TDE_coords)
+remaining_hammerstein_TDE_coords.pop(23)
+remaining_hammerstein_TDE_coords.pop(11)
+remaining_hammerstein_TDE_coords.pop(6)
+remaining_hammerstein_TDE_coords.pop(5)
+hammerstein_in_Simard = np.array(remaining_hammerstein_TDE_coords)
+from download_data import remaining_hammerstein_TDE_names
+sim_remaining_hammerstein_TDE_names = []
+sim_seps = []
+sim_sersics = []
+for i in tqdm(range(len(remaining_hammerstein_TDE_coords))):
+    index, smallest_sep = get_smallest_sep_v2(remaining_hammerstein_TDE_coords[i], superSimard[:,96], superSimard[:,97])
+    print(f"{remaining_hammerstein_TDE_coords[i]} vs {superSimard[index,96:98]} -> {smallest_sep < 3}")
+    sim_seps.append(smallest_sep)
+    sim_sersics.append(superSimard[index,93])
+    if smallest_sep < 3:
+        sim_remaining_hammerstein_TDE_names.append(remaining_hammerstein_TDE_names[i])
+sim_seps = np.array(sim_seps)
+sim_sersics = np.array(sim_sersics)
+hammerstein_in_Simard = np.vstack((hammerstein_in_Simard.T, sim_sersics)).T
+hammerstein_in_Simard = np.vstack((hammerstein_in_Simard.T, sim_seps)).T # separation between catalog and my coords in arcsec
+print("Separation cut...")
+hammerstein_in_Simard = cut_from_catalog(hammerstein_in_Simard, index=-1, bounds=(None, 3), verbose=True)
 
+print(hammerstein_in_Simard)
+print(sim_remaining_hammerstein_TDE_names)
+import sys
+sys.exit()
 
 # Extract the data in an astropy table
 from astropy.table import Table, Column

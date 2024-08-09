@@ -12,7 +12,7 @@ import sys
 import pandas as pd
 
 
-QPE_and_TDEs = [4,5,8] # indices of QPE+TDE hosts which are currently only in the QPE arrays
+QPE_and_TDEs = [5] # indices of QPE+TDE hosts which are currently only in the QPE arrays
 
 
 if __name__ == "__main__":
@@ -28,7 +28,7 @@ if __name__ == "__main__":
     tde_load_1 = np.loadtxt("hammerstein_TDE_allRelevantData_1.txt")
     tde_load_2 = np.loadtxt("hammerstein_TDE_allRelevantData_2.txt")
     TDE_fullData = recombine_arrays(tde_load_0,tde_load_1,tde_load_2)
-    TDE_fullData = TDE_fullData[:10,:,:]
+    TDE_fullData = TDE_fullData[:26,:,:]
 
     # load reference catalog
     refCat = np.loadtxt("referenceCatalog_final.txt")
@@ -49,7 +49,8 @@ if __name__ == "__main__":
                    np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
                    np.concatenate((QPE_SMSDs,TDE_SMSDs)),
                    np.concatenate((QPE_stellar_masses,TDE_stellar_masses)),
-                   references="abccefddghijklmnnno"
+                   references="abccefddghijklmnnno????????????????",
+                   filename="hammerstein_latexTable.txt"
                    )
 
     QPE_redshifts = add_0_uncertainties(QPE_redshifts)
