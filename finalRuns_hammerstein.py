@@ -223,7 +223,7 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
     fit_run.dump_result()
 
 
-def fit_bunch_of_sersics(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None):
+def fit_bunch_of_sersics(bands="r", type="None", objIDs=range(len(hammerstein_TDE_names)), psf_band=None, radius=60, nsigma=15, exp_size=1):
     coords = hammerstein_TDE_coords
     path_section = "ham_tde"
     names = hammerstein_TDE_names
@@ -247,9 +247,9 @@ def fit_bunch_of_sersics(bands="r", type="None", objIDs=range(len(hammerstein_TD
                     0.262,
                     None,
                     band,
-                    5,
-                    60,
-                    2,
+                    nsigma,
+                    radius,
+                    exp_size,
                     5,
                     "COADDED_DESI",
                     f"{names[objID]}_{band}-band_{type}_DESI_PSF",
@@ -328,18 +328,22 @@ import time
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
-    
-    fit_bulge_disk(bands="g", type="Bulge", objIDs=[0], nsigma=3)
-    fit_bulge_disk(bands="riz", type="Bulge", objIDs=[18,19], nsigma=5, psf_band="z")
-    #fit_bulge_disk(bands="g", type="Bulge", objIDs=[22])
+    fit_bunch_of_sersics(objIDs=[14], radius=20, nsigma=5, exp_size=2)
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
+
+        
 
     if False:
         # other bands first bulge+disk fit
         fit_bulge_disk(bands="riz", type="Bulge", nsigma=5) # 78937.10 seconds
+        # case by case
+        fit_bulge_disk(bands="riz", type="Bulge", objIDs=[18,19], nsigma=5, psf_band="z")
 
     if False:
+        # first bulge+disk decomposition run
+        fit_bulge_disk(bands="g", type="Bulge")
         # case by case:
+        fit_bulge_disk(bands="g", type="Bulge", objIDs=[0], nsigma=3)
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[29], nsigma=3, fixed_center=[0,0])
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[22], nsigma=3)
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[13], nsigma=3, exp_size=1.5)
@@ -351,9 +355,7 @@ if __name__ == "__main__":
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[18,19], psf_band="z")
         fit_bulge_disk(bands="g", type="Bulge", objIDs=[2], exp_size=1.5)
 
-    if False:
-        # first bulge+disk decomposition run
-        fit_bulge_disk(bands="g", type="Bulge")
+        
 
     if False:
         # case by case, check notebook for details

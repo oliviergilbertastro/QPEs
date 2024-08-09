@@ -248,7 +248,10 @@ elif input("Load Hammerstein TDE host single-sersic fit? [y/n]") == "y":
     for i, name in enumerate(hammerstein_TDE_names):
         print(i,":",name)
     objID = int(input(f"Enter the object ID you want to load [0-{len(hammerstein_TDE_names)-1}]:\n"))
-    loadRun(hammerstein_TDE_coords[objID], type="None", band="r", picklename=f"{hammerstein_TDE_names[objID]}_{'r'}-band_{'None'}_DESI_PSF.pkl")
+    extension = input("If there is an extension name to the pickle file type it here, otherwise press Enter:")
+    if extension != "":
+        extension = "_"+extension
+    loadRun(hammerstein_TDE_coords[objID], type="None", band="r", picklename=f"{hammerstein_TDE_names[objID]}_{'r'}-band_{'None'}_DESI_PSF{extension}.pkl")
 
 elif input("Load FINAL2 BULGE QPE host? [y/n]") == "y":
     objID = int(input(f"Enter the object ID you want to load [0-{len(objects)-1}]:\n"))

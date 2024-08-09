@@ -16,6 +16,29 @@ simard2011a = np.loadtxt("data/catalogs/Simard2011/table1.dat")
 #simard2011b = np.loadtxt("data/catalogs/Simard2011/table2.dat")
 simard2011c = np.loadtxt("data/catalogs/Simard2011/table3.dat")
 
+
+from astropy.table import Table, Column
+my_table = Table(ra_decs[1].data)
+# Extract the names of the columns
+colnames = my_table.colnames
+print(colnames)
+simard_ra_decs = []
+for i in tqdm(range(len(my_table[colnames[0]]))):
+    try:
+        SpecObjID = int(my_table["objID"][i])
+        simard_ra_decs.append([SpecObjID, my_table["_RAJ2000"][i], my_table["_DEJ2000"][i]])
+    except:
+        simard_ra_decs.append([SpecObjID, my_table["_RA"][i], my_table["_DE"][i]])
+simard_ra_decs = np.array(simard_ra_decs)
+
+superSimard = np.vstack((simard2011a.T, simard2011c.T)).T
+superSimard = np.vstack((superSimard.T, simard_ra_decs.T)).T
+print(superSimard.shape)
+#1123718 lines by 98 columns, the last two are ra and dec, some columns are repeated (e.g. SPECOBJID), but I don't care
+
+# Find the sersic indices of the hammerstein galaxies
+
+
 # Extract the data in an astropy table
 from astropy.table import Table, Column
 my_table = Table(mpajhu[1].data)
