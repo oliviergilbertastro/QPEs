@@ -194,6 +194,19 @@ hammerstein_TDE_coords = [
 ]
 
 
+french_TDE_coords = [
+    (132.1172083, +22.0592778),
+    (233.2833955, +44.5356122),
+    (151.7114167, +1.6928806),
+]
+
+french_TDE_names = [
+    "PTF-15af",
+    "AT2018dyk",
+    "ASASSN18zj",
+]
+
+
 TDE_types = ["None", "None", "None", "None", "None", "None", "None", "None", "None", "None"]
 TDE_types = ["Bulge", "Bulge", "Bulge", "Bulge", "Bulge", "Bulge", "AGN", "Bulge", "AGN", "AGN"]
 
@@ -222,6 +235,11 @@ if __name__ == "__main__":
             url = f'https://www.legacysurvey.org/viewer/jpeg-cutout?ra={str(ra)}&dec={str(dec)}&size={256}&layer=ls-dr10&pixscale={0.262}&bands={"griz"}&invvar'
             r = requests.get(url)
             open(r'data/images/'+f'{TDE_names[i]}'+r'.jpeg' , 'wb').write(r.content)
+    elif input("Download 1024x1024 of all 3 French TDEs? [y/n]") == "y":
+        band = input("Which band do you want to download? ['griz']")
+        for i in tqdm(range(3, len(french_TDE_names))):
+            for b in band:
+                get_file(french_TDE_coords[i], i, size=512*2, pixscale=0.262, band=b, name="french_tde")
     elif input("Download 1024x1024 of all Hammerstein TDEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
         for i in tqdm(range(20, len(hammerstein_TDE_names))):
