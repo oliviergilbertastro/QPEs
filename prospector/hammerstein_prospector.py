@@ -300,7 +300,7 @@ if __name__ == "__main__":
         hammerstein_TDE_stellar_masses_desiProspector = []
         for i in range(len(remaining_hammerstein_TDE_names)):
             hammerstein_TDE_stellar_masses_desiProspector.append(getStellarMass(i, extension="FINAL"))
-        np.savetxt("QPE_stellarMasses.txt", hammerstein_TDE_stellar_masses_desiProspector)
+        np.savetxt("hammerstein_TDE_stellarMasses.txt", hammerstein_TDE_stellar_masses_desiProspector)
 
 
 
