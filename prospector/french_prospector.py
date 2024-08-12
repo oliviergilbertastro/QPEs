@@ -261,7 +261,7 @@ def makeAstropyTableFromDictionnary(dict):
     
 # Load TDE magnitudes:
 import pickle
-with open('hammerstein_TDE_magnitudes.pkl', 'rb') as f:
+with open('french_TDE_magnitudes.pkl', 'rb') as f:
     french_TDE_unreddenedMagnitudes = pickle.load(f)
 
 
@@ -284,7 +284,7 @@ if __name__ == "__main__":
 
     print(french_TDE_magnitudes_dicts)
 
-    if input("Fit hammerstein TDEs? [y/n]") == "y":
+    if input("Fit French TDEs? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to fit [0-{len(french_TDE_names)-1}]:\n"))
         start_time = time.time()
 
@@ -292,15 +292,15 @@ if __name__ == "__main__":
 
         print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
-    elif input("Read hammerstein TDE? [y/n]") == "y":
+    elif input("Read French TDE? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to read [0-{len(french_TDE_names)-1}]:\n"))
         read_SED(objID, extension="FINAL")
 
     elif input("SAVE STELLAR MASSES? [y/n]") == "y":
-        hammerstein_TDE_stellar_masses_desiProspector = []
+        french_TDE_stellar_masses_desiProspector = []
         for i in range(len(french_TDE_names)):
-            hammerstein_TDE_stellar_masses_desiProspector.append(getStellarMass(i, extension="FINAL"))
-        np.savetxt("hammerstein_TDE_stellarMasses.txt", hammerstein_TDE_stellar_masses_desiProspector)
+            french_TDE_stellar_masses_desiProspector.append(getStellarMass(i, extension="FINAL"))
+        np.savetxt("french_TDE_stellarMasses.txt", french_TDE_stellar_masses_desiProspector)
 
 
 
