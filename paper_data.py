@@ -210,6 +210,19 @@ remaining_hammerstein_TDE_mBH = [
                 7.02,
 ]
 
+# All french data is from https://arxiv.org/pdf/2003.02863
+french_TDE_redshifts = [
+    0.079,
+    0.037,
+    0.046,
+]
+
+french_TDE_mBH = [
+    6.88,
+    7.00,
+    5.68,
+]
+
 TDE_r50s = [          #in kpc       (https://iopscience.iop.org/article/10.3847/1538-4357/aaa3fd/pdf)    
                 1.3,            #ASASSN-14ae
                 0.4,            #ASASSN-14li

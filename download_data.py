@@ -197,7 +197,7 @@ hammerstein_TDE_coords = [
 french_TDE_coords = [
     (132.1172083, +22.0592778),
     (233.2833955, +44.5356122),
-    (151.7114167, +1.6928806),
+    (151.7120000, +1.6928000),
 ]
 
 french_TDE_names = [
@@ -240,11 +240,13 @@ if __name__ == "__main__":
         for i in tqdm(range(len(french_TDE_names))):
             for b in band:
                 get_file(french_TDE_coords[i], i, size=512*2, pixscale=0.262, band=b, name="french_tde")
+        print("\x1b[33mDownload finished\x1b[0m")
     elif input("Download 1024x1024 of all Hammerstein TDEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
         for i in tqdm(range(len(hammerstein_TDE_names))):
             for b in band:
                 get_file(hammerstein_TDE_coords[i], i, size=512*2, pixscale=0.262, band=b, name="ham_tde")
+        print("\x1b[33mDownload finished\x1b[0m")
     elif input("Download 1024x1024 of all QPEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
         for i in tqdm(range(len(objects_names))):

@@ -112,9 +112,31 @@ def saveFit(picklename=None, savename=None):
     fig.savefig(f"{save_folder}{savename}.pdf")
     return
 
-from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types, hammerstein_TDE_coords, hammerstein_TDE_names
+from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types, hammerstein_TDE_coords, hammerstein_TDE_names, french_TDE_names
 
-if input("Save FINAL Hammerstein TDE hosts? [y/n]") == "y":
+if input("Save FINAL French TDE hosts? [y/n]") == "y":
+    time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
+    os.mkdir(f"{save_folder}/{time_dir}")
+    for band in "g":
+        for i in range(len(french_TDE_names)):
+            picklename=f"{french_TDE_names[i]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl"
+            try:
+                saveFit(picklename, savename=f"{time_dir}/sersicfit_{french_TDE_names[i]}")
+            except:
+                pass
+
+elif input("Save French Sérsic TDE hosts? [y/n]") == "y":
+    time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
+    os.mkdir(f"{save_folder}/{time_dir}")
+    for band in "r":
+        for i in range(len(french_TDE_names)):
+            picklename=f"{french_TDE_names[i]}_{band}-band_{'None'}_DESI_PSF.pkl"
+            try:
+                saveFit(picklename, savename=f"{time_dir}/sersicfit_{french_TDE_names[i]}")
+            except:
+                pass
+
+elif input("Save FINAL Hammerstein TDE hosts? [y/n]") == "y":
     time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
     os.mkdir(f"{save_folder}/{time_dir}")
     for band in "g":

@@ -277,13 +277,14 @@ def fit_bulge_disk(bands="r", type="None", objIDs=range(len(french_TDE_names)), 
                 continue
             n = fitting_run_result.final_result_galaxy[0]["n_sersic"]
             print(f"\x1b[33m{n}\x1b[0m")
-            if fixed_n_list is None:
+            fixed_n_list_temp = copy.deepcopy(fixed_n_list)
+            if fixed_n_list_temp is None:
                 if n < 1.5:
-                    fixed_n_list = [[0,4]]
+                    fixed_n_list_temp = [[0,4]]
                 elif n > 3:
-                    fixed_n_list = [[1,1]]
+                    fixed_n_list_temp = [[1,1]]
                 else:
-                    fixed_n_list = None
+                    fixed_n_list_temp = None
 
             img_path = f"data/images/{path_section}{objID}_{band}.fits"
             oow_path = f"data/images/{path_section}{objID}_{band}.fits"
@@ -310,7 +311,7 @@ def fit_bulge_disk(bands="r", type="None", objIDs=range(len(french_TDE_names)), 
                     f"{names[objID]}_{band}-band_{type}_DESI_PSF_FINAL2",
                     5,
                     fitting_level,
-                    fixed_n_list,
+                    fixed_n_list_temp,
                     fixed_center,
                     )
             except BaseException as e:
@@ -328,9 +329,17 @@ import time
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
     start_time = time.time()
-    fit_bunch_of_sersics(bands="r", type="None")
-    #fit_bulge_disk(objIDs=[15], bands="g", type="Bulge", radius=60, nsigma=5, exp_size=1, fixed_n_list=[[0,4],[1,1]])
+    fit_bulge_disk(bands="riz", type="Bulge", nsigma=5)
     print("\x1b[33mTime taken: --- %s seconds ---\x1b[0m" % (time.time() - start_time))
 
+    if False:
+        # first bulge+disk runs
+        fit_bulge_disk(bands="g", type="Bulge", nsigma=5)
+        # case by case
+        fit_bulge_disk(bands="g", type="Bulge", nsigma=5, objIDs=[1], radius=30)
+
+    if False:
+        # first single-sersic runs:
+        fit_bunch_of_sersics(bands="r", type="None")
 
     pass

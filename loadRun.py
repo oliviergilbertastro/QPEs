@@ -229,15 +229,36 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
     print('S =', morph.smoothness)
 
 
-from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types, hammerstein_TDE_coords, hammerstein_TDE_names
+from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types, hammerstein_TDE_coords, hammerstein_TDE_names, french_TDE_names, french_TDE_coords
 
-if input("Load Hammerstein TDE host bulge+disk fit? [y/n]") == "y":
+
+if input("Load French TDE host bulge+disk fit? [y/n]") == "y":
+    for i, name in enumerate(french_TDE_names):
+        print(i,":",name)
+    objID = int(input(f"Enter the object ID you want to load [0-{len(french_TDE_names)-1}]:\n"))
+    loadRun(french_TDE_coords[objID], type="Bulge", band="g", picklename=f"{french_TDE_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
+
+elif input("Load French TDE host bulge+disk fit other bands? [y/n]") == "y":
+    for i, name in enumerate(french_TDE_names):
+        print(i,":",name)
+    objID = int(input(f"Enter the object ID you want to load [0-{len(french_TDE_names)-1}]:\n"))
+    band = input("which band? [griz]")
+    loadRun(french_TDE_coords[objID], type="Bulge", band=band, picklename=f"{french_TDE_names[objID]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
+
+elif input("Load French TDE host single-sersic fit? [y/n]") == "y":
+    for i, name in enumerate(french_TDE_names):
+        print(i,":",name)
+    objID = int(input(f"Enter the object ID you want to load [0-{len(french_TDE_names)-1}]:\n"))
+    band = input("Which band? [griz]")
+    loadRun(french_TDE_coords[objID], type="None", band=band, picklename=f"{french_TDE_names[objID]}_{band}-band_{'None'}_DESI_PSF.pkl")
+
+elif input("Load Hammerstein TDE host bulge+disk fit? [y/n]") == "y":
     for i, name in enumerate(hammerstein_TDE_names):
         print(i,":",name)
     objID = int(input(f"Enter the object ID you want to load [0-{len(hammerstein_TDE_names)-1}]:\n"))
     loadRun(hammerstein_TDE_coords[objID], type="Bulge", band="g", picklename=f"{hammerstein_TDE_names[objID]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl")
 
-if input("Load Hammerstein TDE host bulge+disk fit other bands? [y/n]") == "y":
+elif input("Load Hammerstein TDE host bulge+disk fit other bands? [y/n]") == "y":
     for i, name in enumerate(hammerstein_TDE_names):
         print(i,":",name)
     objID = int(input(f"Enter the object ID you want to load [0-{len(hammerstein_TDE_names)-1}]:\n"))
