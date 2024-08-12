@@ -40,12 +40,23 @@ if __name__ == "__main__":
     fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
     refCat = pd.read_csv("referenceCatalog_final.txt", delimiter=" ", header=None, names=fieldnames)
 
-    QPE_r50s, TDE_r50s = QPE_fullData[:,5,:], TDE_fullData[:,5,:]
-    QPE_sersicIndices, TDE_sersicIndices = QPE_fullData[:,1,:], TDE_fullData[:,1,:]
-    QPE_bulgeRatios, TDE_bulgeRatios = QPE_fullData[:,0,:], TDE_fullData[:,0,:]
-    QPE_SMSDs, TDE_SMSDs = QPE_fullData[:,2,:], TDE_fullData[:,2,:]
-    QPE_stellar_masses, TDE_stellar_masses = QPE_fullData[:,3,:], TDE_fullData[:,3,:]
-    QPE_mBH, TDE_mBH = QPE_fullData[:,4,:], TDE_fullData[:,4,:]
+    QPE_r50s, TDE_r50s, french_TDE_r50s = QPE_fullData[:,5,:], TDE_fullData[:,5,:], french_TDE_fullData[:,5,:]
+    QPE_sersicIndices, TDE_sersicIndices, french_TDE_sersicIndices = QPE_fullData[:,1,:], TDE_fullData[:,1,:], french_TDE_fullData[:,1,:]
+    QPE_bulgeRatios, TDE_bulgeRatios, french_TDE_bulgeRatios = QPE_fullData[:,0,:], TDE_fullData[:,0,:], french_TDE_fullData[:,0,:]
+    QPE_SMSDs, TDE_SMSDs, french_TDE_SMSDs = QPE_fullData[:,2,:], TDE_fullData[:,2,:], french_TDE_fullData[:,2,:]
+    QPE_stellar_masses, TDE_stellar_masses, french_TDE_stellar_masses = QPE_fullData[:,3,:], TDE_fullData[:,3,:], french_TDE_fullData[:,3,:]
+    QPE_mBH, TDE_mBH, french_TDE_mBH = QPE_fullData[:,4,:], TDE_fullData[:,4,:], french_TDE_fullData[:,4,:]
+
+    # Concatenate data from Law-Smith and French
+    TDE_r50s = np.concatenate((TDE_r50s,french_TDE_r50s))
+    TDE_sersicIndices = np.concatenate((TDE_sersicIndices, french_TDE_sersicIndices))
+    TDE_bulgeRatios = np.concatenate((TDE_bulgeRatios, french_TDE_bulgeRatios))
+    TDE_SMSDs = np.concatenate((TDE_SMSDs, french_TDE_SMSDs))
+    TDE_stellar_masses = np.concatenate((TDE_stellar_masses, french_TDE_stellar_masses))
+    TDE_mBH = np.concatenate((TDE_mBH, french_TDE_mBH))
+    TDE_names = np.concatenate((TDE_names, french_TDE_names))
+    TDE_redshifts = np.concatenate((TDE_redshifts, french_TDE_redshifts))
+
 
     makeLatexTable(np.concatenate((objects_names, TDE_names)),
                    np.concatenate((QPE_redshifts,TDE_redshifts)),
@@ -63,7 +74,7 @@ if __name__ == "__main__":
     QPE_data = np.array([QPE_redshifts, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_redshifts, QPE_redshifts[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs]))])
 
-    redshiftMass([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=(1,63,67), save_plot="redshift_distribution", fontsize=16, markersize=10,
+    redshiftMass([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=(1,63,67), save_plot="french_redshift_distribution", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
                         smoothness=7,
                         referenceSmoothness=7,
@@ -76,7 +87,7 @@ if __name__ == "__main__":
 
     QPE_data = np.array([QPE_sersicIndices, QPE_bulgeRatios, QPE_SMSDs, QPE_stellar_masses, QPE_mBH])
     TDE_data = np.array([np.concatenate((TDE_sersicIndices, QPE_sersicIndices[QPE_and_TDEs])), np.concatenate((TDE_bulgeRatios, QPE_bulgeRatios[QPE_and_TDEs])), np.concatenate((TDE_SMSDs, QPE_SMSDs[QPE_and_TDEs])), np.concatenate((TDE_stellar_masses, QPE_stellar_masses[QPE_and_TDEs])), np.concatenate((TDE_mBH, QPE_mBH[QPE_and_TDEs]))])
-    myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="combined_final", fontsize=16, markersize=10,
+    myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="french_combined_final", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
                         smoothness=12,
                         referenceSmoothness=20,
@@ -103,7 +114,7 @@ if __name__ == "__main__":
         levels=[0.5,0.7,0.9,1],
         refCat=refCat,
         columns_compare=[67,63,1,59,12,60,68],
-        save_plot="ham_corner_plot",
+        save_plot="french_corner_plot",
         extremums={"$\log(M_\mathrm{BH})$": (4.5,9),
                    "$\log(M_\star)$": (9,11.25),
                    "$(B/T)_g$": (-0.15,1.05),
@@ -126,7 +137,7 @@ if __name__ == "__main__":
         levels=[0.5,0.7,0.9,1],
         refCat=refCat,
         columns_compare=[67,63,12,60,68],
-        save_plot="corner_plot",
+        save_plot="french_corner_plot",
         extremums={"$\log(M_\mathrm{BH})$": (4.5,9),
                    "$\log(M_\star)$": (9,11.25),
                    "$(B/T)_g$": (-0.15,1.05),

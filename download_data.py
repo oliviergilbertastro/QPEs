@@ -49,16 +49,16 @@ objects_types = ["AGN", "AGN", "None", "None", "None", "AGN", "None", "AGN", "AG
 QPE_bands_list = ["i", "i", "i", "i", "z", "i", "i", "r", "r"]
 
 TDE_names = [
-    "ASASSN-14ae",
-    "ASASSN-14li",
-    "PTF-09ge",
-    "RBS 1032",
-    "SDSS J1323",
-    "SDSS J0748",
-    "SDSS J1342",
-    "SDSS J1350",
-    "SDSS J0952",
-    "SDSS J1201",
+    "ASASSN-14ae", #
+    "ASASSN-14li", #
+    "PTF-09ge", #
+    "RBS 1032", #
+    "SDSS J1323", #
+    "SDSS J0748", #
+    "SDSS J1342", #
+    "SDSS J1350", #
+    "SDSS J0952", #
+    "SDSS J1201", # in French Decker review paper but M_BH not listed because not in MPA-JHU catalog
 ]
 
 TDE_coords = [
