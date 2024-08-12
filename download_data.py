@@ -237,12 +237,12 @@ if __name__ == "__main__":
             open(r'data/images/'+f'{TDE_names[i]}'+r'.jpeg' , 'wb').write(r.content)
     elif input("Download 1024x1024 of all 3 French TDEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
-        for i in tqdm(range(3, len(french_TDE_names))):
+        for i in tqdm(range(len(french_TDE_names))):
             for b in band:
                 get_file(french_TDE_coords[i], i, size=512*2, pixscale=0.262, band=b, name="french_tde")
     elif input("Download 1024x1024 of all Hammerstein TDEs? [y/n]") == "y":
         band = input("Which band do you want to download? ['griz']")
-        for i in tqdm(range(20, len(hammerstein_TDE_names))):
+        for i in tqdm(range(len(hammerstein_TDE_names))):
             for b in band:
                 get_file(hammerstein_TDE_coords[i], i, size=512*2, pixscale=0.262, band=b, name="ham_tde")
     elif input("Download 1024x1024 of all QPEs? [y/n]") == "y":
