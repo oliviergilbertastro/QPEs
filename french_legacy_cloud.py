@@ -57,16 +57,30 @@ if __name__ == "__main__":
     TDE_names = np.concatenate((TDE_names, french_TDE_names))
     TDE_redshifts = np.concatenate((TDE_redshifts, french_TDE_redshifts))
 
+    if input("Show only French TDEs? [y/n]") == "y":
+        TDE_r50s = french_TDE_r50s
+        TDE_sersicIndices = french_TDE_sersicIndices
+        TDE_bulgeRatios = french_TDE_bulgeRatios
+        TDE_SMSDs = french_TDE_SMSDs
+        TDE_stellar_masses = french_TDE_stellar_masses
+        TDE_mBH = french_TDE_mBH
+        TDE_names = french_TDE_names
+        TDE_redshifts = french_TDE_redshifts
+        QPE_and_TDEs = []
 
-    makeLatexTable(np.concatenate((objects_names, TDE_names)),
-                   np.concatenate((QPE_redshifts,TDE_redshifts)),
-                   np.concatenate((QPE_r50s,TDE_r50s)),
-                   np.concatenate((QPE_sersicIndices,TDE_sersicIndices)),
-                   np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
-                   np.concatenate((QPE_SMSDs,TDE_SMSDs)),
-                   np.concatenate((QPE_stellar_masses,TDE_stellar_masses)),
-                   references="abccefddghijklmnnno"
-                   )
+    try:
+        makeLatexTable(np.concatenate((objects_names, TDE_names)),
+                    np.concatenate((QPE_redshifts,TDE_redshifts)),
+                    np.concatenate((QPE_r50s,TDE_r50s)),
+                    np.concatenate((QPE_sersicIndices,TDE_sersicIndices)),
+                    np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
+                    np.concatenate((QPE_SMSDs,TDE_SMSDs)),
+                    np.concatenate((QPE_stellar_masses,TDE_stellar_masses)),
+                    references="",#"abccefddghijklmnnno",
+                    filename="french_latexTable.txt"
+                    )
+    except:
+        print("\x1b[31mCouldn't make a latex table :(\x1b[0m")
 
     QPE_redshifts = add_0_uncertainties(QPE_redshifts)
     TDE_redshifts = add_0_uncertainties(TDE_redshifts)
