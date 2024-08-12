@@ -360,3 +360,11 @@ hammerstein_TDE_extinction = {
     "AT2020zso":          {"g":0.224,"r":0.155,"i":0.115,"z":0.086},
     "AT2020ysg":          {"g":0.057,"r":0.039,"i":0.029,"z":0.022},
     }
+
+#Schlafy et al. extinction (https://irsa.ipac.caltech.edu/applications/DUST/)
+french_TDE_extinction = {
+    # TDE hosts
+    "PTF-15af":           {"g":0.111,"r":0.077,"i":0.057,"z":0.043},
+    "AT2018dyk":          {"g":0.068,"r":0.047	,"i":0.035,"z":0.026},
+    "ASASSN18zj":          {"g":0.114,"r":0.079,"i":0.058,"z":0.043},
+    }
