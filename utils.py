@@ -958,6 +958,10 @@ def mergeCatalogs_withObjIDs(cat1,cat2,columnsToAdd=[0]):
         cat1 = np.vstack((cat1.T, np.array(properties_toAdd[i]))).T
     return cat1
 
+def cut_from_array(a, indices):
+    indices = [(i if i >= 0 else len(a)+i) for i in indices]
+    return a[[(i not in indices) for i in range(len(a))]]
+
 
 if __name__ == "__main__":
     data = np.loadtxt("TDE_allRelevantData_0.txt")

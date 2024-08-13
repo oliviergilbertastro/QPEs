@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from astropy.io import fits
 from tqdm import tqdm
-from utils import mergeCatalogs_withObjIDs, get_smallest_sep_v2
+from utils import mergeCatalogs_withObjIDs, get_smallest_sep_v2, cut_from_array
 from download_data import TDE_names, TDE_coords, french_TDE_names, french_TDE_coords, QPE_names, QPE_coords
 
 # load all catalog text files
@@ -41,6 +41,15 @@ TDE_m_star = np.concatenate((QPE_m_star, TDE_m_star, french_TDE_m_star))[:,0]
 
 assert len(TDE_names) == len(TDE_coords)
 
+
+
+bad_indices = [] # indices to cut
+TDE_names = cut_from_array(TDE_names, bad_indices)
+TDE_coords = cut_from_array(TDE_coords, bad_indices)
+TDE_m_star = cut_from_array(TDE_m_star, bad_indices)
+
+
+
 sim_TDE_names = []
 sim_seps = []
 sim_objIDs = []
@@ -63,19 +72,18 @@ myCat = np.array([sim_objIDs, m_star_in_sim]).T
 
 print(myCat.shape)
 
+myCat = mergeCatalogs_withObjIDs(myCat, mendel2014, columnsToAdd=[2,])
 mendel_TDE_names = []
 mendel_indices = []
 for i in range(len(sim_objIDs)):
     if sim_objIDs[i] in myCat[:,0]:
         mendel_TDE_names.append(sim_TDE_names[i])
-        print(f"\x1b[32m{sim_TDE_names[i]}\x1b[0m")
+        print(f"\x1b[32m{sim_TDE_names[i]}\x1b[0m")#, int(sim_objIDs[i])-int(myCat[list(myCat[:,0]).index(sim_objIDs[i]),0]))
     else:
         print(f"\x1b[31m{sim_TDE_names[i]}\x1b[0m")
-
-myCat = mergeCatalogs_withObjIDs(myCat, mendel2014, columnsToAdd=[2,])
 print(myCat.shape)
 myCat[:,1] = np.log10(myCat[:,1])
-print(myCat)
+
 
 def slope45(x, offset):
     return x+offset
