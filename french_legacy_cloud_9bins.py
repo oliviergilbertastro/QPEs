@@ -81,7 +81,7 @@ if __name__ == "__main__":
                     np.concatenate((QPE_SMSDs,TDE_SMSDs)),
                     np.concatenate((QPE_stellar_masses,TDE_stellar_masses)),
                     np.concatenate((QPE_mBH[:,0],TDE_mBH[:,0])),
-                    references="",#"abccefddghijklmnnno",
+                    references="abccefddghijklmnnno",
                     filename="french_latexTable.txt"
                     )
     except Exception as e:
