@@ -42,29 +42,9 @@ simard_ra_decs = np.array(simard_ra_decs)
 
 
 
-from utils import cut_from_catalog
+from utils import cut_from_catalog, mergeCatalogs_withObjIDs
 
-def mergeCatalogs_withObjIDs(cat1,cat2,columnsToAdd=[0]):
-    """
-    Merge catalog1 with catalog2 assuming their first columns are the objIDs
-    """
-    good_indices = []
-    properties_toAdd = []
-    for i in range(len(columnsToAdd)):
-        properties_toAdd.append([])
-    for i in tqdm(range(len(cat1[:,0]))):
-        try:
-            index = list(cat2[:,0]).index(cat1[i,0])
-            good_indices.append(i)
-            for k in range(len(columnsToAdd)):
-                properties_toAdd[k].append(cat2[index,columnsToAdd[k]])
-            #print(f"{cat1[i,0]} vs {cat2[index,0]}")
-        except:
-            pass
-    cat1 = cat1[[good_indices],:][0]
-    for i in range(len(columnsToAdd)):
-        cat1 = np.vstack((cat1.T, np.array(properties_toAdd[i]))).T
-    return cat1
+
 
 # Create a reference catalog, which is just the simard catalog with sersic indices and r50s
 reference_catalog = np.vstack((simard2011a.T, simard2011c[:,15])).T #r50 [59]

@@ -44,6 +44,9 @@ objects_names = [
     "eRO-QPE4",
     "AT 2019qiz"
 ]
+# I was stupid naming them objects, but I don't want to change it in every file, so both names refer to the same lists.
+QPE_names = objects_names
+QPE_coords = objects
 
 objects_types = ["AGN", "AGN", "None", "None", "None", "AGN", "None", "AGN", "AGN"]
 QPE_bands_list = ["i", "i", "i", "i", "z", "i", "i", "r", "r"]

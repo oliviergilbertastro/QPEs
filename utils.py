@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from sklearn.neighbors import KernelDensity
 import seaborn as sns
+from tqdm import tqdm
 
 def print_table(a, header=None, title=None, space_between_columns=2, space_between_rows=0, borders=1, header_color="yellow", border_color="grey", override_length=None):
     """
@@ -935,7 +936,27 @@ def cut_from_catalog(catalog, index, bounds, verbose=False):
         print(f"\x1b[32m{cut_catalog.shape[0]} objects remaining\x1b[0m")
     return cut_catalog
 
-
+def mergeCatalogs_withObjIDs(cat1,cat2,columnsToAdd=[0]):
+    """
+    Merge catalog1 with catalog2 assuming their first columns are the objIDs
+    """
+    good_indices = []
+    properties_toAdd = []
+    for i in range(len(columnsToAdd)):
+        properties_toAdd.append([])
+    for i in tqdm(range(len(cat1[:,0]))):
+        try:
+            index = list(cat2[:,0]).index(cat1[i,0])
+            good_indices.append(i)
+            for k in range(len(columnsToAdd)):
+                properties_toAdd[k].append(cat2[index,columnsToAdd[k]])
+            #print(f"{cat1[i,0]} vs {cat2[index,0]}")
+        except:
+            pass
+    cat1 = cat1[[good_indices],:][0]
+    for i in range(len(columnsToAdd)):
+        cat1 = np.vstack((cat1.T, np.array(properties_toAdd[i]))).T
+    return cat1
 
 
 if __name__ == "__main__":
