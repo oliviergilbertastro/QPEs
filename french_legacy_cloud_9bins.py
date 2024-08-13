@@ -80,10 +80,12 @@ if __name__ == "__main__":
                     np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
                     np.concatenate((QPE_SMSDs,TDE_SMSDs)),
                     np.concatenate((QPE_stellar_masses,TDE_stellar_masses)),
+                    np.concatenate((QPE_mBH[:,0],TDE_mBH[:,0])),
                     references="",#"abccefddghijklmnnno",
                     filename="french_latexTable.txt"
                     )
-    except:
+    except Exception as e:
+        print(e)
         print("\x1b[31mCouldn't make a latex table :(\x1b[0m")
 
     QPE_redshifts = add_0_uncertainties(QPE_redshifts)
