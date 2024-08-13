@@ -396,7 +396,7 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     plt.show()
 
 
-def redshiftMass(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, fontsize=15, smoothness=6, referenceSmoothness=12, save_plot=None, markersize=9, extremums=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
+def redshiftMass(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, fontsize=15, smoothness=6, bw_adjust=None, referenceSmoothness=12, save_plot=None, markersize=9, extremums=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
@@ -510,7 +510,7 @@ def redshiftMass(data, referenceCatalogData=None, columns_compare=None, kernelDe
     plt.show()
 
 
-def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, extremums=None, fontsize=15, markersize=8, smoothness=6, referenceSmoothness=12, save_plot=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
+def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, extremums=None, fontsize=15, markersize=8, smoothness=6, bw_adjust=None, referenceSmoothness=12, save_plot=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """

@@ -17,7 +17,7 @@ from utils import cut_from_catalog
 bounds = {"redshift": (0.01,0.1),
           "m_star": (9.2,10.4),
           "m_bh": (4.5,8)}
-resolution = 100
+resolution = 20
 smoothing_param = resolution/6
 sample_size=48000
 show_plots = True
