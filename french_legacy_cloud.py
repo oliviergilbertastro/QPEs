@@ -33,12 +33,24 @@ if __name__ == "__main__":
     french_tde_load_1 = np.loadtxt("french_TDE_allRelevantData_1.txt")
     french_tde_load_2 = np.loadtxt("french_TDE_allRelevantData_2.txt")
     french_TDE_fullData = recombine_arrays(french_tde_load_0,french_tde_load_1,french_tde_load_2)
-    french_TDE_fullData = french_TDE_fullData[:10,:,:]
+    french_TDE_fullData = french_TDE_fullData[:,:,:]
+
+    offset = input("Assuming ____ was wrong. Choices: ['Me','Mendel','no one (Enter)']")
+    m_star_offsets = [0,0]
+    referenceCata_extension = ""
+    if offset.lower() == "me":
+        QPE_fullData[:,3,0] = QPE_fullData[:,3,0]+0.2370666
+        TDE_fullData[:,3,0] = TDE_fullData[:,3,0]+0.2370666
+        french_TDE_fullData[:,3,0] = french_TDE_fullData[:,3,0]+0.2370666
+        referenceCata_extension = "_prospector"
+        m_star_offsets = [0.2370666, 0.2370666]
+    elif offset.lower() == "mendel":
+        referenceCata_extension = "_mendel"
 
     # load reference catalog
-    refCat = np.loadtxt("referenceCatalog_final.txt")
+    refCat = np.loadtxt(f"referenceCatalog_final{referenceCata_extension}.txt")
     fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
-    refCat = pd.read_csv("referenceCatalog_final.txt", delimiter=" ", header=None, names=fieldnames)
+    refCat = pd.read_csv(f"referenceCatalog_final{referenceCata_extension}.txt", delimiter=" ", header=None, names=fieldnames)
 
     QPE_r50s, TDE_r50s, french_TDE_r50s = QPE_fullData[:,5,:], TDE_fullData[:,5,:], french_TDE_fullData[:,5,:]
     QPE_sersicIndices, TDE_sersicIndices, french_TDE_sersicIndices = QPE_fullData[:,1,:], TDE_fullData[:,1,:], french_TDE_fullData[:,1,:]
@@ -95,7 +107,7 @@ if __name__ == "__main__":
                         bins=10,
                         kernelDensitiesReference=False,
                         extremums={"param": (0.01,0.1),
-                                   "m_star": (9.2,10.4),
+                                   "m_star": (9.2+m_star_offsets[0],10.4+m_star_offsets[0]),
                                    }
                 )
 
@@ -110,7 +122,7 @@ if __name__ == "__main__":
                         extremums={"n_sersic": (0,5.5),
                                    "bt_ratio": (-0.15,1.05),
                                    "ssmd": (8.2,10.6),
-                                   "m_star": (9,11.25),
+                                   "m_star": (9+m_star_offsets[0],11.25+m_star_offsets[0]),
                                    "m_bh": (4.5,9),
                                    }
                         )
