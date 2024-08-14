@@ -828,14 +828,27 @@ def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, M_stars,
 
 
 
-def toLog(a):
-    """Convert array of data and uncertainties in log base"""
-    a = np.array(a)
-    data, lo, hi = a[:,0], a[:,1], a[:,2]
-    lo = np.abs(lo/(data*np.log(10)))
-    hi = np.abs(hi/(data*np.log(10)))
-    data = np.log10(data)
-    return np.array([data, hi, lo]).T
+def toLog(a, inverse=False):
+    """Convert array of data and uncertainties to/from log base"""
+    if not inverse:
+        a = np.array(a)
+        data, lo, hi = a[:,0], a[:,1], a[:,2]
+        lo = np.abs(lo/(data*np.log(10)))
+        hi = np.abs(hi/(data*np.log(10)))
+        data = np.log10(data)
+        return np.array([data, hi, lo]).T
+    else:
+        a = np.array(a)
+        data, lo, hi = 10**a[:,0], 10**a[:,0]*np.log(10)*a[:,1], 10**a[:,0]*np.log(10)*a[:,2]
+        return np.array([data, hi, lo]).T
+
+if __name__ == "__main__":
+    from paper_data import TDE_mBH_litterature
+    print(np.array(TDE_mBH_litterature))
+    TDE_mBH_litterature = toLog(TDE_mBH_litterature, inverse=True)
+    print(TDE_mBH_litterature)
+    TDE_mBH_litterature = toLog(TDE_mBH_litterature)
+    print(TDE_mBH_litterature)
 
 def SDSS_objid_to_values(objid):
 

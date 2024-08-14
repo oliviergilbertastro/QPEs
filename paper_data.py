@@ -24,6 +24,21 @@ TDE_bt_ratio_litterature = [0.5505584522139586, 0.9102572585554349, 0.4201889738
 TDE_mBH_litterature[9] = 7.18 # French2020 review article
 TDE_mBH = 10**np.array(TDE_mBH_litterature)
 
+# French2020 review article
+TDE_mBH_litterature = [(5.42,0.46,0.46), # ASASSN-14ae
+                       (6.23,0.40,0.39), # ASASSN-14li
+                       (6.31,0.39,0.39), # PTF-09ge
+                       (5.25,0.62,0.67), # RBS 1032
+                       (6.15,0.45,0.46), # SDSS J1323
+                       (7.25,0.46,0.45), # SDSS J0748
+                       (6.06,0.52,0.51), # SDSS J1342
+                       (7.47,0.5,0.5), # SDSS J1350 v_disp = [13.50546932 40.5877037  40.5877037 ]
+                       (7.04,0.5,0.5), # SDSS J0952 v_disp = [99.50531769 12.2647686  12.2647686 ]
+                       (7.18,0.41,0.41), # SDSS J1201
+                       ]
+
+
+
 if False:
     #TDE sersic indices from Review Paper (https://arxiv.org/pdf/2003.02863)
     TDE_sersicIndices = [
