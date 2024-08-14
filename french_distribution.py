@@ -187,15 +187,21 @@ if __name__ == "__main__":
     french_TDE_sersicIndices = french_TDE_placeholder_properties["n_sersic"]
     french_TDE_r50s = french_TDE_placeholder_properties["r_50"]
 
+    # Get the B/T
+    french_TDE_bulgeRatios = np.loadtxt("french_TDE_bulgeRatios.txt")
+
     # Get the stellar masses:
-    
+    french_TDE_stellar_masses = np.loadtxt("french_TDE_stellarMasses.txt")
 
     # Calculate stellar mass surface densities
+    french_TDE_SMSDs = np.array([stellarMassDensity(french_TDE_stellar_masses[i], french_TDE_r50s[i]) for i in range(len(french_TDE_names))])
     
 
     # Convert the stellar masses, black hole masses and the SSMDs to logbase and numpy arrays:
     french_TDE_mBH = french_TDE_mBH
-    french_names = french_TDE_names
+    french_TDE_names = french_TDE_names
+    french_TDE_stellar_masses = toLog(french_TDE_stellar_masses)
+    french_TDE_SMSDs = toLog(french_TDE_SMSDs)
 
 
     #Transform lists into arrays
@@ -203,11 +209,14 @@ if __name__ == "__main__":
     french_TDE_r50s = np.array(french_TDE_r50s)
     french_TDE_mBH = np.array(french_TDE_mBH)
     french_TDE_redshifts = np.array(french_TDE_redshifts)
+    french_TDE_stellar_masses = np.array(french_TDE_stellar_masses)
+    french_TDE_SMSDs = np.array(french_TDE_SMSDs)
+    french_TDE_bulgeRatios = np.array(french_TDE_bulgeRatios)
 
     # Make data distributions
     for i in [french_TDE_sersicIndices[:,0], french_TDE_mBH, french_TDE_redshifts]:
         print(i)
         print(len(i))
-    french_TDE_data = np.array([french_TDE_sersicIndices[:,0], french_TDE_mBH, french_TDE_redshifts]).T
+    french_TDE_data = np.array([french_TDE_bulgeRatios[:,0], french_TDE_sersicIndices[:,0], french_TDE_SMSDs[:,0], french_TDE_stellar_masses[:,0], french_TDE_mBH, french_TDE_redshifts]).T
 
     np.savetxt("french_TDE_distribution.txt", french_TDE_data)

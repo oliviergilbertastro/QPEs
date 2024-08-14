@@ -8,7 +8,10 @@ import sys
 
 QPE_distribution = np.loadtxt("QPE_distribution.txt")
 TDE_distribution = np.loadtxt("TDE_distribution.txt")
-reference_distribution = np.loadtxt("referenceCatalog_final.txt")
+french_TDE_distribution = np.loadtxt("french_TDE_distribution.txt")
+TDE_distribution = np.vstack((TDE_distribution,french_TDE_distribution))
+
+reference_distribution = np.loadtxt("referenceCatalog_final_9bins.txt")
 reference_distribution = reference_distribution[:,[12,60,68,63,67,1]]
 different_params = ["B/T ratio", "n_sersic", "SMSD", "M_star", "M_BH", "z"]
 def getStats(dist):
@@ -72,7 +75,7 @@ def compareSamples(sample1, sample2, threshold):
     return np.around((percentage1, percentage2), decimals=2)
 
 if __name__ == "__main__":
-    thresholds = [0.35, 2, 9.5, 10, 10, 0.05]
+    thresholds = [0.35, 2, 9.5, 10, 7, 0.05]
     print_color("OUR COMPARISON TEST", color="blue")
     for i in range(len(different_params)):
         print(f"\x1b[33m{different_params[i]} > {thresholds[i]}:\x1b[0m")
