@@ -791,7 +791,10 @@ def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, M_stars,
     length = len(names)
 
     def LatexUncertainty(value):
-        return f"${round(value[0],2)}_{r'{-'+str(round(value[1],2))+r'}'}^{r'{+'+str(round(value[2],2))+r'}'}$"
+        val, unc_lo, unc_hi = round(value[0],2), round(value[1],2), round(value[2],2)
+        unc_lo, unc_hi = np.max([0.01, unc_lo]), np.max([0.01, unc_hi])
+        val, unc_lo, unc_hi = f'{val:.2f}', f'{unc_lo:.2f}', f'{unc_hi:.2f}'
+        return f"${val}_{r'{-'+unc_lo+r'}'}^{r'{+'+unc_hi+r'}'}$"
 
     for i in range(length):
         each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(round(redshifts[i],3)) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + " & " + LatexUncertainty(M_stars[i])+ " & " + str(round(M_bhs[i],2)) + r" \\" + "\n")        
