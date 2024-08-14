@@ -972,12 +972,32 @@ if __name__ == "__main__":
     hi = np.loadtxt("TDE_allRelevantData_2.txt")
     print(recombine_arrays(data, lo, hi)[:,0,:])
 
-def add_0_uncertainties(a):
+def add_0_uncertainties(a, value=0):
+    """
+    a: array of shape (n,)
+    value: value to set uncertainties (default=0)
+
+    Function to add null uncertainties to an array of data.
+    Takes in an array of shape (n,) and returns an array of shape (n,3).
+    E.g. 
+    [3,4,5,6] -> [[3,0,0],[4,0,0],[5,0,0],[6,0,0]]
+    
+    """
     a = np.array(a)
-    placeholder = np.zeros((a.shape[0],3))
-    placeholder[:,0] = a
-    a = placeholder
-    return a
+    try:
+        if a.shape[1] == 3:
+            print("No uncertainties added, already containing uncertainties.")
+            return a
+    except:
+        placeholder = np.ones((a.shape[0],3))*value
+        placeholder[:,0] = a
+        a = placeholder
+        return a
+
+if __name__ == "__main__":
+    from paper_data import TDE_mBH, QPE_mBH
+    print(add_0_uncertainties(TDE_mBH, 0.01))
+    print(add_0_uncertainties(QPE_mBH))
 
 import time
 if __name__ == "__main__":
