@@ -396,7 +396,7 @@ def myFinalPlot(data, main_property=r"Sérsic index", referenceCatalogData=None,
     plt.show()
 
 
-def redshiftMass(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, fontsize=15, smoothness=6, bw_adjust=None, referenceSmoothness=12, save_plot=None, markersize=9, extremums=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
+def redshiftMass(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, fontsize=15, smoothness=6, bw_adjust=1, referenceSmoothness=12, save_plot=None, markersize=9, extremums=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
@@ -486,7 +486,7 @@ def redshiftMass(data, referenceCatalogData=None, columns_compare=None, kernelDe
     # param vs m_star
     if referenceCatalogData is not None:
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, levels=levels, color="black", ax=mS_ax, label="Reference")
-        sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=mS_ax, label="Reference")
+        sns.kdeplot(referenceCatalogData, bw_adjust=bw_adjust, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=mS_ax, label="Reference")
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0]}", y=f"col_{columns_compare[1]}", fill=False, levels=7, linewidths=0.5, color="black", ax=mS_ax, label="Reference")
     mS_ax.errorbar(QPE_data[0,:,0], QPE_data[1,:,0], yerr=[QPE_data[1,:,1],QPE_data[1,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize, label="QPE")
     mS_ax.errorbar(TDE_data[0,:,0], TDE_data[1,:,0], yerr=[TDE_data[1,:,1],TDE_data[1,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1, mec="white", mew=0.5, label="TDE")
@@ -701,7 +701,7 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, k
     
     # n_sersic vs m_star
     if referenceCatalogData is not None:
-        kde00 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=n_mS_ax, label="Reference")
+        kde00 = sns.kdeplot(referenceCatalogData, bw_adjust=bw_adjust, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=n_mS_ax, label="Reference")
         for contour, color in zip(kde00.collections, background_colors):
             contour.set_facecolor(color)
             #contour.set_color(color)
@@ -711,20 +711,20 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, k
     n_mS_ax.legend(loc="lower right", fontsize=fontsize-3)
     # n_sersic vs m_bh
     if referenceCatalogData is not None:
-        kde01 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=n_mBH_ax)
+        kde01 = sns.kdeplot(referenceCatalogData, bw_adjust=bw_adjust, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=n_mBH_ax)
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][0]}", y=f"col_{columns_compare[2]}", fill=False, levels=levels, linewidths=0.5, color="black", ax=n_mBH_ax)
     n_mBH_ax.errorbar(QPE_data[0,:,0], QPE_data[4,:,0], yerr=[QPE_data[4,:,1],QPE_data[4,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize)
     n_mBH_ax.errorbar(TDE_data[0,:,0], TDE_data[4,:,0], yerr=[TDE_data[4,:,1],TDE_data[4,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1)
 
     # bt vs m_star
     if referenceCatalogData is not None:
-        kde10 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=bt_mS_ax, label="Reference")
+        kde10 = sns.kdeplot(referenceCatalogData, bw_adjust=bw_adjust, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=bt_mS_ax, label="Reference")
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[1]}", fill=False, levels=levels, linewidths=0.5, color="black", ax=bt_mS_ax, label="Reference")
     bt_mS_ax.errorbar(QPE_data[1,:,0], QPE_data[3,:,0], yerr=[QPE_data[3,:,1],QPE_data[3,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize, label="QPE")
     bt_mS_ax.errorbar(TDE_data[1,:,0], TDE_data[3,:,0], yerr=[TDE_data[3,:,1],TDE_data[3,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1, label="TDE")
     # n_sersic vs m_bh
     if referenceCatalogData is not None:
-        kde11 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=bt_mBH_ax)
+        kde11 = sns.kdeplot(referenceCatalogData, bw_adjust=bw_adjust, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=bt_mBH_ax)
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][1]}", y=f"col_{columns_compare[2]}", fill=False, levels=levels, linewidths=0.5, color="black", ax=bt_mBH_ax)
     bt_mBH_ax.errorbar(QPE_data[1,:,0], QPE_data[4,:,0], yerr=[QPE_data[4,:,1],QPE_data[4,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize)
     bt_mBH_ax.errorbar(TDE_data[1,:,0], TDE_data[4,:,0], yerr=[TDE_data[4,:,1],TDE_data[4,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1)
@@ -732,13 +732,13 @@ def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, k
 
     # ssmd vs m_star
     if referenceCatalogData is not None:
-        kde20 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=ssmd_mS_ax, label="Reference")
+        kde20 = sns.kdeplot(referenceCatalogData, bw_adjust=bw_adjust, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[1]}", fill=True, colors=background_colors, levels=levels, ax=ssmd_mS_ax, label="Reference")
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[1]}", fill=False, levels=3, linewidths=0.5, color="black", ax=ssmd_mS_ax, label="Reference")
     ssmd_mS_ax.errorbar(QPE_data[2,:,0], QPE_data[3,:,0], yerr=[QPE_data[3,:,1],QPE_data[3,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize, label="QPE")
     ssmd_mS_ax.errorbar(TDE_data[2,:,0], TDE_data[3,:,0], yerr=[TDE_data[3,:,1],TDE_data[3,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1, label="TDE")
     # n_sersic vs m_bh
     if referenceCatalogData is not None:
-        kde21 = sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=ssmd_mBH_ax)
+        kde21 = sns.kdeplot(referenceCatalogData, bw_adjust=bw_adjust, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[2]}", fill=True, colors=background_colors, levels=levels, ax=ssmd_mBH_ax)
         #sns.kdeplot(referenceCatalogData, x=f"col_{columns_compare[0][2]}", y=f"col_{columns_compare[2]}", fill=False, levels=3, linewidths=0.5, color="black", ax=ssmd_mBH_ax)
     ssmd_mBH_ax.errorbar(QPE_data[2,:,0], QPE_data[4,:,0], yerr=[QPE_data[4,:,1],QPE_data[4,:,2]], xerr=[QPE_data[0,:,1],QPE_data[0,:,2]], fmt="o", color="blue", markersize=markersize)
     ssmd_mBH_ax.errorbar(TDE_data[2,:,0], TDE_data[4,:,0], yerr=[TDE_data[4,:,1],TDE_data[4,:,2]], xerr=[TDE_data[0,:,1],TDE_data[0,:,2]], fmt="*", color="red", markersize=markersize-1)

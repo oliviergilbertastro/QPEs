@@ -81,7 +81,7 @@ if __name__ == "__main__":
                     np.concatenate((QPE_SMSDs,TDE_SMSDs)),
                     np.concatenate((QPE_stellar_masses,TDE_stellar_masses)),
                     np.concatenate((QPE_mBH[:,0],TDE_mBH[:,0])),
-                    references="abccefddghijklmnnno",
+                    references="abccefddghijklmnnnopqr",
                     filename="french_latexTable.txt"
                     )
     except Exception as e:
@@ -99,7 +99,7 @@ if __name__ == "__main__":
                         smoothness=7,
                         referenceSmoothness=7,
                         bins=10,
-                        bw_adjust=None,
+                        bw_adjust=3.5,
                         kernelDensitiesReference=True,
                         extremums={"param": (0.01,0.1),
                                    "m_star": (9.2+m_star_offsets[0],10.4+m_star_offsets[0]),
@@ -111,9 +111,9 @@ if __name__ == "__main__":
     myCombinedFinalPlot([QPE_data, TDE_data], referenceCatalogData=refCat, columns_compare=((60,12,68),63,67), save_plot="french_combined_final", fontsize=16, markersize=10,
                         levels=[0.5,0.7,0.9,1],
                         smoothness=12,
-                        referenceSmoothness=7,
+                        referenceSmoothness=12,
                         bins=10,
-                        bw_adjust=None,
+                        bw_adjust=3,
                         kernelDensitiesReference=True,
                         extremums={"n_sersic": (0,5.5),
                                    "bt_ratio": (-0.15,1.05),
