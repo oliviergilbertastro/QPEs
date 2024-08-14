@@ -80,7 +80,7 @@ if __name__ == "__main__":
                     np.concatenate((QPE_bulgeRatios,TDE_bulgeRatios)),
                     np.concatenate((QPE_SMSDs,TDE_SMSDs)),
                     np.concatenate((QPE_stellar_masses,TDE_stellar_masses)),
-                    np.concatenate((QPE_mBH[:,0],TDE_mBH[:,0])),
+                    np.concatenate((QPE_mBH,TDE_mBH)),
                     references="abccefddghijklmnnnopqr",
                     filename="french_latexTable.txt"
                     )

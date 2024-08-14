@@ -36,7 +36,8 @@ TDE_mBH_litterature = [(5.42,0.46,0.46), # ASASSN-14ae
                        (7.04,0.5,0.5), # SDSS J0952 v_disp = [99.50531769 12.2647686  12.2647686 ]
                        (7.18,0.41,0.41), # SDSS J1201
                        ]
-
+from utils import toLog
+TDE_mBH_litterature = toLog(TDE_mBH_litterature, inverse=True)
 
 
 if False:
@@ -233,9 +234,9 @@ french_TDE_redshifts = [
 ]
 
 french_TDE_mBH = [
-    6.88,
-    7.00,
-    5.68,
+    (6.88,0.38,0.38), # iPTF15af
+    (7.00,0.42,0.41), # AT2018dyk
+    (5.68,0.52,0.51), # ASASSN18zj
 ]
 
 TDE_r50s = [          #in kpc       (https://iopscience.iop.org/article/10.3847/1538-4357/aaa3fd/pdf)    

@@ -4,7 +4,7 @@ Program to compare QPE hosts and TDE hosts "apples to apples" with the LEGACY DE
 import pickle
 import numpy as np
 from ned_wright_cosmology import calculate_cosmo
-from utils import print_table, myCornerPlot, toLog, myFinalPlot
+from utils import print_table, myCornerPlot, toLog, myFinalPlot, add_0_uncertainties
 import matplotlib.pyplot as plt
 from paper_data import *
 from download_data import *
@@ -67,12 +67,6 @@ def get_n_and_r50(objID, model="None", band="i", survey="DESI", redshift=0, qpe_
     return sersic_index_data, r50_data, magnitude
 
 
-def add_0_uncertainties(a):
-    a = np.array(a)
-    placeholder = np.zeros((a.shape[0],3))
-    placeholder[:,0] = a
-    a = placeholder
-    return a
 
 def stellarMassDensity(M_star, r50, returnLog=False):
     '''
@@ -212,7 +206,7 @@ if __name__ == "__main__":
     QPE_SMSDs = toLog(QPE_SMSDs)
     TDE_SMSDs = toLog(TDE_SMSDs)
     QPE_mBH = toLog(QPE_mBH)
-    TDE_mBH = np.log10(TDE_mBH)
+    TDE_mBH = toLog(TDE_mBH_litterature)
 
 
     #Transform lists into arrays

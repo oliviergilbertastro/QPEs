@@ -797,7 +797,7 @@ def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, M_stars,
         return f"${val}_{r'{-'+unc_lo+r'}'}^{r'{+'+unc_hi+r'}'}$"
 
     for i in range(length):
-        each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(round(redshifts[i],3)) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + " & " + LatexUncertainty(M_stars[i])+ " & " + str(round(M_bhs[i],2)) + r" \\" + "\n")        
+        each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(round(redshifts[i],3)) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + " & " + LatexUncertainty(M_stars[i])+ " & " + LatexUncertainty(M_bhs[i])+ r" \\" + "\n")        
 
     # swap lines around here easily
     onlyQPEs = np.array(each_lines)[[0,1,2,3,6,7]]
