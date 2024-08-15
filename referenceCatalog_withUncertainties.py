@@ -62,7 +62,7 @@ print(reference_catalog.shape)
 print("Redshift cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=4, bounds=(0.01, 0.1), verbose=True)
 
-reference_catalog = reference_catalog[:1000]
+#reference_catalog = reference_catalog[:1000] # uncomment to make tests
 # Add the mpa-jhu catalog
 print("Cross-matching RA&DEC...")
 mpa_vdisp = []
@@ -127,6 +127,6 @@ print("Adding mBH error...")
 reference_catalog = np.vstack((reference_catalog.T, mBH_sigma)).T
 print(reference_catalog.shape)
 
-np.savetxt("referenceCatalog_with_uncertainties.txt")
+np.savetxt("referenceCatalog_with_uncertainties.txt", reference_catalog)
 
 sys.exit()
