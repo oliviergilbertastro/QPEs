@@ -5,6 +5,7 @@ import sys
 from utils import cut_from_catalog, mergeCatalogs_withObjIDs, get_smallest_sep_v2
 
 # load all catalog text files
+mendel2014 = np.loadtxt("data/catalogs/Mendel2014/table6.dat")
 mpajhu = fits.open("data/catalogs/MPA_JHU/galSpecInfo-dr8.fits")
 ra_decs = fits.open("data/catalogs/asu.fit")
 simard2011a = np.loadtxt("data/catalogs/Simard2011/table1.dat")
@@ -62,7 +63,7 @@ print(reference_catalog.shape)
 print("Redshift cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=4, bounds=(0.01, 0.1), verbose=True)
 
-#reference_catalog = reference_catalog[:1000] # uncomment to make tests
+reference_catalog = reference_catalog[:1000] # uncomment to make tests
 # Add the mpa-jhu catalog
 print("Cross-matching RA&DEC...")
 mpa_vdisp = []
@@ -126,6 +127,14 @@ print(reference_catalog.shape)
 print("Adding mBH error...")
 reference_catalog = np.vstack((reference_catalog.T, mBH_sigma)).T
 print(reference_catalog.shape)
+
+# Add a stellar mass column by fetching values from the Mendel2014 catalog
+print(reference_catalog.shape)
+reference_catalog = mergeCatalogs_withObjIDs(reference_catalog, mendel2014, columnsToAdd=[2,3,4])
+print(reference_catalog.shape)
+
+reference_catalog[:,-2] = reference_catalog[:,-3]-reference_catalog[:,-2] # convert 16th percentiles stellar mass log to uncertainties
+reference_catalog[:,-1] = reference_catalog[:,-1]-reference_catalog[:,-3] # convert 84th percentiles stellar mass log to uncertainties
 
 np.savetxt("referenceCatalog_with_uncertainties.txt", reference_catalog)
 
