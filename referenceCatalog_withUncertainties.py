@@ -63,7 +63,7 @@ print(reference_catalog.shape)
 print("Redshift cut...")
 reference_catalog = cut_from_catalog(reference_catalog, index=4, bounds=(0.01, 0.1), verbose=True)
 
-reference_catalog = reference_catalog[:1000] # uncomment to make tests
+#reference_catalog = reference_catalog[:1000] # uncomment to make tests
 # Add the mpa-jhu catalog
 print("Cross-matching RA&DEC...")
 mpa_vdisp = []
