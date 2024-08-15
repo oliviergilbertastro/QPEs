@@ -5,3 +5,4 @@ data/catalogs/
 #prospector/fits_data/
 *.pyc
 referenceCatalog.txt
+referenceCatalog_with_uncertainties.txt
