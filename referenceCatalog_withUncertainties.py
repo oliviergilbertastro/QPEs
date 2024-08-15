@@ -128,13 +128,25 @@ print("Adding mBH error...")
 reference_catalog = np.vstack((reference_catalog.T, mBH_sigma)).T
 print(reference_catalog.shape)
 
+print("Physical black hole mass cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=100, bounds=(0, 20), verbose=True)
+
 # Add a stellar mass column by fetching values from the Mendel2014 catalog
+print("Adding stellar mass and its uncertainties columns")
 print(reference_catalog.shape)
 reference_catalog = mergeCatalogs_withObjIDs(reference_catalog, mendel2014, columnsToAdd=[2,3,4])
 print(reference_catalog.shape)
 
 reference_catalog[:,-2] = reference_catalog[:,-3]-reference_catalog[:,-2] # convert 16th percentiles stellar mass log to uncertainties
 reference_catalog[:,-1] = reference_catalog[:,-1]-reference_catalog[:,-3] # convert 84th percentiles stellar mass log to uncertainties
+
+print("Adding stellar mass surface density")
+ssmd = np.log10((10**reference_catalog[:,102])/reference_catalog[:,77]**2)
+reference_catalog = np.vstack((reference_catalog.T, ssmd)).T
+print(reference_catalog.shape)
+print("Physical SSMD cut...")
+reference_catalog = cut_from_catalog(reference_catalog, index=105, bounds=(0, 20), verbose=True)
+
 
 np.savetxt("referenceCatalog_with_uncertainties.txt", reference_catalog)
 
