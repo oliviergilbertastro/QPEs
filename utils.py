@@ -832,7 +832,10 @@ def toLog(a, inverse=False):
     """Convert array of data and uncertainties to/from log base"""
     if not inverse:
         a = np.array(a)
-        data, lo, hi = a[:,0], a[:,1], a[:,2]
+        try:
+            data, lo, hi = a[:,0], a[:,1], a[:,2]
+        except:
+            data, lo, hi = a
         lo = np.abs(lo/(data*np.log(10)))
         hi = np.abs(hi/(data*np.log(10)))
         data = np.log10(data)

@@ -268,6 +268,22 @@ QPE_mBH = [
             ]
 
 
+# New bh masses with uncertainties:
+QPE_mBH = [
+                (5.99, 0.50, 0.50),                                                 # GSN 069, Wevers 2022
+                toLog([1.8E6, 0.1E6, 0.1E6]),                                       # RX J1301.9+2747
+                (5.78, 0.55, 0.55),                                                 # eRO-QPE1, Wevers 2022
+                (4.96, 0.54, 0.54),                                                 # eRO-QPE2, Wevers 2022
+                toLog([6.5E6, 1.5E6, 1.5E6]),                                              # AT 2019vcb
+                (5.29, 0.55, 0.55),#or 5E5 depending on paper                       # 2MASX J0249, Wevers 2022
+                toLog([5.3E6, 3.5E6, 0.7E6]),                                              # eRO-QPE3
+                toLog([6.8E7, 3.2E7, 4.8E7]),                                              # eRO-QPE4
+                toLog([6.18, 0.44, 0.44]), # AT 2019qiz
+                
+            ]
+QPE_mBH = toLog(QPE_mBH, inverse=True)
+
+
 #M_star in solar masses
 QPE_stellar_masses_litterature_sdssProspector = [
                 (10**10.74, 10**10.74-10**(10.74-0.11), 10**(10.74+0.05)-10**10.74),# GSN 069               #Prospector (manual magnitudes)
