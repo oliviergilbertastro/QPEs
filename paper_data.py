@@ -278,7 +278,7 @@ QPE_mBH = [
                 (5.29, 0.55, 0.55),#or 5E5 depending on paper                       # 2MASX J0249, Wevers 2022
                 toLog([5.3E6, 3.5E6, 0.7E6]),                                              # eRO-QPE3
                 toLog([6.8E7, 3.2E7, 4.8E7]),                                              # eRO-QPE4
-                toLog([6.18, 0.44, 0.44]), # AT 2019qiz
+                (6.18, 0.44, 0.44), # AT 2019qiz
                 
             ]
 QPE_mBH = toLog(QPE_mBH, inverse=True)
