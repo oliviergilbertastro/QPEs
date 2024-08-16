@@ -271,7 +271,7 @@ QPE_mBH = [
 # New bh masses with uncertainties:
 QPE_mBH = [
                 (5.99, 0.50, 0.50),                                                 # GSN 069, Wevers 2022
-                toLog([1.8E6, 0.1E6, 0.1E6]),                                       # RX J1301.9+2747
+                (6.65,0.42,0.42),                                       # RX J1301.9+2747
                 (5.78, 0.55, 0.55),                                                 # eRO-QPE1, Wevers 2022
                 (4.96, 0.54, 0.54),                                                 # eRO-QPE2, Wevers 2022
                 toLog([6.5E6, 1.5E6, 1.5E6]),                                              # AT 2019vcb
