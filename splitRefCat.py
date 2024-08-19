@@ -27,6 +27,17 @@ def recombine_catalog(catalogs, savename="referenceCatalog"):
 
 
 if __name__ == "__main__":
+    if input("Split reference catalog UNCERTAINTIES? [y/n]") == "y":
+        refCat = np.loadtxt("referenceCatalog_with_uncertainties.txt")
+        split_catalog(refCat, number_of_children=9, savename="referenceCatalog_with_uncertainties")
+
+    if input("Recombine reference catalogs UNCERTAINTIES? [y/n]") == "y":
+        refCats = []
+        for i in range(9):
+            refCats.append(np.loadtxt(f"referenceCatalog_with_uncertainties_{i}.txt"))
+        recombine_catalog(refCats, savename="referenceCatalog_with_uncertainties")
+
+
     if input("Split reference catalog? [y/n]") == "y":
         refCat = np.loadtxt("referenceCatalog.txt")
         split_catalog(refCat, number_of_children=9)
