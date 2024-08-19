@@ -122,6 +122,8 @@ from utils import recombine_arrays
 import pandas as pd
 from paper_data import *
 import random
+from sklearn.neighbors import KernelDensity
+import seaborn as sns
 
 # get black hole masses:
 # load QPE and TDE data
@@ -193,9 +195,9 @@ def extreme_deconvolve(x, y, dx, dy, n_components=10, max_iter=200):
     sample = clf.sample(len(X))
     return sample
 
-QPE_mBH_dc = extreme_deconvolve(x=QPE_redshifts, y=QPE_mBH[:,0], dx=np.zeros(np.array(QPE_redshifts).shape), dy=QPE_mBH[:,1], n_components=2)[:,1]
+QPE_mBH_dc = extreme_deconvolve(x=QPE_redshifts, y=QPE_mBH[:,0], dx=np.zeros(np.array(QPE_redshifts).shape), dy=QPE_mBH[:,1], n_components=1)[:,1]
 TDE_mBH_dc = extreme_deconvolve(x=TDE_redshifts, y=TDE_mBH[:,0], dx=np.zeros(np.array(TDE_redshifts).shape), dy=TDE_mBH[:,1], n_components=1)[:,1]
-ref_mBH_dc = extreme_deconvolve(x=ref_redshifts, y=ref_mBH[:,0], dx=np.zeros(np.array(ref_redshifts).shape), dy=ref_mBH[:,1], n_components=1)[:,1]
+ref_mBH_dc = extreme_deconvolve(x=ref_redshifts, y=ref_mBH[:,0], dx=np.zeros(np.array(ref_redshifts).shape), dy=ref_mBH[:,1], n_components=5)[:,1]
 
 # plot noisy distribution
 plt.plot(ref_redshifts, ref_mBH_dc, "o", color="grey", label="ref")
@@ -207,5 +209,26 @@ plt.legend()
 plt.title("Deconvolved distributions",fontsize=10)
 plt.show()
 
+import sys
+sys.exit()
 
 # Compare before/after histograms
+ax_before = plt.subplot(211)
+ax_after = plt.subplot(212)
+# m_bh
+x_min, x_max = (4.5,9)
+X_plot = np.linspace(x_min, x_max, 1000)[:,np.newaxis]
+smoothness=12
+referenceSmoothness=12
+bandwidth = np.abs(x_max-x_min)/smoothness
+
+kde = KernelDensity(kernel="gaussian", bandwidth=np.abs(x_max-x_min)/referenceSmoothness).fit(np.array(referenceCatalogData[f"col_{columns_compare[2]}"])[:,np.newaxis])
+log_dens = kde.score_samples(X_plot)
+#mBH_hist_ax.fill_betweenx(Y_plot[:, 0], np.exp(log_dens), fc="grey", alpha=0.4)
+ax_before.plot(X_plot[:, 0], np.exp(log_dens), color="black", linewidth=2)
+kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(QPE_data[4,:,0][:,np.newaxis])
+log_dens = kde.score_samples(X_plot)
+ax_before.fill_betweenx(X_plot[:, 0], np.exp(log_dens), fc="blue", alpha=0.4)
+kde = KernelDensity(kernel="gaussian", bandwidth=bandwidth).fit(TDE_data[4,:,0][:,np.newaxis])
+log_dens = kde.score_samples(X_plot)
+ax_before.fill_betweenx(X_plot[:, 0], np.exp(log_dens), fc="red", alpha=0.4)
