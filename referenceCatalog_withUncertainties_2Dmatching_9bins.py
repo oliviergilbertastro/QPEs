@@ -19,7 +19,7 @@ bounds = {"redshift": (0.01,0.1),
           "m_bh": (4.5,8)}
 resolution = 20
 smoothing_param = resolution/6
-sample_size=48000
+sample_size=36000
 show_plots = True
 matching = "m_star" # choose wether to match on black hole mass or stellar mass
 # ***************************************************************************
@@ -125,6 +125,7 @@ for bin in QPE_bins:
     else:
         print(bin, "empty!")
 print(len(non_empty_bins))
+print(non_empty_bins)
 
 # Resample the reference catalog galaxies in the QPE bins:
 goodGalaxies = []
@@ -135,14 +136,14 @@ for i in tqdm(range(sample_size)):
     goodGalaxies.append(refCat[random_galaxy,:])
 
 
-goodGalaxies = np.array(goodGalaxies)[:48000,:]
+goodGalaxies = np.array(goodGalaxies)[:sample_size,:]
 print(goodGalaxies.shape)
 np.savetxt("referenceCatalog_with_uncertainties_final_9bins.txt", goodGalaxies)
 refCat = np.loadtxt("referenceCatalog_with_uncertainties_final_9bins.txt")
 fieldnames = [f"col_{i}" for i in range(refCat.shape[1])]
-fieldnames[1] = "redshift"
-fieldnames[63] = "m_star"
-fieldnames[67] = "m_bh"
+fieldnames[4] = "redshift"
+fieldnames[102] = "m_star"
+fieldnames[100] = "m_bh"
 refCat = pd.read_csv("referenceCatalog_with_uncertainties_final_9bins.txt", delimiter=" ", header=None, names=fieldnames)
 
 ref_grid = np.zeros((resolution,resolution))

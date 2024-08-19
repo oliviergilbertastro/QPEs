@@ -6,3 +6,4 @@ data/catalogs/
 *.pyc
 referenceCatalog.txt
 referenceCatalog_with_uncertainties.txt
+referenceCatalog_with_uncertainties_matching.txt
