@@ -178,79 +178,34 @@ plot_distribution(TDE_redshifts, TDE_mBH[:,0], [TDE_mBH[:,1],TDE_mBH[:,2]], host
 plt.xlabel('$z$')
 plt.ylabel('$M_\mathrm{BH}$')
 plt.legend()
-plt.title("Distribution",fontsize=10)
+plt.title("Distributions",fontsize=10)
 plt.show()
 
 
 
-# add noise to get the "observed" distribution
-dx = 0.2 + 0.5 * np.random.random(N)
-dy = 0.2 + 0.5 * np.random.random(N)
+def extreme_deconvolve(x, y, dx, dy, n_components=10, max_iter=200):
+    X = np.vstack([x, y]).T
+    Xerr = np.zeros(X.shape + X.shape[-1:])
+    diag = np.arange(X.shape[-1])
+    Xerr[:, diag, diag] = np.vstack([dx ** 2, dy ** 2]).T
+    clf = XDGMM(n_components=n_components, max_iter=max_iter)
+    clf.fit(X, Xerr)
+    sample = clf.sample(len(X))
+    return sample
 
-x = x_true + np.random.normal(0, dx)
-y = y_true + np.random.normal(0, dy)
+QPE_mBH_dc = extreme_deconvolve(x=QPE_redshifts, y=QPE_mBH[:,0], dx=np.zeros(np.array(QPE_redshifts).shape), dy=QPE_mBH[:,1], n_components=2)[:,1]
+TDE_mBH_dc = extreme_deconvolve(x=TDE_redshifts, y=TDE_mBH[:,0], dx=np.zeros(np.array(TDE_redshifts).shape), dy=TDE_mBH[:,1], n_components=1)[:,1]
+ref_mBH_dc = extreme_deconvolve(x=ref_redshifts, y=ref_mBH[:,0], dx=np.zeros(np.array(ref_redshifts).shape), dy=ref_mBH[:,1], n_components=1)[:,1]
 
 # plot noisy distribution
-plot_distribution('Noisy Distribution', x, y)
-
+plt.plot(ref_redshifts, ref_mBH_dc, "o", color="grey", label="ref")
+plt.plot(QPE_redshifts, QPE_mBH_dc, "o", color="blue", label="QPE")
+plt.plot(TDE_redshifts, TDE_mBH_dc, "o", color="red", label="TDE")
+plt.xlabel('$z$')
+plt.ylabel('$M_\mathrm{BH}$')
+plt.legend()
+plt.title("Deconvolved distributions",fontsize=10)
 plt.show()
 
-# stack the results for computation
-X = np.vstack([x, y]).T
-Xerr = np.zeros(X.shape + X.shape[-1:])
-diag = np.arange(X.shape[-1])
-Xerr[:, diag, diag] = np.vstack([dx ** 2, dy ** 2]).T
 
-clf = XDGMM(n_components=10, max_iter=200)
-
-clf.fit(X, Xerr)
-sample = clf.sample(N)
-
-# plot noisy distribution
-plot_distribution('Extreme Deconvolution Resampling', sample[:, 0], sample[:, 1])
-plt.show()
-
-# Plot the results
-fig = plt.figure(figsize=(5, 3.75))
-fig.subplots_adjust(left=0.1, right=0.95,
-                    bottom=0.1, top=0.95,
-                    wspace=0.02, hspace=0.02)
-
-ax1 = fig.add_subplot(221)
-ax1.scatter(x_true, y_true, s=4, lw=0, c='k')
-
-ax2 = fig.add_subplot(222)
-ax2.scatter(x, y, s=4, lw=0, c='k')
-
-ax3 = fig.add_subplot(223)
-ax3.scatter(sample[:, 0], sample[:, 1], s=4, lw=0, c='k')
-
-
-
-titles = ["True Distribution", "Noisy Distribution",
-        "Extreme Deconvolution\n  resampling",
-        "Extreme Deconvolution\n  cluster locations"]
-
-ax = [ax1, ax2, ax3]
-
-for i in range(len(ax)):
-    ax[i].set_xlim(-1, 13)
-    ax[i].set_ylim(-6, 16)
-
-    ax[i].xaxis.set_major_locator(plt.MultipleLocator(4))
-    ax[i].yaxis.set_major_locator(plt.MultipleLocator(5))
-
-    ax[i].text(0.05, 0.95, titles[i],
-            ha='left', va='top', transform=ax[i].transAxes)
-
-    if i in (0, 1):
-        ax[i].xaxis.set_major_formatter(plt.NullFormatter())
-    else:
-        ax[i].set_xlabel('$x$')
-
-    if i in (1, 3):
-        ax[i].yaxis.set_major_formatter(plt.NullFormatter())
-    else:
-        ax[i].set_ylabel('$y$')
-
-plt.show()
+# Compare before/after histograms
