@@ -15,7 +15,7 @@ from datetime import datetime
 
 save_folder = f"/Users/oliviergilbert/Desktop/QPEs/fits/auto_fits/"
 
-def saveFit(picklename=None, savename=None):
+def saveFit(picklename=None, savename=None, filetype="pdf"):
     try:
         fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
     except:
@@ -101,7 +101,7 @@ def saveFit(picklename=None, savename=None):
         fig = total_compare(list(flux_dict_2d.values()), list(flux_dict_2d.keys()), list(flux_dict_1d.values()), list(flux_dict_1d.keys()), deltaPix = fitting_run_result.fitting_specify_class.deltaPix,
                         zp=fitting_run_result.zp, if_annuli=False,
                         mask_image = fitting_run_result.fitting_specify_class.kwargs_likelihood['image_likelihood_mask_list'][0],
-                        target_ID = target_ID, cmap=my_cmap, figsize=(13,4.5), show_plot=False)
+                        target_ID = target_ID, cmap=my_cmap, figsize=(13,4.7), show_plot=False)
     #flux_dict_2d['data-point source'] = flux_dict_2d.pop('data$-$point source')
     fitting_run_result.flux_2d_out = flux_dict_2d
     fitting_run_result.flux_1d_out = flux_dict_1d
@@ -109,12 +109,24 @@ def saveFit(picklename=None, savename=None):
         savename = f"{picklename}_fit"
     
     
-    fig.savefig(f"{save_folder}{savename}.pdf")
+    fig.savefig(f"{save_folder}{savename}.{filetype}", dpi=300)
     return
 
 from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types, hammerstein_TDE_coords, hammerstein_TDE_names, french_TDE_names
 
-if input("Save FINAL French TDE hosts? [y/n]") == "y":
+
+if input("Save presentation sersic fit? [y/n]") == "y":
+    time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
+    os.mkdir(f"{save_folder}/{time_dir}")
+    try:
+        picklename=f"{objects_names[7]}_{'r'}-band_{'None'}_DESI_PSF.pkl"
+        saveFit(picklename, savename=f"{time_dir}/sersicfit_{objects_names[7]}", filetype="png")
+        picklename=f"{objects_names[7]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl"
+        saveFit(picklename, savename=f"{time_dir}/bulgediskfit_{objects_names[7]}", filetype="png")
+    except:
+        pass
+
+elif input("Save FINAL French TDE hosts? [y/n]") == "y":
     time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
     os.mkdir(f"{save_folder}/{time_dir}")
     for band in "g":
