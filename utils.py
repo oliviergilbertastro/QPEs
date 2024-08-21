@@ -118,7 +118,7 @@ def print_table(a, header=None, title=None, space_between_columns=2, space_betwe
 
 
 
-def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, linewidth=3, extremums=None, background_colors=["#f0f0f0","#969696","#252525"], levels=4, markersize=8, refCat=None, columns_compare=None, save_plot=None):
+def myCornerPlot(data, labels=None, bw_adjust=1, units=None, fontsize=15, smoothness=6, linewidth=3, extremums=None, background_colors=["#f0f0f0","#969696","#252525"], levels=4, markersize=8, refCat=None, columns_compare=None, save_plot=None):
     """
     data should be [data_set1, data_set2, ...] each containing multiple parameters
     """
@@ -200,7 +200,7 @@ def myCornerPlot(data, labels=None, units=None, fontsize=15, smoothness=6, linew
             for j in range(len(data)):
                 corner_axes[i][k].plot(data[j][i], data[j][i+k+1], ["o","*","*"][j%3], color=["blue","red","red"][j%3], markersize=[markersize,markersize-1,markersize-1][j%3])
             if refCat is not None:
-                sns.kdeplot(refCat, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=True, levels=levels, colors=background_colors, ax=corner_axes[i][k])
+                sns.kdeplot(refCat, bw_adjust=bw_adjust, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=True, levels=levels, colors=background_colors, ax=corner_axes[i][k])
                 #sns.kdeplot(refCat, x=f"col_{columns_compare[i]}", y=f"col_{columns_compare[i+k+1]}", fill=False, levels=levels, linewidths=0.5, color="black", ax=corner_axes[i][k])
         print_color(f"{labels[i]} :")
         print(f"QPE: {(np.min(data[0][i]), np.median(data[0][i]), np.max(data[0][i]))}")
@@ -510,7 +510,7 @@ def redshiftMass(data, referenceCatalogData=None, columns_compare=None, kernelDe
     plt.show()
 
 
-def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, extremums=None, fontsize=15, markersize=8, smoothness=6, bw_adjust=None, referenceSmoothness=12, save_plot=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
+def myCombinedFinalPlot(data, referenceCatalogData=None, columns_compare=None, kernelDensitiesReference=False, extremums=None, fontsize=15, markersize=8, smoothness=6, bw_adjust=1, referenceSmoothness=12, save_plot=None, bins=50, background_colors = ["#f0f0f0","#969696","#252525"], linewidth=2, levels = 4):
     """
     Originally made for the Sérsic index, but tweaked so it can accomodate the Bulge/Total light ratio
     """
