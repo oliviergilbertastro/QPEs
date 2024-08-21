@@ -21,7 +21,7 @@ def recombine_catalog(catalogs, savename="referenceCatalog"):
     for cat in catalogs[1:]:
         refCat = np.vstack((refCat,cat))
     print(refCat.shape)
-    if input("Type 'YES' if you are absolutely sure you want to erase referenceCatalog.txt. This cannot be undone.") == "YES":
+    if input(f"Type 'YES' if you are absolutely sure you want to erase {savename}.txt. This cannot be undone.") == "YES":
         np.savetxt(f"{savename}.txt", refCat)
     pass
 
