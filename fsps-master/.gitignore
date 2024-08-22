@@ -1,0 +1,13 @@
+*.o
+*.mod
+*.exe
+.DS_Store
+nr
+SPECTRA/CKC14/*
+OUTPUTS/*
+CodeToDo.txt
+runsps.f90
+metalml.f90
+colorteff.f90
+bytype.f90
+Makefile.prv
