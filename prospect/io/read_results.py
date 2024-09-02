@@ -184,10 +184,14 @@ def read_hdf5(filename, **extras):
         res["bestfit"] = groups["bestfit"]
         res["optimization"] = groups["optimization"]
         # do observations
+        print("******************\n**********************\n***************\n**************\n*******************")
+        print('observations' in hf)
+        print(hf)
         if 'observations' in hf:
             try:
                 obs = obs_from_h5(hf['observations'])
             except:
+                print("Error and therefore out_obs = None")
                 obs = None
         else:
             obs = None
