@@ -10,10 +10,14 @@ import sys
 import parse
 import astropy.units
 #Let's just go in the parent directory since all of our imports are from there (much less complicated)
-parent_dir = parse.parse("{}/prospector", os.path.dirname(os.path.realpath(__file__)))[0]
-sys.path.append(parent_dir)
+try:
+    parent_dir = parse.parse("{}/prospector", os.path.dirname(os.path.realpath(__file__)))[0]
+    sys.path.append(parent_dir)
+except:
+    parent_dir = parse.parse("{}\prospector", os.path.dirname(os.path.realpath(__file__)))[0]
+    sys.path.append(parent_dir)
 import download_data, paper_data
-os.environ["SPS_HOME"] = "/Users/oliviergilbert/Desktop/QPEs/fsps-master" #Need to download fsps from https://github.com/cconroy20/fsps and put it locally, change the path in .bash_profile to point to it
+os.environ["SPS_HOME"] = "/Users/oliviergilbert/Desktop/QPEs/fsps" #Need to download fsps from https://github.com/cconroy20/fsps and put it locally, change the path in .bash_profile to point to it
 import astropy.table
 import fsps
 import dynesty
