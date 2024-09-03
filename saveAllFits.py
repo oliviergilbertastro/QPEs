@@ -13,7 +13,8 @@ import parse
 import os
 from datetime import datetime
 
-save_folder = f"/Users/oliviergilbert/Desktop/QPEs/fits/auto_fits/"
+#save_folder = f"/Users/oliviergilbert/Desktop/QPEs/fits/auto_fits/"
+save_folder = r"C:\\Users\\lauri\\Downloads\\"
 
 def saveFit(picklename=None, savename=None, filetype="pdf"):
     try:
@@ -108,14 +109,25 @@ def saveFit(picklename=None, savename=None, filetype="pdf"):
     if savename is None:
         savename = f"{picklename}_fit"
     
-    
-    fig.savefig(f"{save_folder}{savename}.{filetype}", dpi=300)
+    dpi = 'figure' if filetype == "pdf" else 300
+    fig.savefig(f"{save_folder}{savename}.{filetype}", dpi=dpi)
     return
 
 from download_data import objects, comparisons, objects_names, objects_types, TDE_names, TDE_coords, TDE_types, hammerstein_TDE_coords, hammerstein_TDE_names, french_TDE_names
 
+if input("Save ERO-QPE4 (Article fit)? [y/n]") == "y":
+    time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
+    os.mkdir(f"{save_folder}/{time_dir}")
+    try:
+        picklename=f"{objects_names[7]}_{'r'}-band_{'None'}_DESI_PSF.pkl"
+        saveFit(picklename, savename=f"{time_dir}/sersicfit_{objects_names[7]}", filetype="pdf")
+        picklename=f"{objects_names[7]}_{'g'}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl"
+        saveFit(picklename, savename=f"{time_dir}/bulgediskfit_{objects_names[7]}", filetype="pdf")
+    except Exception as e:
+        print(e)
+        pass
 
-if input("Save presentation sersic fit? [y/n]") == "y":
+elif input("Save presentation sersic fit? [y/n]") == "y":
     time_dir = str(datetime.now()).replace(' ', '_').replace(':', '_')
     os.mkdir(f"{save_folder}/{time_dir}")
     try:

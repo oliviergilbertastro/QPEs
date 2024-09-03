@@ -172,10 +172,10 @@ def total_compare(flux_list_2d, label_list_2d, flux_list_1d, label_list_1d,
     ax_rt.invert_yaxis()
     ax_rb.set_yticks([-0.5,-0.25, 0., 0.25])
     if if_annuli == False:
-        ax_rt.set_ylabel('$\mu$(mag, pixel$^{-2}$)', fontsize=17)
+        ax_rt.set_ylabel('$\mu$(mag pixel$^{-1}$)', fontsize=17)
         ax_rb.set_ylabel('$\Delta\mu$', fontsize=17)
     elif if_annuli == True:
-        ax_rt.set_ylabel('$SB_{annuli}$(mag, pixel$^{-2}$)', fontsize=15)
+        ax_rt.set_ylabel('$SB_{annuli}$(mag pixel$^{-1}$)', fontsize=15)
         ax_rb.set_ylabel('$\Delta SB$', fontsize=18)
     plt.ylim([-0.5,0.5])
     
