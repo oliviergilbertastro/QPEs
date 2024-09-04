@@ -227,6 +227,12 @@ comparisons_names = [
 ]
 
 if __name__ == "__main__":
+    if input("Download eRO-QPE4?") == "y":
+        band = input("Which band do you want to download? ['griz']")
+        for i in [7]:
+            for b in band:
+                get_file(objects[i], i, size=512*2, pixscale=0.262, band=b, name="qpe")
+        print("\x1b[33mDownload finished\x1b[0m")
     if input("Download pictures of QPEs and TDEs?") == "y":
         for i in tqdm(range(len(objects_names))):
             ra, dec = objects[i]
