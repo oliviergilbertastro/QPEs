@@ -272,7 +272,7 @@ def read_SED(objID, extension="", QPE=True, additional_data=None):
     print(out_obs["maggies"], out_obs["maggies_unc"])
 
     pwave = np.array([f.wave_effective for f in out_obs["filters"]])
-    fontsize = 16
+    fontsize = 18
     # plot the data
     ax.plot(pwave, out_obs["maggies"], linestyle="", marker="o", color="k")
     ax.errorbar(pwave,  out_obs["maggies"], out_obs["maggies_unc"], linestyle="", color="k", zorder=10)
@@ -296,6 +296,26 @@ def read_SED(objID, extension="", QPE=True, additional_data=None):
     ax.set_ylabel(r"$\chi_{\rm best}$", fontsize=fontsize)
     ax.xaxis.set_tick_params(labelsize=fontsize-2)
     ax.yaxis.set_tick_params(labelsize=fontsize-2)
+    plt.show()
+
+    #Plot the observed SED of the spectrum and SED of the highest probability posterior sample
+    saxes = plt.subplot(111)
+    ax = saxes
+
+    ax.plot(pwave, out_obs["maggies"], linestyle="", marker="o", color="k")
+    ax.errorbar(pwave,  out_obs["maggies"], out_obs["maggies_unc"], linestyle="", color="k", zorder=10)
+    ax.set_ylabel(r"$f_\nu$ [maggies]", fontsize=fontsize)
+    ax.set_xlabel(r"Rest-frame wavelength [$\mathrm{\AA}$]", fontsize=fontsize)
+    ax.set_xlim(3e3, 1e4)
+    ax.set_ylim(out_obs["maggies"].min() * 0.1, out_obs["maggies"].max() * 5)
+    ax.set_yscale("log")
+    ax.xaxis.set_tick_params(labelsize=fontsize-2)
+    ax.yaxis.set_tick_params(labelsize=fontsize-2)
+
+    # get the best-fit SED
+    bsed = out["bestfit"]
+    ax.plot(bsed["restframe_wavelengths"] * (1+out_obs["redshift"]), bsed["spectrum"], color="firebrick", label="MAP sample")
+    ax.plot(pwave, bsed["photometry"], linestyle="", marker="s", markersize=10, mec="orange", mew=3, mfc="none")
     plt.show()
 
 
