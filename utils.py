@@ -790,14 +790,19 @@ def makeLatexTable(names, redshifts, r50s, n_sersics, bt_ratios, ssmds, M_stars,
     assert len(names) == len(redshifts) == len(r50s[:,0]) == len(n_sersics[:,0]) == len(bt_ratios[:,0]) == len(ssmds[:,0]) == len(M_stars[:,0]) == len(references) == len(M_bhs)
     length = len(names)
 
-    def LatexUncertainty(value):
-        val, unc_lo, unc_hi = round(value[0],2), round(value[1],2), round(value[2],2)
+    def LatexUncertainty(value, sigfig=2):
+        val, unc_lo, unc_hi = round(value[0],sigfig), round(value[1],sigfig), round(value[2],sigfig)
         unc_lo, unc_hi = np.max([0.01, unc_lo]), np.max([0.01, unc_hi])
+        if sigfig == 1:
+            unc_lo, unc_hi = np.max([0.1, unc_lo]), np.max([0.1, unc_hi])
+            val, unc_lo, unc_hi = f'{val:.1f}', f'{unc_lo:.1f}', f'{unc_hi:.1f}'
+            return f"${val}_{r'{-'+unc_lo+r'}'}^{r'{+'+unc_hi+r'}'}$"
+
         val, unc_lo, unc_hi = f'{val:.2f}', f'{unc_lo:.2f}', f'{unc_hi:.2f}'
         return f"${val}_{r'{-'+unc_lo+r'}'}^{r'{+'+unc_hi+r'}'}$"
 
     for i in range(length):
-        each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(round(redshifts[i],3)) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i]) + " & " + LatexUncertainty(M_stars[i])+ " & " + LatexUncertainty(M_bhs[i])+ r" \\" + "\n")        
+        each_lines.append(names[i]+r"$^{\rm "+references[i]+"}$" + " & " + "$" + str(round(redshifts[i],3)) + "$" + " & " + LatexUncertainty(r50s[i]) + " & " + LatexUncertainty(n_sersics[i]) + " & " + LatexUncertainty(bt_ratios[i]) + " & " + LatexUncertainty(ssmds[i], sigfig=1) + " & " + LatexUncertainty(M_stars[i], sigfig=1)+ " & " + LatexUncertainty(M_bhs[i], sigfig=1)+ r" \\" + "\n")        
 
     # swap lines around here easily
     onlyQPEs = np.array(each_lines)[[0,1,2,3,6,7]]
