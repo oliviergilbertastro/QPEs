@@ -12,16 +12,17 @@ import astropy.units
 #Let's just go in the parent directory since all of our imports are from there (much less complicated)
 try:
     parent_dir = parse.parse("{}/prospector", os.path.dirname(os.path.realpath(__file__)))[0]
+    print(parent_dir)
     sys.path.append(parent_dir)
 except:
     parent_dir = parse.parse("{}\prospector", os.path.dirname(os.path.realpath(__file__)))[0]
+    print(parent_dir)
     sys.path.append(parent_dir)
 import download_data, paper_data
 os.environ["SPS_HOME"] = "fsps_quoi" #Need to download fsps from https://github.com/cconroy20/fsps and put it locally, change the path in .bash_profile to point to it
 import astropy.table
 #import fsps
 import dynesty
-import sedpy
 import h5py, astropy
 import numpy as np
 import astroquery
@@ -57,7 +58,8 @@ def get_data_windows(objID, bands="griz", redshift=0, magnitudes_dict=None, exte
     maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in working_bands])
     magerr = np.array([cat[0][f"cModelMagErr_{b}"] for b in working_bands])
     magerr = np.hypot(magerr, 0.05)
-    return filters, redshift, maggies, magerr
+    maggies_unc = magerr * maggies / 1.086
+    return filters, redshift, maggies, maggies_unc
 
 
 def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, extension="", QPE=True):
@@ -267,16 +269,20 @@ def read_SED(objID, extension="", QPE=True, additional_data=None):
     out_obs = {}
     out_obs["filters"], out_obs["redshift"], out_obs["maggies"], out_obs["maggies_unc"] = additional_data
 
-    pwave = np.array([f.wave_effective for f in out_obs["filters"]])
+    print(out_obs["maggies"], out_obs["maggies_unc"])
 
+    pwave = np.array([f.wave_effective for f in out_obs["filters"]])
+    fontsize = 18
     # plot the data
     ax.plot(pwave, out_obs["maggies"], linestyle="", marker="o", color="k")
     ax.errorbar(pwave,  out_obs["maggies"], out_obs["maggies_unc"], linestyle="", color="k", zorder=10)
-    ax.set_ylabel(r"$f_\nu$ (maggies)")
-    ax.set_xlabel(r"$\lambda$ (AA)")
+    ax.set_ylabel(r"$f_\nu$ (maggies)", fontsize=fontsize)
+    ax.set_xlabel(r"$\lambda$ (AA)", fontsize=fontsize)
     ax.set_xlim(3e3, 1e4)
     ax.set_ylim(out_obs["maggies"].min() * 0.1, out_obs["maggies"].max() * 5)
     ax.set_yscale("log")
+    ax.xaxis.set_tick_params(labelsize=fontsize-2)
+    ax.yaxis.set_tick_params(labelsize=fontsize-2)
 
     # get the best-fit SED
     bsed = out["bestfit"]
@@ -287,7 +293,29 @@ def read_SED(objID, extension="", QPE=True, additional_data=None):
     ax.plot(pwave, chi, linestyle="", marker="o", color="k")
     ax.axhline(0, color="k", linestyle=":")
     ax.set_ylim(-2, 2)
-    ax.set_ylabel(r"$\chi_{\rm best}$")
+    ax.set_ylabel(r"$\chi_{\rm best}$", fontsize=fontsize)
+    ax.xaxis.set_tick_params(labelsize=fontsize-2)
+    ax.yaxis.set_tick_params(labelsize=fontsize-2)
+    plt.show()
+
+    #Plot the observed SED of the spectrum and SED of the highest probability posterior sample
+    saxes = plt.subplot(111)
+    ax = saxes
+
+    ax.plot(pwave, out_obs["maggies"], linestyle="", marker="o", color="k")
+    ax.errorbar(pwave,  out_obs["maggies"], out_obs["maggies_unc"], linestyle="", color="k", zorder=10)
+    ax.set_ylabel(r"$f_\nu$ [maggies]", fontsize=fontsize)
+    ax.set_xlabel(r"Rest-frame wavelength [$\mathrm{\AA}$]", fontsize=fontsize)
+    ax.set_xlim(3e3, 1e4)
+    ax.set_ylim(out_obs["maggies"].min() * 0.1, out_obs["maggies"].max() * 5)
+    ax.set_yscale("log")
+    ax.xaxis.set_tick_params(labelsize=fontsize-2)
+    ax.yaxis.set_tick_params(labelsize=fontsize-2)
+
+    # get the best-fit SED
+    bsed = out["bestfit"]
+    ax.plot(bsed["restframe_wavelengths"] * (1+out_obs["redshift"]), bsed["spectrum"], color="firebrick", label="MAP sample")
+    ax.plot(pwave, bsed["photometry"], linestyle="", marker="s", markersize=10, mec="orange", mew=3, mfc="none")
     plt.show()
 
 
