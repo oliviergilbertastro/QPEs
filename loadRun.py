@@ -85,9 +85,12 @@ def loadRun(ra_dec, type="AGN", band="i", picklename=None):
         plt.yscale("log")
         plt.title(picklename, fontsize=17)
         plt.show()
-        fitting_run_result.run_diag()
-        fitting_run_result.plot_params_corner()
-        fitting_run_result.plot_flux_corner()
+        try:
+            fitting_run_result.run_diag()
+            fitting_run_result.plot_params_corner()
+            fitting_run_result.plot_flux_corner()
+        except:
+            pass
     print("-------------------------------------------------------")
     print("max likelihood:", fitting_run_result.fitting_seq.best_fit_likelihood)
     print("BIC:", fitting_run_result.fitting_seq.bic)

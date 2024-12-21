@@ -15,6 +15,7 @@ from datetime import datetime
 
 #save_folder = f"/Users/oliviergilbert/Desktop/QPEs/fits/auto_fits/"
 save_folder = r"C:\\Users\\lauri\\Downloads\\"
+save_folder = r"C:\Users\olivi\Desktop\QPEs\iPoster\\"
 
 def saveFit(picklename=None, savename=None, filetype="pdf"):
     try:
