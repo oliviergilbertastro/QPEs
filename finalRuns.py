@@ -150,7 +150,7 @@ def galight_fit_short(ra_dec, img_path, oow_path=None, exp_path=None, psf_path=N
         data_process.apertures = apertures #Pass apertures to the data_process
 
         #Adding a prior so that 1)the size of the bulge is within a range to the disk size. 2) disk have more ellipticity.
-        def condition_bulgedisk(kwargs_lens, kwargs_source, kwargs_lens_light, kwargs_ps, kwargs_special, kwargs_extinction, kwargs_tracer_source):
+        def condition_bulgedisk(kwargs_lens, kwargs_source, kwargs_lens_light, kwargs_ps, kwargs_special, kwargs_extinction):
             logL = 0
             #note that the Comp[0] is the bulge and the Comp[1] is the disk.
             phi0, q0 = param_util.ellipticity2phi_q(kwargs_lens_light[0]['e1'], kwargs_lens_light[0]['e2'])
@@ -304,29 +304,32 @@ def fit_single_object(qpe_oder_tde="QPE", objID=0, bands="r", types=["None"], ps
             oow_path = f"data/images/{path_section}{objID}_{band}.fits"
             #Use the co-add PSF model from the survey
             psf_path = f"data/images/{path_section}{objID}_{psf_band}_PSF.fits"
+            galight_fit_short(
+                coords[objID],
+                img_path,
+                oow_path,
+                None,
+                psf_path,
+                current_type,
+                0.262,
+                None,
+                band,
+                15,
+                60,
+                1,
+                5,
+                "COADDED_DESI",
+                f"{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
+                5,
+                "mega_deep",
+                fixed_n_list,
+                )
+            print("\x1b[32mThis one did work\x1b[0m")
+            
             try:
-                galight_fit_short(
-                    coords[objID],
-                    img_path,
-                    oow_path,
-                    None,
-                    psf_path,
-                    current_type,
-                    0.262,
-                    None,
-                    band,
-                    15,
-                    60,
-                    1,
-                    5,
-                    "COADDED_DESI",
-                    f"big_fits/{names[objID]}_{band}-band_{current_type}_DESI_PSF_FINAL2",
-                    5,
-                    "mega_deep",
-                    fixed_n_list,
-                    )
-                print("\x1b[32mThis one did work\x1b[0m")
-            except:
+                pass
+            except Exception as e:
+                print(e)
                 print("\x1b[31mThis one didn't work\x1b[0m")
                 #psf_bands = "griz"
                 #fit_single_object(qpe_oder_tde=qpe_oder_tde, objID=objID, bands=bands, types=types, psf_band=psf_bands[(psf_bands.index(psf_band)+1)%len(psf_bands)])
@@ -337,6 +340,9 @@ import time
 
 if __name__ == "__main__":
     # All the "if False" lines are previous runs that have been done
+
+    fit_single_object("QPE", 7, bands="g", types=["Bulge"], psf_band="g")
+
     if False:
         fit_single_object("QPE", 2, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[1,1]])
         fit_single_object("TDE", 0, bands="g", types=["Bulge"], psf_band="g", fixed_n_list=[[0,4]])

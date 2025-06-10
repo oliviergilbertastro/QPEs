@@ -134,8 +134,11 @@ class FittingProcess(object):
             print("PS result:", ps_result)
             log_l = _imageModel.likelihood_data_given_model(source_marg=False, linear_prior=None,
                                                                   **kwargs_params)
-            if len(log_l) > 1:
-                log_l = log_l[0]  #update for lenstronomy 1.11.9
+            try:
+                if len(log_l) > 1:
+                    log_l = log_l[0]  #update for lenstronomy 1.11.9
+            except:
+                pass
             n_data = _imageModel.num_data_evaluate
             self.reduced_Chisq_bylenstronomy = -1 * log_l * 2 / n_data
         

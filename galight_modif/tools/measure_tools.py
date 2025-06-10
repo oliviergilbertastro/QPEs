@@ -777,6 +777,7 @@ def esti_bgkstd(image, nsigma=2, exp_sz= 1.5, npixels = 15, if_plot=False):
         mask *= mask_list[i]
     image_mask = image*mask
     stdd = np.std(image_mask[image_mask!=0])
+    meann = np.mean(image_mask[image_mask!=0])
     if if_plot == True:
         fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12.5, 6))
         ax1.imshow(image_mask, origin='lower', cmap=my_cmap, norm=LogNorm())
@@ -786,7 +787,7 @@ def esti_bgkstd(image, nsigma=2, exp_sz= 1.5, npixels = 15, if_plot=False):
         ax2.plot(np.zeros(5)+np.median(image_mask[image_mask!=0]), np.linspace(0,values[0].max(),num=5), 'k--', linewidth = 4)
         ax2.set_title('pixel value hist and med-point (mid = {0:.4f}).'.format(np.median(image_mask[image_mask!=0])), fontsize=20)
         ax2.tick_params(labelsize=15)
-    return stdd
+    return stdd, meann
 
 def model_flux_cal(params_list, model_list = None, sersic_major_axis=None):
     """

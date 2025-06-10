@@ -10,28 +10,57 @@ import sys
 import parse
 import astropy.units
 #Let's just go in the parent directory since all of our imports are from there (much less complicated)
-parent_dir = parse.parse("{}/prospector", os.path.dirname(os.path.realpath(__file__)))[0]
-sys.path.append(parent_dir)
+try:
+    parent_dir = parse.parse("{}/prospector", os.path.dirname(os.path.realpath(__file__)))[0]
+    print(parent_dir)
+    sys.path.append(parent_dir)
+except:
+    parent_dir = parse.parse("{}\prospector", os.path.dirname(os.path.realpath(__file__)))[0]
+    print(parent_dir)
+    sys.path.append(parent_dir)
 import download_data, paper_data
-os.environ["SPS_HOME"] = "fsps-master" #Need to download fsps from https://github.com/cconroy20/fsps and put it locally, change the path in .bash_profile to point to it
+os.environ["SPS_HOME"] = "fsps_quoi" #Need to download fsps from https://github.com/cconroy20/fsps and put it locally, change the path in .bash_profile to point to it
 import astropy.table
-import fsps
+#import fsps
 import dynesty
-import sedpy
 import h5py, astropy
 import numpy as np
 import astroquery
 from sedpy.observate import load_filters
 from prospect.utils.obsutils import fix_obs
 from download_data import objects_names, objects, TDE_coords, TDE_names
-if __name__ != "prospector.prospector_myFits":
-    from cleanEverything_v2 import QPE_magnitudes, QPE_unreddenedMagnitudes
 from paper_data import QPE_redshifts, TDE_redshifts
 from prospect.sources import CSPSpecBasis
 from prospect.io import read_results as reader
 import matplotlib.pyplot as plt
 from prospect.plotting import corner
 from prospect.plotting.utils import best_sample
+
+def get_data_windows(objID, bands="griz", redshift=0, magnitudes_dict=None, extension="", QPE=True):
+    """
+    Fits SED using prospector
+    """
+    
+    filters = load_filters([f"sdss_{b}0" for b in bands])
+    working_bands = ""
+    for b in bands:
+        try:
+            idc = magnitudes_dict[0][f"cModelMag_{b}"]
+            working_bands += b
+        except:
+            pass
+    filters = load_filters([f"sdss_{b}0" for b in working_bands])
+    print(working_bands)
+
+    cat = copy.copy(magnitudes_dict)
+    for b in working_bands:
+        print(b, cat[0][f"cModelMag_{b}"])
+    maggies = np.array([10**(-0.4 * cat[0][f"cModelMag_{b}"]) for b in working_bands])
+    magerr = np.array([cat[0][f"cModelMagErr_{b}"] for b in working_bands])
+    magerr = np.hypot(magerr, 0.05)
+    maggies_unc = magerr * maggies / 1.086
+    return filters, redshift, maggies, maggies_unc
+
 
 def fit_SED(objID, bands="griz", redshift=0, magnitudes_dict=None, extension="", QPE=True):
     """
@@ -171,7 +200,7 @@ if input("Rewrite mfrac_files? [y/n]") == "y":
         rewrite_mfracFiles(i, extension="FINAL", QPE=False)
 
 
-def read_SED(objID, extension="", QPE=True):
+def read_SED(objID, extension="", QPE=True, additional_data=None):
     #try:
         # Directly fitting the surviving mass
     #    hfile = f"prospector/fits_data/{objects_names[objID]}_survMass_prospector_SED.h5"
@@ -184,13 +213,15 @@ def read_SED(objID, extension="", QPE=True):
     else:
         hfile = f"prospector/fits_data/{TDE_names[objID]}_prospector_{extension}.h5"
     out, out_obs, out_model = reader.results_from(hfile)
+    print("out", out)
+    print("out_obs", out_obs)
     for k in out.keys():
         pass
         #print(k, ":", out[k])
 
     
     # Get the surviving fraction mass redone:
-    sps = CSPSpecBasis(zcontinuous=1)#reader.get_sps(out)
+    #sps = CSPSpecBasis(zcontinuous=1)#reader.get_sps(out)
     from prospect.plotting.utils import sample_posterior
     theta = sample_posterior(out["chain"], weights=out.get("weights", None), nsample=1)[0,:]
 
@@ -201,10 +232,11 @@ def read_SED(objID, extension="", QPE=True):
     model_params = TemplateLibrary["parametric_sfh"]
     #model_params.update(TemplateLibrary["nebular"]) #This is to add nebular emission lines (I don't care about that)
     #model_params.update(TemplateLibrary["continuity_psb_sfh"]) #This is to add additional parameters
-    model_params["zred"]["init"] = out['obs']["redshift"]
+    #model_params["zred"]["init"] = out['obs']["redshift"]
+    model_params["zred"]["init"] = QPE_redshifts[objID]
     out_model = SpecModel(model_params)
-    thing = out_model.predict(theta, obs=out['obs'], sps=sps)
-    print("OUT MFRAC:", thing)
+   # thing = out_model.predict(theta, obs=out['obs'], sps=sps)
+    #print("OUT MFRAC:", thing)
 
     #Plot the posterior's corner plot
     nsamples, ndim = out["chain"].shape
@@ -231,16 +263,26 @@ def read_SED(objID, extension="", QPE=True):
     #Plot the observed SED of the spectrum and SED of the highest probability posterior sample
     sfig, saxes = plt.subplots(2, 1, gridspec_kw=dict(height_ratios=[1, 4]), sharex=True)
     ax = saxes[1]
-    pwave = np.array([f.wave_effective for f in out_obs["filters"]])
 
+    print(additional_data)
+    print(len(additional_data))
+    out_obs = {}
+    out_obs["filters"], out_obs["redshift"], out_obs["maggies"], out_obs["maggies_unc"] = additional_data
+
+    print(out_obs["maggies"], out_obs["maggies_unc"])
+
+    pwave = np.array([f.wave_effective for f in out_obs["filters"]])
+    fontsize = 18
     # plot the data
     ax.plot(pwave, out_obs["maggies"], linestyle="", marker="o", color="k")
     ax.errorbar(pwave,  out_obs["maggies"], out_obs["maggies_unc"], linestyle="", color="k", zorder=10)
-    ax.set_ylabel(r"$f_\nu$ (maggies)")
-    ax.set_xlabel(r"$\lambda$ (AA)")
+    ax.set_ylabel(r"$f_\nu$ (maggies)", fontsize=fontsize)
+    ax.set_xlabel(r"$\lambda$ (AA)", fontsize=fontsize)
     ax.set_xlim(3e3, 1e4)
     ax.set_ylim(out_obs["maggies"].min() * 0.1, out_obs["maggies"].max() * 5)
     ax.set_yscale("log")
+    ax.xaxis.set_tick_params(labelsize=fontsize-2)
+    ax.yaxis.set_tick_params(labelsize=fontsize-2)
 
     # get the best-fit SED
     bsed = out["bestfit"]
@@ -251,7 +293,29 @@ def read_SED(objID, extension="", QPE=True):
     ax.plot(pwave, chi, linestyle="", marker="o", color="k")
     ax.axhline(0, color="k", linestyle=":")
     ax.set_ylim(-2, 2)
-    ax.set_ylabel(r"$\chi_{\rm best}$")
+    ax.set_ylabel(r"$\chi_{\rm best}$", fontsize=fontsize)
+    ax.xaxis.set_tick_params(labelsize=fontsize-2)
+    ax.yaxis.set_tick_params(labelsize=fontsize-2)
+    plt.show()
+
+    #Plot the observed SED of the spectrum and SED of the highest probability posterior sample
+    saxes = plt.subplot(111)
+    ax = saxes
+
+    ax.plot(pwave, out_obs["maggies"], linestyle="", marker="o", color="k")
+    ax.errorbar(pwave,  out_obs["maggies"], out_obs["maggies_unc"], linestyle="", color="k", zorder=10)
+    ax.set_ylabel(r"$f_\nu$ [maggies]", fontsize=fontsize)
+    ax.set_xlabel(r"Rest-frame wavelength [$\mathrm{\AA}$]", fontsize=fontsize)
+    ax.set_xlim(3e3, 1e4)
+    ax.set_ylim(out_obs["maggies"].min() * 0.1, out_obs["maggies"].max() * 5)
+    ax.set_yscale("log")
+    ax.xaxis.set_tick_params(labelsize=fontsize-2)
+    ax.yaxis.set_tick_params(labelsize=fontsize-2)
+
+    # get the best-fit SED
+    bsed = out["bestfit"]
+    ax.plot(bsed["restframe_wavelengths"] * (1+out_obs["redshift"]), bsed["spectrum"], color="firebrick", label="MAP sample")
+    ax.plot(pwave, bsed["photometry"], linestyle="", marker="s", markersize=10, mec="orange", mew=3, mfc="none")
     plt.show()
 
 
@@ -329,7 +393,8 @@ if __name__ == "__main__":
 
     elif input("Read QPE? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to read [0-{len(objects)-1}]:\n"))
-        read_SED(objID, extension="FINAL")
+        additional_data = get_data_windows(objID, bands="griz", redshift=QPE_redshifts[objID], magnitudes_dict=QPE_magnitudes_dicts[objID], extension="FINAL")
+        read_SED(objID, extension="FINAL", additional_data=additional_data)
 
     elif input("Fit TDEs? [y/n]") == "y":
         objID = int(input(f"Input object ID you want to fit [0-{len(TDE_names)-1}]:\n"))
