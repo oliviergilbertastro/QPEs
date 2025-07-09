@@ -407,7 +407,7 @@ class FittingProcess(object):
         else:
             plt.close()
     
-    def plot_all(self, target_ID=None):
+    def plot_all(self, target_ID=None, show_plot = True, save_plot=False):
         """
         Plot everyting, including:
             -run_diag()
@@ -416,15 +416,15 @@ class FittingProcess(object):
             -plot_flux_corner()
             -plot_final_qso_fit() or plot_final_galaxy_fit(), based on if point source is included or not.
         """          
-        self.run_diag()
-        self.model_plot()
+        self.run_diag(show_plot=show_plot)
+        self.model_plot(show_plot=show_plot, save_plot=save_plot)
         if self.fitting_kwargs_list[-1][0] == 'MCMC':
-            self.plot_params_corner()
-            self.plot_flux_corner()  
+            self.plot_params_corner(show_plot=show_plot, save_plot=save_plot)
+            self.plot_flux_corner(show_plot=show_plot, save_plot=save_plot)  
         if self.image_ps_list != []:
-            self.plot_final_qso_fit(target_ID=target_ID)
+            self.plot_final_qso_fit(target_ID=target_ID, show_plot=show_plot, save_plot=save_plot)
         else:
-            self.plot_final_galaxy_fit(target_ID=target_ID)
+            self.plot_final_galaxy_fit(target_ID=target_ID, show_plot=show_plot, save_plot=save_plot)
 
     def cal_chisq(self):
         num_param_nonlinear = self.fitting_seq.param_class.num_param()[0]
