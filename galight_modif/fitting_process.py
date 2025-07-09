@@ -603,11 +603,10 @@ class FittingProcess(object):
         #print("Low {0:.3f}, Mid {1:.3f}, High: {2:.3f}".format(np.percentile(chain[:, checkid],16),
         #                                                        np.percentile(chain[:, checkid],50), 
         #                                                        np.percentile(chain[:, checkid],84)) )
-    def dump_result(self, savedata= False):
+    def dump_result(self, savedata= False, savefolder=None):
         """
         Save all the fitting materials as pickle for the future use. To save space, the data_process_class() will be removed, since it usually includes FOV image which can be huge.
         """        
-        savename = self.savename
         dump_class = copy.deepcopy(self)
         if hasattr(dump_class.fitting_specify_class, 'data_process_class') and savedata==False:
             if hasattr(dump_class.fitting_specify_class.data_process_class, 'fov_image'):
@@ -620,7 +619,7 @@ class FittingProcess(object):
         if dump_class.fitting_specify_class.kwargs_likelihood['custom_logL_addition'] != None:
             dump_class.prior = str(dump_class.fitting_specify_class.kwargs_likelihood['custom_logL_addition'])
             del dump_class.fitting_specify_class.kwargs_likelihood['custom_logL_addition']
-        pickle.dump(dump_class, open("galight_fitruns/"+savename+'.pkl', 'wb'))    
+        pickle.dump(dump_class, open(f"{savefolder}fitting_process.pkl", 'wb'))    
     
     def dump_result_version_free(self):
         save_pickle = {}
