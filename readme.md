@@ -1,0 +1,1 @@
+## Tutorial to download and spatially decompose DESI Legacy Survey galaxies : [fitting_tutorial.ipynb](fitting_tutorial.ipynb)
