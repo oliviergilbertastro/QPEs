@@ -16,11 +16,11 @@ import copy
 import matplotlib as matt
 matt.rcParams['font.family'] = 'STIXGeneral'
 from lenstronomy.Plots.model_plot import ModelPlot
-from galight.tools.plot_tools import total_compare
+from galight_modif.tools.plot_tools import total_compare
 from packaging import version
 import lenstronomy
 import lenstronomy.Util.param_util as param_util
-from galight.tools.measure_tools import model_flux_cal
+from galight_modif.tools.measure_tools import model_flux_cal
 
 class FittingProcess(object):
     """

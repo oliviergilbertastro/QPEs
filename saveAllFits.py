@@ -7,21 +7,28 @@ import matplotlib.pyplot as plt
 import copy
 from matplotlib.colors import LogNorm
 import matplotlib
-my_cmap = copy.copy(matplotlib.cm.get_cmap('gist_heat')) # copy the default cmap
+#my_cmap = copy.copy(matplotlib.cm.get_cmap('gist_heat')) # copy the default cmap
+my_cmap = copy.copy(matplotlib.colormaps['gist_heat'])
 my_cmap.set_bad('black')
 import parse
 import os
 from datetime import datetime
-
+import traceback
 #save_folder = f"/Users/oliviergilbert/Desktop/QPEs/fits/auto_fits/"
 save_folder = r"C:\\Users\\lauri\\Downloads\\"
 save_folder = r"C:\Users\olivi\Desktop\QPEs\iPoster\\"
+save_folder = r"figures_test/"
 
 def saveFit(picklename=None, savename=None, filetype="pdf"):
     try:
         fitting_run_result = pickle.load(open("galight_fitruns/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
-    except:
-        fitting_run_result = pickle.load(open("galight_fitruns/big_fits/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
+    except Exception as e:
+        traceback.print_exc()
+        print(e)
+        try:
+            fitting_run_result = pickle.load(open("galight_fitruns\\"+picklename,'rb'))
+        except:
+            fitting_run_result = pickle.load(open("galight_fitruns/big_fits/"+picklename,'rb'))  #fitting_run_result is actually the fit_run in galightFitting.py.
 
     if len(fitting_run_result.image_host_list) == 2:
         if fitting_run_result.final_result_galaxy[0]["n_sersic"] < fitting_run_result.final_result_galaxy[1]["n_sersic"]:
@@ -147,7 +154,8 @@ elif input("Save FINAL French TDE hosts? [y/n]") == "y":
             picklename=f"{french_TDE_names[i]}_{band}-band_{'Bulge'}_DESI_PSF_FINAL2.pkl"
             try:
                 saveFit(picklename, savename=f"{time_dir}/sersicfit_{french_TDE_names[i]}")
-            except:
+            except Exception as e:
+                print(e)
                 pass
 
 elif input("Save French Sérsic TDE hosts? [y/n]") == "y":

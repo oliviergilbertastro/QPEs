@@ -8,6 +8,10 @@ import sys
 
 QPE_distribution = np.loadtxt("QPE_distribution.txt")
 TDE_distribution = np.loadtxt("TDE_distribution.txt")
+print(TDE_distribution.shape)
+QPE_distribution = QPE_distribution[[0,1,2,3,6,7],:] # remove QPE+TDE from TDE sample
+#TDE_distribution = TDE_distribution[:-3,:] # remove QPE+TDE from TDE sample
+print(TDE_distribution.shape)
 french_TDE_distribution = np.loadtxt("french_TDE_distribution.txt")
 TDE_distribution = np.vstack((TDE_distribution,french_TDE_distribution))
 

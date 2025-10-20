@@ -7,8 +7,8 @@ import numpy as np
 from math import floor, ceil
 import matplotlib.pyplot as plt
 import matplotlib as mpl
-from sklearn.neighbors import KernelDensity
-import seaborn as sns
+#from sklearn.neighbors import KernelDensity
+#import seaborn as sns
 from tqdm import tqdm
 
 def print_table(a, header=None, title=None, space_between_columns=2, space_between_rows=0, borders=1, header_color="yellow", border_color="grey", override_length=None):

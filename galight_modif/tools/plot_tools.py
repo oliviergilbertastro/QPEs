@@ -10,11 +10,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import astropy.io.fits as pyfits
 from matplotlib.colors import LogNorm
-from galight.tools.measure_tools import SB_profile
+from galight_modif.tools.measure_tools import SB_profile
 import copy, matplotlib
 from matplotlib.ticker import ScalarFormatter
-from galight.tools.astro_tools import plt_fits, plt_fits_color, plt_many_fits
-from galight.tools.cutout_tools import plot_overview
+from galight_modif.tools.astro_tools import plt_fits, plt_fits_color, plt_many_fits
+from galight_modif.tools.cutout_tools import plot_overview
 
 my_cmap = copy.copy(matplotlib.cm.get_cmap('gist_heat')) # copy the default cmap
 my_cmap.set_bad('black')
